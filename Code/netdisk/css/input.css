@@ -1,0 +1,20 @@
+/* label聚焦样式 */
+.labelFocus {
+  transform: translateY(-34px) scale(0.86, 0.86);
+}
+
+/* label聚焦颜色 */
+.labelFocusColor {
+  color: #399af2;
+}
+
+/* 空input样式 */
+.inputEmpty {
+  border-color: #f00;
+  background-color: #ff00001a;
+}
+
+/* 空input时的label样式 */
+.labelEmpty {
+  color: #f00;
+}

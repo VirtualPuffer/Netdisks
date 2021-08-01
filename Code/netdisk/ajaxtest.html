@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>网盘</title>
+    <link rel="stylesheet" href="./css/netdisk.css">
+    <script src="./js/api/axios.min.js"></script>
+</head>
+
+<body>
+    <button id="loginbtn">登录测试</button>
+    <button id="freeloginbtn">免登录测试</button>
+    <a href="javascript:window.open('http://47.96.253.99/Netdisk/downLoadFile?source=/java/test/UserLog.java');" id="download">点击下载</a>
+    <a href="javascript:;" id="ajaxDownload">ajaxDownload</a>
+    <br>
+    <input type="file" name="上传" id="upload_input">
+    <button id="upload_btn">上传</button>
+
+    <div>-----------------------------------------------</div>
+    <form action="http://47.96.253.99/Netdisk/uploadFile" method="post" enctype="multipart/form-data">
+        <input type="file" name="getFile" />
+        <input type="text" value="/" name="source">
+        <p>
+            <input type="submit" value="提交" />
+            <p>
+                <input type="reset" value="清空" />
+                <p>
+    </form>
+    <div>
+        <h1>打印信息：</h1>
+        <button id="cls">清空</button>
+        <div id="info"></div>
+    </div>
+</body>
+<script src="js/api/ajaxPOST.js"></script>
+<script src="js/api/ajaxDownload.js"></script>
+<script>
+    var info = document.getElementById("info");
+    var loginbtn = document.getElementById("loginbtn");
+    let loginFd = new FormData();
+    loginFd.append("username", "123");
+    loginFd.append("password", "123");
+    let freelogin = true;
+    loginFd.append("freeLogin", freelogin);
+
+    let clsbtn = document.getElementById("cls");
+    clsbtn.onclick = () => {
+        info.innerHTML = "";
+    }
+    // 登录按钮
+    loginbtn.onclick = () => {
+        ajaxPOST("userLogin", loginFd).then((res) => {
+            info.innerHTML += JSON.stringify(res) + '<br>';
+        }).catch((status) => {
+            if (status.code === 300) {
+                info.innerHTML += JSON.stringify(status) + '<br>';
+                console.log(status.msg);
+            } else {
+                console.error("请求错误： " + status);
+            }
+        });
+    }
+
+    // 免登录
+    let freeloginbtn = document.getElementById("freeloginbtn");
+    freeloginbtn.onclick = () => {
+        ajaxPOST("freeLogin", null).then((res) => {
+            info.innerHTML += JSON.stringify(res) + "<br>";
+        }).catch((status) => {
+            if (status.code === 300) {
+                info.innerHTML += JSON.stringify(status) + "<br>";
+                console.log(status.msg);
+            } else {
+                if (typeof status === Object) {
+                    console.log("错误：信息：");
+                    console.log(status);
+                } else {
+                    console.error("请求错误: " + status || status.code);
+                }
+            }
+        });
+    }
+
+    let ajaxDownloadBtn = document.getElementById("ajaxDownload");
+
+    function ajaxDownloadFun() {
+        ajaxDownload("/agf");
+    }
+    ajaxDownloadBtn.onclick = ajaxDownloadFun;
+
+    let upload_input = document.getElementById("upload_input");
+    let upload_btn = document.getElementById("upload_btn");
+    upload_btn.onclick = () => {
+        if (upload_input.files[0]) {
+            let uploadFd = new FormData();
+            uploadFd.append("source", "/");
+            uploadFd.append("getFile", upload_input.files[0]);
+            ajaxPOST("uploadFile", uploadFd).then((res) => {
+                console.log("ok");
+            })
+        }
+    }
+    //axios.defaults.headers.post['Content-Type'] = 'multipart/form-data'
+    axios.defaults.headers.post['Content-Type'] = 'application/json;charset=utf-8'
+    let f = new FormData();
+    f.append("source", "/java")
+    // console.log(axios.defaults.headers.post['Content-Type'])
+    // axios.post("http://47.96.253.99/Netdisk/json", {
+    //     username: "tsuibin",
+    //     password: "kaukay"
+    // }).then(res => {
+    //     console.log(res)
+    // }).catch(res => {
+    //     console.error(res)
+    // })
+    // ajaxPOST("json/data", {
+    //     tsuibin: "tsuibin"
+    // })
+</script>
+
+</html>
