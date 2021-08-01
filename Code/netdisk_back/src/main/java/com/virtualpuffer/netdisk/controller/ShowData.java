@@ -1,5 +1,6 @@
 package com.virtualpuffer.netdisk.controller;
 
+import com.virtualpuffer.netdisk.JDBCOBJ;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,11 +19,15 @@ import java.util.NoSuchElementException;
 @RestController
 public class ShowData {
 
+    static LinkedList<String> test;
+    static HashMap<String,LinkedList<String>> hasf;
 
-        static LinkedList<String> test;
-        static HashMap<String,LinkedList<String>> hasf;
+    @RequestMapping("/aa")
+    public static String a(){
+        return "HelloWorld";
+    }
 
-        @RequestMapping("/background")
+    @RequestMapping("/background")
     public synchronized StringBuffer handlf(String username, String password, HttpServletResponse response, HttpServletRequest request){
         String json = "123";
         StringBuffer strhead  = new StringBuffer();

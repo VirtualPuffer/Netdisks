@@ -2,8 +2,10 @@ package com.virtualpuffer.netdisk;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.servlet.ServletComponentScan;
 
-@SpringBootApplication
+@ServletComponentScan
+@SpringBootApplication(scanBasePackages = {"com.virtualpuffer.netdisk.controller"})//核心包
 public class NetdiskApplication {
 
     public static void main(String[] args) {

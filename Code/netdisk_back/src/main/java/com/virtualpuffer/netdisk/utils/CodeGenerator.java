@@ -1,3 +1,4 @@
+/*
 package com.virtualpuffer.netdisk.utils;
 
 import com.baomidou.mybatisplus.generator.AutoGenerator;
@@ -10,12 +11,14 @@ import com.baomidou.mybatisplus.generator.engine.FreemarkerTemplateEngine;
 import java.util.ArrayList;
 import java.util.List;
 
+*/
 /**
  * @author MrDoubleZhang
  * @ClassName CodeGenerator
  * @Date 2020/12/14 3:13 PM
  * @Version 1.0
- **/
+ **//*
+
 public class CodeGenerator {
 
     public static void main(String[] args) {
@@ -131,3 +134,4 @@ public class CodeGenerator {
     }
 
 }
+*/

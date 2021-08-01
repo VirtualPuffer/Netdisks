@@ -1,6 +1,6 @@
 
 server:
-  port: 4768
+  port: 80
   servlet:
     context-path: /gangballs
 spring:
