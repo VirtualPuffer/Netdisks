@@ -1,0 +1,21 @@
+
+server:
+  port: 4768
+  servlet:
+    context-path: /gangballs
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://47.96.253.99:3306/netdisk?characterEncoding=utf-8&serverTimezone=UTC&useSSL=false
+    username: gangballs
+    password: Where.gangballs123
+
+#mybatis-plus配置
+mybatis-plus:
+  mapper-locations:  classpath:/mapper/mysql/*Mapper.xml
+  global-config:
+    #字段策略 0:"忽略判断",1:"非 NULL 判断"),2:"非空判断"
+    field-strategy: 0
+    refresh-mapper: true
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

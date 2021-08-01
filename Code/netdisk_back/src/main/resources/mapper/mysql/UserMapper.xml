@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mapper.UserMap">
+    <select id="getName" resultType="persistance.User">
+        select user.username from user left join login_verify on user.USER_ID=Ver.USER_ID where login_verify.verCode = #{verCode};
+    </select>
+    <select id="getPath" resultType="persistance.User">
+        select user.URL from user,login_verify where login_verify.verCode = #{verCode} and login_verify.USER_ID = user.USER_ID
+    </select>
+
+
+    <!--免登录验证-->
+    <select id="verCodeVerify" resultType="persistance.User">
+        select * from login_verify where verCode = #{verCode};
+    </select>
+    <select id="freeLogVerify" resultType="persistance.User">
+        select * from login_verify where verCode = #{verCode} and ip = #{ip};
+    </select>
+
+    <!--登录验证记录-->
+    <select id="userLoginVerify" resultType="persistance.User">
+        select * from user where username = #{username} and password = #{password};
+    </select>
+    <insert id="userLoginDao">
+        insert into login_verify (verCode,clock,ip,date,username,USER_ID) values (#{verCode},#{clock},#{ip},#{date},#{username},(select USER_ID from user where username = #{username}));
+    </insert>
+
+    <!--注册账号逻辑-->
+    <select id="duplicationUsername" resultType="persistance.User">
+        select * from user where username = #{username};
+    </select>
+    <insert id="register">
+        insert into user (username,password,name) values (#{username},#{password},#{name});
+    </insert>
+    <update id="updateURL">
+        Update user set URL = USER_ID where URL is null ;
+    </update>
+    <select id="getIDbyName" resultType="int">
+        select USER_ID from user where username = #{username};
+    </select>
+    <select id="locateByVer" resultType="persistance.User">
+        select * from user,login_verify where login_verify.verCode = #{verCode} and login_verify.USER_ID = user.USER_ID
+    </select>
+
+    <!---->
+    <select id="getMessage" resultType="persistance.User">
+        select user.name,user.photo,user.username from login_verify,user where login_verify.verCode = #{verCode} and login_verify.USER_ID = user.USER_ID;
+    </select>
+</mapper>
