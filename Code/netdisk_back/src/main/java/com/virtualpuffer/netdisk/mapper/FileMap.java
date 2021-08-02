@@ -9,9 +9,9 @@ public interface FileMap {
     * 删除文件
     * */
     //只删除对应路径
-    int deleteFileMap(String path);
+    int deleteFileMap(String path,int userID);
     //正则匹配前缀
-    int deleteDirectoryMap(String path);
+    int deleteDirectoryMap(String path,int userID);
     //检查还有没有其他文件引用
     LinkedList invokeOnExit(String path);
     /*
@@ -22,14 +22,18 @@ public interface FileMap {
     LinkedList parentONExit(String path);
     int addFile(String destination,String name);
     /*
+    * 获取文件路径映射
+    * */
+    LinkedList getDirectoryMap(String destination,int userID);
+    /*
     * 搜索文件
     * */
-    LinkedList searchFile(String name);
+    LinkedList searchFile(String fileName,int userID);
     /**
      * 上传文件
      * */
     LinkedList checkDuplicate(String hash);
-    int insertMap(String userID,String fileHash);
+    int insertMap(String userID,String fileHash,String fileName);
 
 
 }

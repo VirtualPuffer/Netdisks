@@ -24,6 +24,4 @@ public interface UserMap {
     int userLoginDao(String verCode, long clock, String ip, Timestamp date, String username);
     int locateByVer(String verCode);
 
-    /*获取URL*/
-    LinkedList getURL(String );
 }

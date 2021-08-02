@@ -3,6 +3,7 @@ package com.virtualpuffer.netdisk.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.virtualpuffer.netdisk.MybatisConnect;
+import com.virtualpuffer.netdisk.entity.File_Map;
 import com.virtualpuffer.netdisk.entity.User;
 import com.virtualpuffer.netdisk.utils.Message;
 import org.apache.ibatis.session.SqlSession;
@@ -10,43 +11,48 @@ import com.virtualpuffer.netdisk.mapper.*;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.zip.ZipOutputStream;
 
 
 /**
-* 只处理文件操作，不涉及用户信息
+ * 只处理文件操作，不涉及用户信息
+ * 物理内存优先，如果网盘内已有完全一样的版本
+ * 则不再上传文件，只在映射表中添加映射
+ *
+ * @method 获取文件路径时，查询映射表并查询物理路径，合并后回传
+ * 下载时，如果没有物理路径则在映射表中查询，没有则抛出异常
+ *
+ *
+ * @para user           用户对象，生成类时注入
+ * @para file           文件对象，可能是不存在的，让Controller层处理
+ * @para path           文件的绝对路径
+ * @para destination    文件的相对路径
 * */
 @Service
 public class FileServiceImpl extends FileServiceUtil{
     private User user;
     private File file;
-    private String path;
+    private String path;//绝对路径
+    private String destination;//相对路径
     private static final int BUFFER_SIZE = 4 * 1024;
     public static final String defaultWare = Message.getMess("defaultWare");
     public FileServiceImpl(){}
 
     /**
     * 构造服务对象
+     * @param destination 相对文件路径
+     * @param user 用户对象
+     * 没有处理404，controller级别再获取
     * */
-    public FileServiceImpl(String path,User user) throws FileNotFoundException {
+    public FileServiceImpl(String destination,User user) throws FileNotFoundException {
         this.user = user;
-        this.file = new File(path);
-        if(this.file.exists()) {
+        this.destination = destination;
+        this.file = new File(getAbsolutePath(destination));
+ /*       if(this.file.exists()) {
             throw new FileNotFoundException("");
-        }
-        try {
-            this.path = file.getCanonicalPath();
-        } catch (IOException e) {
-            this.path = file.getAbsolutePath();
-        }
-    }
-    public FileServiceImpl(File file,User user) throws FileNotFoundException{
-        this.file = file;
-        this.user = user;
-        if(!this.file.exists()) {
-            throw new FileNotFoundException("");
-        }
+        }*/
         try {
             this.path = file.getCanonicalPath();
         } catch (IOException e) {
@@ -55,6 +61,7 @@ public class FileServiceImpl extends FileServiceUtil{
     }
     /**
     * 物理路径计算
+     * @param destination 相对路径位置（网盘）
     * */
     public String getAbsolutePath(String destination){
         return defaultWare + this.user.getURL() + destination;
@@ -62,6 +69,22 @@ public class FileServiceImpl extends FileServiceUtil{
     /**
      * 获取路径下文件
      * */
+    public ArrayList<String> getDirectory(){
+        SqlSession session = MybatisConnect.getSession();
+        ArrayList<String> arrayList = new ArrayList();
+        LinkedList<File_Map> list = session.getMapper(FileMap.class).getDirectoryMap(destination,user.getUSER_ID());
+        if(!list.isEmpty()){
+            for(File_Map fileMap : list){
+                arrayList.add(fileMap.getFile_Path());
+            }
+        }
+        if(file.isDirectory()){
+            for (File dirFile : file.listFiles()){
+                arrayList.add(dirFile.getName());
+            }
+        }
+        return arrayList;
+    }
     /**
      * 文件上传
      * */
@@ -76,11 +99,11 @@ public class FileServiceImpl extends FileServiceUtil{
         return !list.isEmpty();
     }
     /*public boolean duplicateUpload(String hash,String)*/
-    public boolean uploadFile(InputStream inputStream,String destination)throws Exception{
+    public boolean uploadFile(InputStream inputStream)throws Exception{
         OutputStream outputStream;
+        SqlSession session = MybatisConnect.getSession();
         if (checkDuplicate(inputStream)) {
-            SqlSession session = MybatisConnect.getSession();
-            int count = session.getMapper(FileMap.class).insertMap(user.getURL(),getSH256(inputStream));
+            int count = session.getMapper(FileMap.class).insertMap(user.getURL(),getSH256(inputStream),file.getName());
         }else {
             byte[] buffer = new byte[BUFFER_SIZE];
             outputStream = new FileOutputStream(path);
@@ -95,17 +118,19 @@ public class FileServiceImpl extends FileServiceUtil{
                 close(inputStream);
                 close(outputStream);
             }
+            session.commit();/*提交*/
         }
         return false;
     }
     /**
      * 文件删除
      * */
-    public boolean deleteFileMap(String path){
+    @Deprecated
+    public boolean deleteFileMap(){
         //删除文件映射
         SqlSession session = MybatisConnect.getSession();
         FileMap fileMap = session.getMapper(FileMap.class);
-        fileMap.deleteFileMap(path);
+        fileMap.deleteFileMap(path,user.getUSER_ID());
         if(fileMap.invokeOnExit(path).isEmpty()){
             //删除物理文件
             deleteFile();
@@ -114,18 +139,15 @@ public class FileServiceImpl extends FileServiceUtil{
         session.close();
         return false;
     }
-    public boolean deleteFile() {
+    public void deleteFile() {
         try {
             //删除操作
             delete(this.file);
         } catch (Exception e) {
             if(file.exists()){
                 //删除失败
-                return false;
             }
         }
-        //清除map
-        return true;
     }
 
     /**
