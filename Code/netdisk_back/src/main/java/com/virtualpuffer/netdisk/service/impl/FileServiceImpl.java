@@ -3,6 +3,7 @@ package com.virtualpuffer.netdisk.service.impl;
 
 import com.virtualpuffer.netdisk.MybatisConnect;
 import com.virtualpuffer.netdisk.entity.User;
+import com.virtualpuffer.netdisk.utils.Message;
 import org.apache.ibatis.session.SqlSession;
 import com.virtualpuffer.netdisk.mapper.*;
 import org.springframework.stereotype.Service;
@@ -18,15 +19,16 @@ import java.util.zip.ZipOutputStream;
 @Service
 public class FileServiceImpl extends FileServiceUtil{
     private User user;
-    private String USER_ID;
     private File file;
     private String path;
+    public static final String defaultWare = Message.getMess("defaultWare");
     public FileServiceImpl(){}
 
     /**
     * 构造服务对象
     * */
-    public FileServiceImpl(String path) throws FileNotFoundException {
+    public FileServiceImpl(String path,User user) throws FileNotFoundException {
+        this.user = user;
         this.file = new File(path);
         if(this.file.exists()) {
             throw new FileNotFoundException("");
@@ -37,8 +39,9 @@ public class FileServiceImpl extends FileServiceUtil{
             this.path = file.getAbsolutePath();
         }
     }
-    public FileServiceImpl(File file) throws FileNotFoundException{
+    public FileServiceImpl(File file,User user) throws FileNotFoundException{
         this.file = file;
+        this.user = user;
         if(!this.file.exists()) {
             throw new FileNotFoundException("");
         }
@@ -47,6 +50,13 @@ public class FileServiceImpl extends FileServiceUtil{
         } catch (IOException e) {
             this.path = file.getAbsolutePath();
         }
+    }
+    /**
+    * 物理路径计算
+    * */
+    public String getAbsolutePath(String destination){
+
+        return defaultWare + this.user.getURL() + destination;
     }
     /**
      * 文件上传
@@ -61,7 +71,8 @@ public class FileServiceImpl extends FileServiceUtil{
         LinkedList list = session.getMapper(FileMap.class).checkDuplicate(hash);
         return !list.isEmpty();
     }
-    public boolean uploadFile(InputStream inputStream){
+    /*public boolean duplicateUpload(String hash,String)*/
+    public boolean uploadFile(InputStream inputStream,String destination){
         return false;
     }
     /**
