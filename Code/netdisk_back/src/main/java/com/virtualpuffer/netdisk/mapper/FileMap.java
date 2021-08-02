@@ -25,6 +25,10 @@ public interface FileMap {
     * 搜索文件
     * */
     LinkedList searchFile(String name);
+    /**
+     * 上传文件
+     * */
+    LinkedList checkDuplicate(String hash);
 
 
 }

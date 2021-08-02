@@ -8,9 +8,13 @@ import com.virtualpuffer.netdisk.mapper.*;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
+import java.util.LinkedList;
 import java.util.zip.ZipOutputStream;
 
 
+/**
+* 只处理文件操作，不涉及用户信息
+* */
 @Service
 public class FileServiceImpl extends FileServiceUtil{
     private User user;
@@ -44,7 +48,25 @@ public class FileServiceImpl extends FileServiceUtil{
             this.path = file.getAbsolutePath();
         }
     }
-
+    /**
+     * 文件上传
+     * */
+    //SHA校验
+    public boolean checkDuplicate(InputStream inputStream) throws Exception{
+        return checkDuplicate(getSH256(inputStream));
+    }
+    //重复返回true
+    public boolean checkDuplicate(String hash){
+        SqlSession session = MybatisConnect.getSession();
+        LinkedList list = session.getMapper(FileMap.class).checkDuplicate(hash);
+        return !list.isEmpty();
+    }
+    public boolean uploadFile(InputStream inputStream){
+        return false;
+    }
+    /**
+     * 文件删除
+     * */
     public boolean deleteFileMap(String path){
         //删除文件映射
         SqlSession session = MybatisConnect.getSession();
