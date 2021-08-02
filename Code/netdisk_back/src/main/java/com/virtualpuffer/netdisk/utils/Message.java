@@ -1,4 +1,4 @@
-package com.virtualpuffer.netdisk;
+package com.virtualpuffer.netdisk.utils;
 
 import java.io.IOException;
 import java.io.InputStream;

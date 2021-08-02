@@ -1,5 +1,7 @@
 package com.virtualpuffer.netdisk;
 
+import com.virtualpuffer.netdisk.utils.Message;
+
 import java.lang.reflect.Constructor;
 import java.util.LinkedList;
 

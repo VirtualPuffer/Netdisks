@@ -1,10 +1,14 @@
 package com.virtualpuffer.netdisk.service.impl;
 
+import org.springframework.stereotype.Service;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+
+@Service
 public class BaseServiceImpl {
     protected static final int BUFFER_SIZE = 4 * 1024;
     protected static String properties = "getMess.properties";

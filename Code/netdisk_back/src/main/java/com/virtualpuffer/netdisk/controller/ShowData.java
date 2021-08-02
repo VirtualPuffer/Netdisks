@@ -1,6 +1,6 @@
 package com.virtualpuffer.netdisk.controller;
 
-import com.virtualpuffer.netdisk.JDBCOBJ;
+import com.virtualpuffer.netdisk.utils.JDBCOBJ;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -24,6 +24,7 @@ public class ShowData {
 
     @RequestMapping("/aa")
     public static String a(){
+        System.out.println("safsafas");
         return "HelloWorld";
     }
 

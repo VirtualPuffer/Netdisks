@@ -5,9 +5,13 @@ import com.virtualpuffer.netdisk.MybatisConnect;
 import com.virtualpuffer.netdisk.entity.User;
 import org.apache.ibatis.session.SqlSession;
 import com.virtualpuffer.netdisk.mapper.*;
+import org.springframework.stereotype.Service;
+
 import java.io.*;
 import java.util.zip.ZipOutputStream;
 
+
+@Service
 public class FileServiceImpl extends FileServiceUtil{
     private User user;
     private String USER_ID;

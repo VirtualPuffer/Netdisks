@@ -1,5 +1,7 @@
 package com.virtualpuffer.netdisk.service.impl;
 
+import org.springframework.stereotype.Service;
+
 import java.io.*;
 import java.security.MessageDigest;
 import java.util.Enumeration;
@@ -7,6 +9,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
+
+@Service
 public class FileServiceUtil extends BaseServiceImpl{
 
     /**

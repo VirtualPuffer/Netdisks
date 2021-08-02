@@ -1,10 +1,10 @@
-package com.virtualpuffer.netdisk;
+package com.virtualpuffer.netdisk.utils;
 
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import com.virtualpuffer.netdisk.DemoFactory;
+import com.virtualpuffer.netdisk.Singleton;
+
+import java.sql.*;
 import java.util.LinkedList;
 
 
@@ -57,7 +57,8 @@ public class JDBCOBJ {
             if(con.isClosed() || con ==null){
                 getConnect();
             }
-            out = con.createStatement();
+            out = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
+                    ResultSet.CONCUR_UPDATABLE);
             statePack pack = new statePack(out);
             stateList.add(pack);
         } catch (SQLException throwables) {
@@ -93,12 +94,12 @@ public class JDBCOBJ {
         String sqlPassword = Message.getMess("sqlpassword");
         String sqlURL = Message.getMess("sqlURL");
         try {
-            Class.forName("com.mysql.jdbc.Driver");
+        /*    Class.forName("com.mysql.jdbc.Driver");*/
             con = DriverManager.getConnection(sqlURL,sqlUsername,sqlPassword);
             state = con.createStatement();
-        } catch (ClassNotFoundException e) {
+        } /*catch (ClassNotFoundException e) {
             e.printStackTrace();
-        } catch (SQLException throwables) {
+        }*/ catch (SQLException throwables) {
             throwables.printStackTrace();
         }
 
