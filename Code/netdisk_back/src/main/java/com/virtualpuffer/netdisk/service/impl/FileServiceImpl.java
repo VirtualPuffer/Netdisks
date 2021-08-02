@@ -1,6 +1,7 @@
 package com.virtualpuffer.netdisk.service.impl;
 
 
+import com.alibaba.fastjson.JSON;
 import com.virtualpuffer.netdisk.MybatisConnect;
 import com.virtualpuffer.netdisk.entity.User;
 import com.virtualpuffer.netdisk.utils.Message;
@@ -21,6 +22,7 @@ public class FileServiceImpl extends FileServiceUtil{
     private User user;
     private File file;
     private String path;
+    private static final int BUFFER_SIZE = 4 * 1024;
     public static final String defaultWare = Message.getMess("defaultWare");
     public FileServiceImpl(){}
 
@@ -55,9 +57,11 @@ public class FileServiceImpl extends FileServiceUtil{
     * 物理路径计算
     * */
     public String getAbsolutePath(String destination){
-
         return defaultWare + this.user.getURL() + destination;
     }
+    /**
+     * 获取路径下文件
+     * */
     /**
      * 文件上传
      * */
@@ -72,7 +76,26 @@ public class FileServiceImpl extends FileServiceUtil{
         return !list.isEmpty();
     }
     /*public boolean duplicateUpload(String hash,String)*/
-    public boolean uploadFile(InputStream inputStream,String destination){
+    public boolean uploadFile(InputStream inputStream,String destination)throws Exception{
+        OutputStream outputStream;
+        if (checkDuplicate(inputStream)) {
+            SqlSession session = MybatisConnect.getSession();
+            int count = session.getMapper(FileMap.class).insertMap(user.getURL(),getSH256(inputStream));
+        }else {
+            byte[] buffer = new byte[BUFFER_SIZE];
+            outputStream = new FileOutputStream(path);
+            int length = 0;
+            try {
+                while ((length = inputStream.read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, length);
+                }
+            } catch (IOException e) {
+                //日志工厂
+            } finally {
+                close(inputStream);
+                close(outputStream);
+            }
+        }
         return false;
     }
     /**
