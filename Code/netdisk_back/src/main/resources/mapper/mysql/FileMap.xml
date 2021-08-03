@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="mapper.FileMap">
-    <!--删除文件映射-->
+    <!--删除文件映射,删除文件时直接匹配，目录时相对路径+'/'后正则匹配-->
     <delete id="deleteFileMap">
         delete from File_Map where File_Path = #{path} and USER_ID = #{userID};
     </delete>
     <delete id="deleteDirectoryMap">
         delete from File_Map where File_Path REGEXP /^#{path}.*/ and USER_ID = #{userID};
     </delete>
+
     <select id="invokeOnExit" resultType="com.virtualpuffer.netdisk.mapper.FileMap">
         select * from File_Map where File_Path = #{path};
     </select>

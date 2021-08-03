@@ -19,7 +19,10 @@ import java.util.zip.ZipOutputStream;
 /**
  * 只处理文件操作，不涉及用户信息
  * 物理内存优先，如果网盘内已有完全一样的版本
- * 则不再上传文件，只在映射表中添加映射
+ * 则不再上传文件，只在映射表中创建/添加映射
+ *
+ * 只有两种情况：  1.在仓库的物理内存里
+ *              2.在映射表中，映射表使用独立的仓库
  *
  * @method 获取文件路径时，查询映射表并查询物理路径，合并后回传
  * 下载时，如果没有物理路径则在映射表中查询，没有则抛出异常
@@ -38,25 +41,28 @@ public class FileServiceImpl extends FileServiceUtil{
     private String destination;//相对路径
     private static final int BUFFER_SIZE = 4 * 1024;
     public static final String defaultWare = Message.getMess("defaultWare");
+    public static final String duplicateFileWare = Message.getMess("duplicateFileWare");
     public FileServiceImpl(){}
 
     /**
     * 构造服务对象
      * @param destination 相对文件路径
      * @param user 用户对象
-     * 没有处理404，controller级别再获取
+     * 没有处理404情况，controller级别再获取
     * */
     public FileServiceImpl(String destination,User user) throws FileNotFoundException {
         this.user = user;
         this.destination = destination;
         this.file = new File(getAbsolutePath(destination));
- /*       if(this.file.exists()) {
-            throw new FileNotFoundException("");
-        }*/
+
         try {
             this.path = file.getCanonicalPath();
         } catch (IOException e) {
             this.path = file.getAbsolutePath();
+        }
+        //长度判断，过短说明跳到上级路径
+        if(this.path.length() < defaultWare.length() && this.path.length() < duplicateFileWare.length()){
+            throw new SecurityException();
         }
     }
     /**
@@ -87,6 +93,7 @@ public class FileServiceImpl extends FileServiceUtil{
     }
     /**
      * 文件上传
+     * 发现相同文件后将文件移到独立仓库并建立文件映射
      * */
     //SHA校验
     public boolean checkDuplicate(InputStream inputStream) throws Exception{
@@ -99,55 +106,48 @@ public class FileServiceImpl extends FileServiceUtil{
         return !list.isEmpty();
     }
     /*public boolean duplicateUpload(String hash,String)*/
-    public boolean uploadFile(InputStream inputStream)throws Exception{
+    public void uploadFile(InputStream inputStream)throws Exception{
         OutputStream outputStream;
         SqlSession session = MybatisConnect.getSession();
         if (checkDuplicate(inputStream)) {
-            int count = session.getMapper(FileMap.class).insertMap(user.getURL(),getSH256(inputStream),file.getName());
+            //看看有没有创建映射
+            session.getMapper(FileMap.class)
+            session.getMapper(FileMap.class).insertMap(user.getURL(),getSH256(inputStream),file.getName());
+
         }else {
-            byte[] buffer = new byte[BUFFER_SIZE];
+
             outputStream = new FileOutputStream(path);
-            int length = 0;
             try {
-                while ((length = inputStream.read(buffer)) != -1) {
-                    outputStream.write(buffer, 0, length);
-                }
+                copy(inputStream,outputStream);
             } catch (IOException e) {
                 //日志工厂
             } finally {
                 close(inputStream);
                 close(outputStream);
             }
+
             session.commit();/*提交*/
         }
-        return false;
     }
+
     /**
      * 文件删除
+     * 检查映射表，存在则删除
+     * 映射表不存在，检查
      * */
-    @Deprecated
     public boolean deleteFileMap(){
-        //删除文件映射
+        if(file.exists()){
+            delete(file);
+        };
         SqlSession session = MybatisConnect.getSession();
         FileMap fileMap = session.getMapper(FileMap.class);
-        fileMap.deleteFileMap(path,user.getUSER_ID());
-        if(fileMap.invokeOnExit(path).isEmpty()){
-            //删除物理文件
-            deleteFile();
-        };
+
+        fileMap.deleteFileMap(destination,user.getUSER_ID());
+        fileMap.deleteDirectoryMap(destination + "/",user.getUSER_ID());
+
         session.commit();
         session.close();
         return false;
-    }
-    public void deleteFile() {
-        try {
-            //删除操作
-            delete(this.file);
-        } catch (Exception e) {
-            if(file.exists()){
-                //删除失败
-            }
-        }
     }
 
     /**
