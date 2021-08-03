@@ -37,6 +37,7 @@ public class ShowData {
         td("user",strhead,"white");
         td("login_verify",strhead);
         td("login_history",strhead);
+        td("FileHash_Map",strhead);
             td("File_Map",strhead);
         strend = new StringBuffer();
 

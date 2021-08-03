@@ -2,13 +2,13 @@ package com.virtualpuffer.netdisk.entity;
 
 public class FileHash_Map {
     String Hash;
-    String USER_ID;
+    int USER_ID;
     String path;
 
     public FileHash_Map() {
     }
 
-    public FileHash_Map(String hash, String USER_ID, String path) {
+    public FileHash_Map(String hash, int USER_ID, String path) {
         Hash = hash;
         this.USER_ID = USER_ID;
         this.path = path;
@@ -22,11 +22,11 @@ public class FileHash_Map {
         Hash = hash;
     }
 
-    public String getUSER_ID() {
+    public int getUSER_ID() {
         return USER_ID;
     }
 
-    public void setUSER_ID(String USER_ID) {
+    public void setUSER_ID(int USER_ID) {
         this.USER_ID = USER_ID;
     }
 

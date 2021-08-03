@@ -102,20 +102,22 @@ public class FileServiceImpl extends FileServiceUtil{
     //重复返回true
     public boolean checkDuplicate(String hash){
         SqlSession session = MybatisConnect.getSession();
-        LinkedList list = session.getMapper(FileMap.class).checkDuplicate(hash);
+        LinkedList list = session.getMapper(FileHashMap.class).checkDuplicate(hash);
         return !list.isEmpty();
     }
     /*public boolean duplicateUpload(String hash,String)*/
     public void uploadFile(InputStream inputStream)throws Exception{
         OutputStream outputStream;
+        String hash = getSH256(inputStream);
         SqlSession session = MybatisConnect.getSession();
         if (checkDuplicate(inputStream)) {
-            //看看有没有创建映射
-            session.getMapper(FileMap.class)
-            session.getMapper(FileMap.class).insertMap(user.getURL(),getSH256(inputStream),file.getName());
+            //看看有没有创建映射,
+            session.getMapper(FileMap.class);
+            session.getMapper(FileMap.class).insertMap(user.getURL(),hash,file.getName());
 
         }else {
 
+            session.getMapper(FileHashMap.class).addHashMap(hash,path,user.getUSER_ID());
             outputStream = new FileOutputStream(path);
             try {
                 copy(inputStream,outputStream);

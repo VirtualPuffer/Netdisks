@@ -32,7 +32,6 @@ public interface FileMap {
     /**
      * 上传文件
      * */
-    LinkedList checkDuplicate(String hash);
     int insertMap(String userID,String fileHash,String fileName);
 
 
