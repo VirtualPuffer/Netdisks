@@ -3,17 +3,17 @@ package com.virtualpuffer.netdisk.entity;
 public class File_Map {
     String USER_ID;
     String File_Name;
-    String File_Path;
+    String File_Destination;
     String File_Hash;
 
     public File_Map() {
     }
 
-    public File_Map(String USER_ID, String file_Name, String file_Path, String file_Hash) {
+    public File_Map(String USER_ID, String file_Name, String file_Destination, String file_Hash) {
         this.USER_ID = USER_ID;
-        File_Name = file_Name;
-        File_Path = file_Path;
-        File_Hash = file_Hash;
+        this.File_Name = file_Name;
+        this.File_Destination = file_Destination;
+        this.File_Hash = file_Hash;
     }
 
     public String getUSER_ID() {
@@ -24,8 +24,8 @@ public class File_Map {
         return File_Name;
     }
 
-    public String getFile_Path() {
-        return File_Path;
+    public String getFile_Destination() {
+        return File_Destination;
     }
 
     public String getFile_Hash() {

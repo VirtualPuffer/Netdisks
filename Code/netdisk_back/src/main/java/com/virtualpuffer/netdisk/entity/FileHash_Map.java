@@ -1,25 +1,25 @@
 package com.virtualpuffer.netdisk.entity;
 
 public class FileHash_Map {
-    String Hash;
+    String File_Hash;
     int USER_ID;
     String path;
 
     public FileHash_Map() {
     }
 
-    public FileHash_Map(String hash, int USER_ID, String path) {
-        Hash = hash;
+    public FileHash_Map(String File_Hash, int USER_ID, String path) {
+        this.File_Hash = File_Hash;
         this.USER_ID = USER_ID;
         this.path = path;
     }
 
-    public String getHash() {
-        return Hash;
+    public String getFile_Hash() {
+        return File_Hash;
     }
 
-    public void setHash(String hash) {
-        Hash = hash;
+    public void setFile_Hash(String hash) {
+        File_Hash = hash;
     }
 
     public int getUSER_ID() {

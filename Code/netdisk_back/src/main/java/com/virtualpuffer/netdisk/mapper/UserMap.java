@@ -13,6 +13,7 @@ public interface UserMap {
     LinkedList freeLogVerify(String verCode,String ip);
     LinkedList userLoginVerify(String username,String password);
     LinkedList getMessage(String verCode);
+    LinkedList<User> getUserByID(String userID);
 
     /*注册逻辑线*/
     LinkedList duplicationUsername(String username);

@@ -10,8 +10,15 @@
     </delete>
 
     <select id="invokeOnExit" resultType="com.virtualpuffer.netdisk.mapper.FileMap">
-        select * from File_Map where File_Path = #{path};
+        select * from File_Map where File_Hash = #{hash};
     </select>
+    <insert id="buildFileMap">
+        insert into File_Map (USER_ID,File_Name,File_Path,File_Hash)
+        select File_Path as File_Path,
+               #{userID}as USER_ID,
+               #{fileName} as File_Name,
+               #{fileHash} as File_Hash from File_Map where File_Hash = #{fileHash};
+    </insert>
 
 
     <insert id="insertMap">

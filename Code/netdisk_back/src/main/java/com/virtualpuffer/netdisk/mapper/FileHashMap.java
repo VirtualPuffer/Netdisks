@@ -8,6 +8,10 @@ public interface FileHashMap {
      * */
     LinkedList checkDuplicate(String hash);
 
+    LinkedList getFilePath(String hash);
+
+    int updatePath(String fileHash,String filePath);
+
     int addHashMap(String hash,String path,int userID);
 
 }

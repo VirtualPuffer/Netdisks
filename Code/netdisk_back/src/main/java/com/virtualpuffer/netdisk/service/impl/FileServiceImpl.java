@@ -3,6 +3,7 @@ package com.virtualpuffer.netdisk.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.virtualpuffer.netdisk.MybatisConnect;
+import com.virtualpuffer.netdisk.entity.FileHash_Map;
 import com.virtualpuffer.netdisk.entity.File_Map;
 import com.virtualpuffer.netdisk.entity.User;
 import com.virtualpuffer.netdisk.utils.Message;
@@ -50,6 +51,7 @@ public class FileServiceImpl extends FileServiceUtil{
      * @param user 用户对象
      * 没有处理404情况，controller级别再获取
     * */
+
     public FileServiceImpl(String destination,User user) throws FileNotFoundException {
         this.user = user;
         this.destination = destination;
@@ -64,6 +66,17 @@ public class FileServiceImpl extends FileServiceUtil{
         if(this.path.length() < defaultWare.length() && this.path.length() < duplicateFileWare.length()){
             throw new SecurityException();
         }
+    }
+    public static FileServiceImpl getInstanceByPath(String path,String userID) throws FileNotFoundException{
+        SqlSession session = MybatisConnect.getSession();
+        User user = session.getMapper(UserMap.class).getUserByID(userID).getFirst();
+        String destination = path.substring(defaultWare.length() + user.getURL().length());
+        return new FileServiceImpl(destination,user);
+    }
+    public static FileServiceImpl getInstance(String destination,String userID) throws FileNotFoundException{
+        SqlSession session = MybatisConnect.getSession();
+        User user = session.getMapper(UserMap.class).getUserByID(userID).getFirst();
+        return new FileServiceImpl(destination,user);
     }
     /**
     * 物理路径计算
@@ -81,7 +94,7 @@ public class FileServiceImpl extends FileServiceUtil{
         LinkedList<File_Map> list = session.getMapper(FileMap.class).getDirectoryMap(destination,user.getUSER_ID());
         if(!list.isEmpty()){
             for(File_Map fileMap : list){
-                arrayList.add(fileMap.getFile_Path());
+                arrayList.add(fileMap.getFile_Destination());
             }
         }
         if(file.isDirectory()){
@@ -112,7 +125,20 @@ public class FileServiceImpl extends FileServiceUtil{
         SqlSession session = MybatisConnect.getSession();
         if (checkDuplicate(inputStream)) {
             //看看有没有创建映射,
-            session.getMapper(FileMap.class);
+            if (session.getMapper(FileMap.class).invokeOnExit(hash).isEmpty()) {
+                //查询文件当前位置
+                LinkedList<FileHash_Map> list = session.getMapper(FileHashMap.class).getFilePath(hash);
+                String file_path = list.getFirst().getPath();
+                String hashFile_path = duplicateFileWare;
+                //更新hash表路径
+                session.getMapper(FileHashMap.class).updatePath(hash,hashFile_path);
+                //复制
+                copy(new FileInputStream(file_path),new FileOutputStream(hashFile_path));
+                new File(file_path).delete();
+                //源文件映射建立
+                session.getMapper(FileMap.class).buildFileMap(file_path,name,hash);
+
+            }
             session.getMapper(FileMap.class).insertMap(user.getURL(),hash,file.getName());
 
         }else {

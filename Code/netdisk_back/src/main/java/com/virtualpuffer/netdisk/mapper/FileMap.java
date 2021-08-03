@@ -12,8 +12,9 @@ public interface FileMap {
     int deleteFileMap(String path,int userID);
     //正则匹配前缀
     int deleteDirectoryMap(String path,int userID);
-    //检查还有没有其他文件引用
-    LinkedList invokeOnExit(String path);
+    //检查是否存在映射
+    LinkedList invokeOnExit(String hash);
+    int buildFileMap(String filePath,String fileName,String hash);
     /*
     * 添加文件映射：
     * 1.检查父级路径是否存在
