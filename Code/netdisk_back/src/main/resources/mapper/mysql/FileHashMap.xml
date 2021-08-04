@@ -14,5 +14,9 @@
                #{fileHash} as File_Hash from File_Map where File_Hash = #{fileHash};
     </insert>
 
+    <insert id="addHashMap">
+        insert into FileHash_Map (File_Hash,File_Path,USER_ID) values (#{hash},#{path},#{userID});
+    </insert>
+
 
 </mapper>

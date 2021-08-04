@@ -55,11 +55,20 @@ public class FileServiceImpl extends FileServiceUtil{
     public FileServiceImpl(String destination,User user) throws FileNotFoundException {
         this.user = user;
         this.destination = destination;
-        this.file = new File(getAbsolutePath(destination));
-        try {
-            this.path = file.getCanonicalPath();
-        } catch (IOException e) {
-            this.path = file.getAbsolutePath();
+
+        SqlSession session = MybatisConnect.getSession();
+        LinkedList<File_Map> list = session.getMapper(FileMap.class).getFileMap(user.getUSER_ID(),destination);
+        if(list.isEmpty()){
+            this.file = new File(getAbsolutePath(destination));
+            try {
+                this.path = file.getCanonicalPath();
+            } catch (IOException e) {
+                this.path = file.getAbsolutePath();
+            }
+        }else {
+            File_Map get = list.getFirst();
+            this.path = getAbsolutePath(this.destination);
+            //File拿真实路径回来
         }
         //长度判断，过短说明跳到上级路径
         if(this.path.length() < defaultWare.length() && this.path.length() < duplicateFileWare.length()){
@@ -93,7 +102,9 @@ public class FileServiceImpl extends FileServiceUtil{
         LinkedList<File_Map> list = session.getMapper(FileMap.class).getDirectoryMap(destination,user.getUSER_ID());
         if(!list.isEmpty()){
             for(File_Map fileMap : list){
-                arrayList.add(fileMap.getFile_Destination());
+                if(!fileMap.getFile_Destination().substring(this.destination.length()).contains("/")){
+                    arrayList.add(fileMap.getFile_Destination());
+                }
             }
         }
         if(file.isDirectory()){
@@ -119,7 +130,9 @@ public class FileServiceImpl extends FileServiceUtil{
     }
 
     /*public boolean duplicateUpload(String hash,String)*/
-
+    public void downloadFile(OutputStream outputStream){
+        if()//晚点再弄
+    }
     /**
      * 操作流程：
      *  获取输入流

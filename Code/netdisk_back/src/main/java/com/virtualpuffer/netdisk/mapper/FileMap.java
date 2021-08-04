@@ -1,6 +1,7 @@
 package com.virtualpuffer.netdisk.mapper;
 
 
+
 import java.util.LinkedList;
 
 public interface FileMap {
@@ -34,6 +35,8 @@ public interface FileMap {
      * 上传文件
      * */
     int insertMap(int userID,String fileHash,String fileName);
+
+    LinkedList getFileMap(int userID,String destination);
 
 
 }

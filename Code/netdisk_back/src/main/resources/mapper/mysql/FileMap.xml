@@ -6,7 +6,7 @@
         delete from File_Map where File_Path = #{path} and USER_ID = #{userID};
     </delete>
     <delete id="deleteDirectoryMap">
-        delete from File_Map where File_Destination REGEXP "/^"#{REPLACE(path,'/','\/')}"[^\/]+/" and USER_ID = #{userID};
+        delete from File_Map where File_Destination like "#{path}%" and USER_ID = #{userID};
     </delete>
 
     <select id="invokeOnExit" resultType="com.virtualpuffer.netdisk.mapper.FileMap">
@@ -30,8 +30,13 @@
     </insert>
 
     <select id="getDirectoryMap" resultType="com.virtualpuffer.netdisk.mapper.FileMap">
-        select File_Path from File_Map where File_Path = #{destination},USER_ID = #{userID};
+        select File_Path from File_Map where File_Path like "#{destination}%",USER_ID = #{userID};
     </select>
+
+    <select id="getFileMap" resultType="com.virtualpuffer.netdisk.entity.File_Map">
+        select * from File_Map where USER_ID = #{userID} and File_Destination = #{destination};
+    </select>
+
 
 
 
