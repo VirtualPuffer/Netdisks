@@ -38,8 +38,11 @@ import java.util.zip.ZipOutputStream;
 public class FileServiceImpl extends FileServiceUtil{
     private User user;
     private File file;
+    private String file_type;
+    private String file_name;
     private String path;//绝对路径
     private String destination;//相对路径
+    private boolean isMapper = false;
     private static final int BUFFER_SIZE = 4 * 1024;
     public static final String defaultWare = Message.getMess("defaultWare");
     public static final String duplicateFileWare = Message.getMess("duplicateFileWare");
@@ -58,6 +61,7 @@ public class FileServiceImpl extends FileServiceUtil{
 
         SqlSession session = MybatisConnect.getSession();
         LinkedList<File_Map> list = session.getMapper(FileMap.class).getFileMap(user.getUSER_ID(),destination);
+
         if(list.isEmpty()){
             this.file = new File(getAbsolutePath(destination));
             try {
@@ -66,13 +70,22 @@ public class FileServiceImpl extends FileServiceUtil{
                 this.path = file.getAbsolutePath();
             }
         }else {
+            this.isMapper = true;
             File_Map get = list.getFirst();
             this.path = getAbsolutePath(this.destination);
             //File拿真实路径回来
         }
+        
+        this.file_name = file.getName();
         //长度判断，过短说明跳到上级路径
         if(this.path.length() < defaultWare.length() && this.path.length() < duplicateFileWare.length()){
             throw new SecurityException();
+        }
+
+        try {
+            this.file_type = this.file_name.substring(this.file_name.lastIndexOf("."));
+        } catch (IndexOutOfBoundsException e) {
+            e.printStackTrace();
         }
     }
     public static FileServiceImpl getInstanceByPath(String path,String userID) throws FileNotFoundException{
@@ -130,8 +143,9 @@ public class FileServiceImpl extends FileServiceUtil{
     }
 
     /*public boolean duplicateUpload(String hash,String)*/
-    public void downloadFile(OutputStream outputStream){
-        if()//晚点再弄
+    public void downloadFile(OutputStream outputStream) throws IOException{
+        InputStream inputStream = new FileInputStream(this.file);
+        copy(inputStream,outputStream);
     }
     /**
      * 操作流程：
@@ -165,7 +179,7 @@ public class FileServiceImpl extends FileServiceUtil{
                 new File(file_path).delete();
                 //源文件映射建立
                 FileServiceImpl original = getInstanceByPath("",file_path);//操作对象
-                session.getMapper(FileMap.class).buildFileMap(original.getDestination(),original.getFile().getName(),hash,original.getUser().getUSER_ID());
+                session.getMapper(FileMap.class).buildFileMap(original.getDestination(),original.getFile_name(),hash,original.getUser().getUSER_ID());
             }
             session.getMapper(FileMap.class).buildFileMap(this.destination,this.file.getName(),hash,this.user.getUSER_ID());
 
@@ -227,9 +241,9 @@ public class FileServiceImpl extends FileServiceUtil{
         }
     }
 
-    public static long count(String srcDir) throws RuntimeException {
+    public long count(String srcDir) throws RuntimeException {
         ZipOutputStream zos = null;
-        String fileName = srcDir.substring(srcDir.lastIndexOf("/"));
+        String fileName = this.file_name;
         String path = getMess("compressTemp") + fileName.hashCode();
         File a = new File(path);
         try {
@@ -240,8 +254,7 @@ public class FileServiceImpl extends FileServiceUtil{
         try {
             OutputStream out = new FileOutputStream(path);
             zos = new ZipOutputStream(out);
-            File sourceFile = new File(srcDir);
-            compress(sourceFile, zos, sourceFile.getName());
+            compress(this.file, zos, this.file_name);
         } catch (Exception e) {
             throw new RuntimeException("zip error from ZipUtils", e);
         } finally {
@@ -267,5 +280,9 @@ public class FileServiceImpl extends FileServiceUtil{
 
     public String getDestination() {
         return destination;
+    }
+
+    public String getFile_name() {
+        return file_name;
     }
 }
