@@ -136,10 +136,11 @@ public class FileServiceImpl extends FileServiceUtil{
                 copy(new FileInputStream(file_path),new FileOutputStream(hashFile_path));
                 new File(file_path).delete();
                 //源文件映射建立
-                session.getMapper(FileMap.class).buildFileMap(file_path,name,hash);
+                getInstanceByPath("",file_path);//操作对象
+                session.getMapper(FileMap.class).buildFileMap(file_path,"name",hash);
 
             }
-            session.getMapper(FileMap.class).insertMap(user.getURL(),hash,file.getName());
+            session.getMapper(FileMap.class).insertMap(user.getUSER_ID(),hash,file.getName());
 
         }else {
 

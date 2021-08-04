@@ -6,7 +6,7 @@
         delete from File_Map where File_Path = #{path} and USER_ID = #{userID};
     </delete>
     <delete id="deleteDirectoryMap">
-        delete from File_Map where File_Path REGEXP /^#{path}.*/ and USER_ID = #{userID};
+        delete from File_Map where File_Destination REGEXP "/^"#{REPLACE(path,'/','\/')}"[^\/]+/" and USER_ID = #{userID};
     </delete>
 
     <select id="invokeOnExit" resultType="com.virtualpuffer.netdisk.mapper.FileMap">

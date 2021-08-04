@@ -33,7 +33,7 @@ public interface FileMap {
     /**
      * 上传文件
      * */
-    int insertMap(String userID,String fileHash,String fileName);
+    int insertMap(int userID,String fileHash,String fileName);
 
 
 }

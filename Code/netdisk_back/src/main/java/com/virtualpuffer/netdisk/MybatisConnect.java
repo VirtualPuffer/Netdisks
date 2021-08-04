@@ -19,7 +19,7 @@ public class MybatisConnect {
     //启动链接
     static {
         try {
-            String resource = "mapper.mysql.mybatis-config.xml";
+            String resource = "mybatis-config.xml";
             InputStream inputStream = Resources.getResourceAsStream(resource);
             factory = new SqlSessionFactoryBuilder().build(inputStream);
         } catch (IOException e) {
