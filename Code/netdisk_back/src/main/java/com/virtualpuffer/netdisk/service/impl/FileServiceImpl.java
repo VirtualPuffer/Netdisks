@@ -75,7 +75,7 @@ public class FileServiceImpl extends FileServiceUtil{
             this.path = getAbsolutePath(this.destination);
             //File拿真实路径回来
         }
-        
+
         this.file_name = file.getName();
         //长度判断，过短说明跳到上级路径
         if(this.path.length() < defaultWare.length() && this.path.length() < duplicateFileWare.length()){
