@@ -38,6 +38,7 @@ import java.util.zip.ZipOutputStream;
 public class FileServiceImpl extends FileServiceUtil{
     private User user;
     private File file;
+    private String file_Name;
     private String path;//绝对路径
     private String destination;//相对路径
     private static final int BUFFER_SIZE = 4 * 1024;
@@ -56,7 +57,7 @@ public class FileServiceImpl extends FileServiceUtil{
         this.user = user;
         this.destination = destination;
         this.file = new File(getAbsolutePath(destination));
-
+        this.file_Name = this.file.getName();
         try {
             this.path = file.getCanonicalPath();
         } catch (IOException e) {
@@ -118,7 +119,23 @@ public class FileServiceImpl extends FileServiceUtil{
         LinkedList list = session.getMapper(FileHashMap.class).checkDuplicate(hash);
         return !list.isEmpty();
     }
+
     /*public boolean duplicateUpload(String hash,String)*/
+
+    /**
+     * 操作流程：
+     *  获取输入流
+     *  计算sha256
+     *  在file hashmap表中看看有没有已经存在的文件
+     *  如果有，把该文件移到重复仓库中
+     *  给源文件拥有者和上传者分别建立映射
+     *  然后修改file hashmap路径使其指向当前文件位置
+     *
+     *  hashmap 维护文件物理路径和hash值的对应关系
+     *  map     维护hash值和文件拥有者以及相对路径的对应关系
+     *
+    * @param inputStream 上传文件的输入流
+    * */
     public void uploadFile(InputStream inputStream)throws Exception{
         OutputStream outputStream;
         String hash = getSH256(inputStream);
@@ -136,9 +153,8 @@ public class FileServiceImpl extends FileServiceUtil{
                 copy(new FileInputStream(file_path),new FileOutputStream(hashFile_path));
                 new File(file_path).delete();
                 //源文件映射建立
-                getInstanceByPath("",file_path);//操作对象
-                session.getMapper(FileMap.class).buildFileMap(file_path,"name",hash);
-
+                FileServiceImpl original = getInstanceByPath("",file_path);//操作对象
+                session.getMapper(FileMap.class).buildFileMap(original.getDestination(),original.getFile_Name(),hash);
             }
             session.getMapper(FileMap.class).insertMap(user.getUSER_ID(),hash,file.getName());
 
@@ -146,6 +162,7 @@ public class FileServiceImpl extends FileServiceUtil{
 
             session.getMapper(FileHashMap.class).addHashMap(hash,path,user.getUSER_ID());
             outputStream = new FileOutputStream(path);
+
             try {
                 copy(inputStream,outputStream);
             } catch (IOException e) {
@@ -220,5 +237,25 @@ public class FileServiceImpl extends FileServiceUtil{
         long ret = temp.length();
         temp.delete();
         return ret;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public File getFile() {
+        return file;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public String getDestination() {
+        return destination;
+    }
+
+    public String getFile_Name() {
+        return file_Name;
     }
 }
