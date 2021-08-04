@@ -38,7 +38,6 @@ import java.util.zip.ZipOutputStream;
 public class FileServiceImpl extends FileServiceUtil{
     private User user;
     private File file;
-    private String file_Name;
     private String path;//绝对路径
     private String destination;//相对路径
     private static final int BUFFER_SIZE = 4 * 1024;
@@ -57,7 +56,6 @@ public class FileServiceImpl extends FileServiceUtil{
         this.user = user;
         this.destination = destination;
         this.file = new File(getAbsolutePath(destination));
-        this.file_Name = this.file.getName();
         try {
             this.path = file.getCanonicalPath();
         } catch (IOException e) {
@@ -154,9 +152,9 @@ public class FileServiceImpl extends FileServiceUtil{
                 new File(file_path).delete();
                 //源文件映射建立
                 FileServiceImpl original = getInstanceByPath("",file_path);//操作对象
-                session.getMapper(FileMap.class).buildFileMap(original.getDestination(),original.getFile_Name(),hash);
+                session.getMapper(FileMap.class).buildFileMap(original.getDestination(),original.getFile().getName(),hash,original.getUser().getUSER_ID());
             }
-            session.getMapper(FileMap.class).insertMap(user.getUSER_ID(),hash,file.getName());
+            session.getMapper(FileMap.class).buildFileMap(this.destination,this.file.getName(),hash,this.user.getUSER_ID());
 
         }else {
 
@@ -181,19 +179,22 @@ public class FileServiceImpl extends FileServiceUtil{
      * 检查映射表，存在则删除
      * 映射表不存在，检查
      * */
-    public boolean deleteFileMap(){
+    public void deleteFileMap(){
         if(file.exists()){
             delete(file);
         };
         SqlSession session = MybatisConnect.getSession();
         FileMap fileMap = session.getMapper(FileMap.class);
 
-        fileMap.deleteFileMap(destination,user.getUSER_ID());
-        fileMap.deleteDirectoryMap(destination + "/",user.getUSER_ID());
-
-        session.commit();
+        int count = fileMap.deleteFileMap(destination,user.getUSER_ID());
+        count += fileMap.deleteDirectoryMap(destination + "/",user.getUSER_ID());
+        if(count > 0){
+            session.commit();
+            return ;
+        }
+        delete(this.file);
         session.close();
-        return false;
+        return ;
     }
 
     /**
@@ -253,9 +254,5 @@ public class FileServiceImpl extends FileServiceUtil{
 
     public String getDestination() {
         return destination;
-    }
-
-    public String getFile_Name() {
-        return file_Name;
     }
 }
