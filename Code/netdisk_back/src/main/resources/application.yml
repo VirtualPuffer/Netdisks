@@ -13,6 +13,6 @@ spring:
     password: Where.gangballs123
   security:
     user:
-      name: admin
-      password: admin
+      1name: admin
+      1password: admin
 

@@ -1,27 +1,24 @@
 package com.virtualpuffer.netdisk.entity;
 
-public class User {
-    private String Password;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
+
+public class User/* implements UserDetails */{
+
     private String username;
+    private String password;
     private String URL;
     private String name;
     private int USER_ID;
     private String photo;
 
-    public User() {
-    }
+    public User() { }
 
-    public User(String password, String username, String URL, String name, int USER_ID, String photo) {
-        Password = password;
-        this.username = username;
-        this.URL = URL;
-        this.name = name;
-        this.USER_ID = USER_ID;
-        this.photo = photo;
-    }
 
     public void setPassword(String password) {
-        Password = password;
+        password = password;
     }
 
     public void setUsername(String username) {
@@ -45,7 +42,8 @@ public class User {
     }
 
     public String getPassword() {
-        return Password;
+        System.out.println("sdsda"+password);
+        return password;
     }
 
     public String getUsername() {

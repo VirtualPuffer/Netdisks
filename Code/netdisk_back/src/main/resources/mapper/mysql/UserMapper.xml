@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.virtualpuffer.netdisk.mapper.UserMap">
+    <select id="getUserByUsername" resultType="com.virtualpuffer.netdisk.entity.User">
+        select  * from user where username = #{username};
+    </select>
     <!--<select id="getName" resultType="com.virtualpuffer.netdisk.mapper.User">
         select user.username from user left join login_verify on user.USER_ID=Ver.USER_ID where login_verify.verCode = #{verCode};
     </select>

@@ -1,27 +1,31 @@
 package com.virtualpuffer.netdisk.Security;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
 @Configuration
 @EnableWebSecurity
 public class NetdiskSecurityConfig extends WebSecurityConfigurerAdapter {
-    private UserDetailsService userDetailsService;
-/*    private TokenManager tokenManager;*/
-    private DefaultPasswordEncoder encoder;
+    @Autowired
+    UserDetailsService userDetailsService;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         System.out.println("83274285982");
         http
             .authorizeRequests()
-                .antMatchers("/aa", "/signup", "/about").permitAll()
+                .antMatchers( "/signup", "/about").permitAll()
                 .antMatchers("/admin/**").hasRole("ADMIN")
                 .antMatchers("/db/**").access("hasRole('ADMIN') and hasRole('DBA')")
                 .anyRequest().authenticated()
@@ -29,15 +33,23 @@ public class NetdiskSecurityConfig extends WebSecurityConfigurerAdapter {
             .formLogin()
                 .usernameParameter("username")
                 .passwordParameter("password")
-                .successForwardUrl("www.baidu.com")
-                .loginPage("/login").permitAll();
+                .successForwardUrl("/cc")
+                .permitAll();
             http.csrf().disable();
 
 
     }
 
     @Override
-    public void configure(WebSecurity web) throws Exception {
-        web.ignoring().antMatchers("/aa", "/signup", "/about");
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(userDetailsService).passwordEncoder(getEncoder());
     }
+
+    @Override
+    public void configure(WebSecurity web) throws Exception {
+        web.ignoring().antMatchers( "/signup", "/about");
+    }
+
+    @Bean("defaultEncoder")
+    PasswordEncoder getEncoder(){return new BCryptPasswordEncoder(); }
 }
