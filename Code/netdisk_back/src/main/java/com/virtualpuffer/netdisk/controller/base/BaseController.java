@@ -2,8 +2,10 @@ package com.virtualpuffer.netdisk.controller.base;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.virtualpuffer.netdisk.entity.User;
 import com.virtualpuffer.netdisk.enums.ErrorCode;
 import com.virtualpuffer.netdisk.enums.Result;
+import com.virtualpuffer.netdisk.service.impl.FileServiceImpl;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.util.FileCopyUtils;
@@ -13,10 +15,7 @@ import org.springframework.web.bind.annotation.InitBinder;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -105,7 +104,22 @@ public class BaseController extends BaseLogger {
             }
 
             this.response.getOutputStream().flush();
+
         }
+    }
+
+    protected void sendFileStream(User user,String destination,OutputStream outputStream) throws IOException{
+        FileServiceImpl fileService = null;
+        try {
+            fileService = new FileServiceImpl(destination,user);
+        } catch (FileNotFoundException e) {
+            //找不到
+        }
+        InputStream inputStream = fileService.downloadFile(outputStream);
+        response.setContentType("application/force-download");
+        this.response.setContentLength(inputStream.available());
+        this.response.addHeader("Content-Disposition", "attachment; filename=" + URLEncoder.encode(fileService.getFile_name(), "UTF-8"));
+
     }
 
     protected void sendFileStream(File file) throws IOException {

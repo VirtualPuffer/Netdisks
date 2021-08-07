@@ -16,9 +16,12 @@ public class User/* implements UserDetails */{
 
     public User() { }
 
+    public String getPassword() {
+        return password;
+    }
 
     public void setPassword(String password) {
-        password = password;
+        this.password = password;
     }
 
     public void setUsername(String username) {
@@ -41,10 +44,7 @@ public class User/* implements UserDetails */{
         this.photo = photo;
     }
 
-    public String getPassword() {
-        System.out.println("sdsda"+password);
-        return password;
-    }
+
 
     public String getUsername() {
         return username;

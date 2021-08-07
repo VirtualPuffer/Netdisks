@@ -1,5 +1,7 @@
 package com.virtualpuffer.netdisk.Security;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.virtualpuffer.netdisk.Security.securityFilter.LoginAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,7 +13,14 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.stereotype.Component;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 @Configuration
@@ -22,7 +31,18 @@ public class NetdiskSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        System.out.println("83274285982");
+        http.addFilterAt(new LoginAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+      /*  http.httpBasic().authenticationEntryPoint((request,response,authException) -> {
+            response.setContentType("application/json;charset=utf-8");
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            PrintWriter out = response.getWriter();
+            Map<String,Object> map = new HashMap<String,Object>();
+            map.put("code",403);
+            map.put("message","未登录");
+            out.write(new ObjectMapper().writeValueAsString(map));
+            out.flush();
+            out.close();
+        });*/
         http
             .authorizeRequests()
                 .antMatchers( "/signup", "/about").permitAll()
@@ -39,6 +59,7 @@ public class NetdiskSecurityConfig extends WebSecurityConfigurerAdapter {
 
 
     }
+    public JsonAuthenticationFilter
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {

@@ -31,18 +31,13 @@ public class UserService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         SqlSession session = MybatisConnect.getSession();
-        LinkedList<User> list = session.getMapper(UserMap.class).getUserByUsername(username);
-        if (list.isEmpty()) {
+        User user = null;
+        try {
+            user = session.getMapper(UserMap.class).getUserByUsername(username);
+        } catch (Exception e) {
             throw new UsernameNotFoundException(username);
         }
-        User user = list.getFirst();
-/*        list.getFirst().setPassword(defaultEncoder.encode(list.getFirst().getPassword()));*/
-
         List<GrantedAuthority> lisc = AuthorityUtils.commaSeparatedStringToAuthorityList("asda");
-
-        System.out.println(user.getUsername());
-        System.out.println(user.getPassword());
-        System.out.println(lisc);
         return new org.springframework.security.core.userdetails.User(user.getUsername(),defaultEncoder.encode("123"),lisc);
     }
 

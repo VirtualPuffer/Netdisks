@@ -143,9 +143,10 @@ public class FileServiceImpl extends FileServiceUtil{
     }
 
     /*public boolean duplicateUpload(String hash,String)*/
-    public void downloadFile(OutputStream outputStream) throws IOException{
+    public InputStream downloadFile(OutputStream outputStream) throws IOException{
         InputStream inputStream = new FileInputStream(this.file);
         copy(inputStream,outputStream);
+        return inputStream;
     }
     /**
      * 操作流程：
