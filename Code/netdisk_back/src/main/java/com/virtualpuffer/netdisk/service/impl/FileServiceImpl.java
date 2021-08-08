@@ -13,7 +13,9 @@ import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.zip.ZipOutputStream;
 
 
@@ -44,6 +46,7 @@ public class FileServiceImpl extends FileServiceUtil{
     private String destination;//相对路径
     private boolean isMapper = false;
     private static final int BUFFER_SIZE = 4 * 1024;
+    public static final String downloadAPI = Message.getMess("downloadAPI");
     public static final String defaultWare = Message.getMess("defaultWare");
     public static final String duplicateFileWare = Message.getMess("duplicateFileWare");
     public FileServiceImpl(){}
@@ -88,6 +91,7 @@ public class FileServiceImpl extends FileServiceUtil{
             e.printStackTrace();
         }
     }
+
     public static FileServiceImpl getInstanceByPath(String path,String userID) throws FileNotFoundException{
         SqlSession session = MybatisConnect.getSession();
         User user = session.getMapper(UserMap.class).getUserByID(userID).getFirst();
@@ -106,6 +110,16 @@ public class FileServiceImpl extends FileServiceUtil{
     public String getAbsolutePath(String destination){
         return defaultWare + this.user.getURL() + destination;
     }
+    /**
+     * 下载链接获取
+    * */
+    public String getDownloadURL(long time){
+        Map<String,Object> map = new HashMap();
+        map.put("path",this.path);
+        return  downloadAPI + createToken(time,map,user.getUsername());
+    }
+
+
     /**
      * 获取路径下文件
      * */

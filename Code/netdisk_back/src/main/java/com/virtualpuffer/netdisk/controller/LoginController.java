@@ -15,4 +15,5 @@ public class LoginController {
         LoginService service = LoginService.getInstance(user);
         return service.getUser().getToken();
     }
+
 }

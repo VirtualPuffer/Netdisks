@@ -24,7 +24,7 @@ import java.util.Map;
  * LoginService检测token真实性
  * 出问题直接抛出异常
 * */
-@WebFilter(urlPatterns = "/*",filterName = "apiControlFilter")
+@WebFilter(urlPatterns = "/api/*",filterName = "apiControlFilter")
 public class APIAuthorizationFilter implements Filter {
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -45,9 +45,9 @@ public class APIAuthorizationFilter implements Filter {
             response.getWriter().write("老子要post");
             return;
         }
-
+        System.out.println("???");
         if(request.getServletPath().equals("/login")){
-            //放行登录请求
+            //放行登录和直链下载请求
             filterChain.doFilter(request,response);
             return;
         }
@@ -60,9 +60,12 @@ public class APIAuthorizationFilter implements Filter {
         try {
             //解析token
             String token = request.getHeader("Authorization");
+            System.out.println(token);
             if(token != null && !token.equals("") ){
                 LoginService service = LoginService.getInstance(token);
                 request.setAttribute("AuthService",service);
+            }else {
+                throw new RuntimeException();
             }
         } catch (RuntimeException e) {
             response.setStatus(200);

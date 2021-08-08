@@ -17,6 +17,7 @@ import java.util.NoSuchElementException;
 
 @org.springframework.stereotype.Controller
 @RestController
+@RequestMapping("/api")
 public class ShowData {
 
     static LinkedList<String> test;

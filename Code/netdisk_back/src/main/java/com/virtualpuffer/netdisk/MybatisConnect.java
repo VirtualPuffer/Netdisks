@@ -49,7 +49,7 @@ public class MybatisConnect {
     }
     public static SqlSession getSession(){
         SqlSession session = factory.openSession();
-        getMybatisConnect().getSessionList().add(session);
+      /*  getMybatisConnect().getSessionList().add(session);*/
         return session;
     }
 
