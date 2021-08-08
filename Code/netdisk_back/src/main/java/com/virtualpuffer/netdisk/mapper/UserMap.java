@@ -7,6 +7,13 @@ import java.sql.Timestamp;
 import java.util.LinkedList;
 
 public interface UserMap {
+    /**
+     * 登录逻辑
+     * */
+    User getUserByPassword(String username);
+
+
+
     User getUserByUsername(String username);
     LinkedList<User> getName(String verCode);
 /*    LinkedList contain();*/
