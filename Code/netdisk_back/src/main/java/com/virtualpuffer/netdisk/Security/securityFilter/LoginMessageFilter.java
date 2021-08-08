@@ -2,10 +2,13 @@ package com.virtualpuffer.netdisk.Security.securityFilter;
 
 import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.catalina.core.ApplicationContext;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.neo4j.Neo4jProperties;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.http.MediaType;
+import org.springframework.jca.context.SpringContextResourceAdapter;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -23,6 +26,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
+import java.util.Locale;
 import java.util.Map;
 
 
@@ -41,6 +45,12 @@ public class LoginMessageFilter implements Filter {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
+
+        if(request.getServletPath().equals("/login")){
+            System.out.println("?");
+        }
+
+
         if(!request.getMethod().equals("POST")){
             response.setStatus(200);
             response.addHeader("Content-Encoding","UTF-8");
@@ -54,6 +64,8 @@ public class LoginMessageFilter implements Filter {
 /*            String json = getStringFromInputStream(request.getInputStream());
             Map map = (Map)JSONObject.parse(json);
             System.out.println( "map     " +  map.get("username"));*/
+            System.out.println("??");
+            response.addHeader("Token","43243242");
         }
 
         //放行

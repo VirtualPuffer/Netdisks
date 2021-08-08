@@ -13,8 +13,23 @@ public class User/* implements UserDetails */{
     private String name;
     private int USER_ID;
     private String photo;
+    private String token;
 
     public User() { }
+
+    public User(String username, String password,int id) {
+        this.username = username;
+        this.password = password;
+        this.USER_ID = id;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
 
     public String getPassword() {
         return password;
