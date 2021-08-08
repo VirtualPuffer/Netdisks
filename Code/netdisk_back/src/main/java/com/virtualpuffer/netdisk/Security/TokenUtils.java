@@ -10,21 +10,21 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class TokenUtils {
-    private static final String secretKey = "c7fp2dh6msk0";
+        public class TokenUtils {
+            private static final String secretKey = "c7fp2dh6msk0";
 
-    /**
-     * 用户登录成功后生成Jwt
-     * 使用Hs256算法  私匙使用用户密码
-     *
-     * @param time jwt过期时间
-     * @param user User操作对象
-     * @return
-     */
-    public static String createJWT(long time, User user) {
-        time = time*1000;
-        //指定签名的时候使用的签名算法，也就是header那部分，jjwt已经将这部分内容封装好了。
-        SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
+            /**
+             * 用户登录成功后生成Jwt
+             * 使用Hs256算法  私匙使用用户密码
+             *
+             * @param time jwt过期时间
+             * @param user User操作对象
+             * @return
+             */
+            public static String createJWT(long time, User user) {
+                time = time*1000;
+                //指定签名的时候使用的签名算法，也就是header那部分，jjwt已经将这部分内容封装好了。
+                SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 
         //生成JWT的时间
         long nowMillis = System.currentTimeMillis();

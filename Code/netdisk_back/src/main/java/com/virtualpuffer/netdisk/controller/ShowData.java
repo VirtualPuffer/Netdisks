@@ -24,7 +24,6 @@ public class ShowData {
 
     @RequestMapping("/aa")
     public static String a(){
-        System.out.println("safsafas");
         return "HelloWorld";
     }
 

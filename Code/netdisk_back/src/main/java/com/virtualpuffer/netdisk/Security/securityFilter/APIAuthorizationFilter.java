@@ -1,21 +1,10 @@
 package com.virtualpuffer.netdisk.Security.securityFilter;
 
-import com.alibaba.fastjson.JSONObject;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.catalina.core.ApplicationContext;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.neo4j.Neo4jProperties;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
-import org.springframework.boot.web.servlet.ServletComponentScan;
+
+import com.virtualpuffer.netdisk.Security.TokenUtils;
+
+import com.virtualpuffer.netdisk.service.impl.LoginService;
 import org.springframework.http.MediaType;
-import org.springframework.jca.context.SpringContextResourceAdapter;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 
 import javax.servlet.*;
@@ -25,14 +14,18 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Constructor;
-import java.util.Locale;
+
 import java.util.Map;
 
 
-
-@WebFilter(urlPatterns = "/login",filterName = "userLoginFilter")
-public class LoginMessageFilter implements Filter {
+/**
+* 通过header传输token,
+ * 获取token后在LoginService里注册
+ * LoginService检测token真实性
+ * 出问题直接抛出异常
+* */
+@WebFilter(urlPatterns = "/*",filterName = "apiControlFilter")
+public class APIAuthorizationFilter implements Filter {
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
     }
@@ -45,12 +38,6 @@ public class LoginMessageFilter implements Filter {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
-
-        if(request.getServletPath().equals("/login")){
-            System.out.println("?");
-        }
-
-
         if(!request.getMethod().equals("POST")){
             response.setStatus(200);
             response.addHeader("Content-Encoding","UTF-8");
@@ -59,15 +46,31 @@ public class LoginMessageFilter implements Filter {
             return;
         }
 
-        String type = request.getContentType();
-        if(type.equals(MediaType.APPLICATION_JSON_VALUE)||type.equals(MediaType.APPLICATION_JSON_UTF8_VALUE)){
-/*            String json = getStringFromInputStream(request.getInputStream());
-            Map map = (Map)JSONObject.parse(json);
-            System.out.println( "map     " +  map.get("username"));*/
-            System.out.println("??");
-            response.addHeader("Token","43243242");
+        if(request.getServletPath().equals("/login")){
+            //放行登录请求
+            filterChain.doFilter(request,response);
+            return;
         }
 
+        String type = request.getContentType();
+        if(type.equals(MediaType.APPLICATION_JSON_VALUE)||type.equals(MediaType.APPLICATION_JSON_UTF8_VALUE)){
+
+        }
+
+        try {
+            //解析token
+            String token = request.getHeader("Authorization");
+            if(token != null && !token.equals("") ){
+                LoginService service = LoginService.getInstance(token);
+                request.setAttribute("AuthService",service);
+            }
+        } catch (RuntimeException e) {
+            response.setStatus(200);
+            response.addHeader("Content-Encoding","UTF-8");
+            response.setContentType("text/html;charset=utf-8");
+            response.getWriter().write("权限校验失败，请重新登录");
+            return;
+        }
         //放行
         filterChain.doFilter(request,response);
 

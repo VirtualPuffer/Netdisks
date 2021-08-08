@@ -8,14 +8,16 @@ import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.LinkedList;
 
 
 @Singleton
 public class MybatisConnect {
     private static SqlSessionFactory factory;
-    private static final MybatisConnect mybatisFactory = new MybatisConnect();
+    private static volatile MybatisConnect mybatisFactory;
+    private LinkedList<SqlSession> SessionList;
 
-
+    private MybatisConnect(){}
     //启动链接
     static {
         try {
@@ -26,15 +28,37 @@ public class MybatisConnect {
             e.printStackTrace();
         }
     }
+
     public static MybatisConnect getMybatisConnect(){
+        if(mybatisFactory == null){//1
+            synchronized (MybatisConnect.class){//2
+                if(mybatisFactory == null){//3
+                    mybatisFactory = new MybatisConnect();//4
+                }
+            }
+        }
         return mybatisFactory;
     }
-    private MybatisConnect(){}
 
-
-    public static SqlSession getSession(){
-        System.out.println("分发对象");
-        return factory.openSession();
+    public void setSessionList(LinkedList<SqlSession> sessionList) {
+        SessionList = sessionList;
     }
 
+    public LinkedList getSessionList(){
+        return SessionList;
+    }
+    public static SqlSession getSession(){
+        SqlSession session = factory.openSession();
+        getMybatisConnect().getSessionList().add(session);
+        return session;
+    }
+
+}
+class Clean implements Runnable{
+    @Override
+    public void run() {
+        while (true){
+
+        }
+    }
 }

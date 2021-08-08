@@ -1,6 +1,7 @@
 package com.virtualpuffer.netdisk.controller;
 
 import com.virtualpuffer.netdisk.entity.User;
+import com.virtualpuffer.netdisk.service.impl.LoginService;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,7 +11,8 @@ public class LoginController {
     private SqlSession session;
     @ResponseBody
     @RequestMapping(value = "/login",method = RequestMethod.POST)
-    public User doLogin(@RequestBody User user){
-        return user;
+    public String doLogin(@RequestBody User user){
+        LoginService service = LoginService.getInstance(user);
+        return service.getUser().getToken();
     }
 }
