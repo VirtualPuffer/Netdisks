@@ -20,6 +20,9 @@
     <select id="getFileMapByHash" resultType="com.virtualpuffer.netdisk.entity.FileHash_Map">
         select * from FileHash_Map where File_Hash = #{hash};
     </select>
+    <select id="getFileMapByPath" resultType="com.virtualpuffer.netdisk.entity.FileHash_Map">
+        select * from FileHash_Map where File_Path = #{path};
+    </select>
 
 
 </mapper>

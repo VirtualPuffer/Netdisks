@@ -55,14 +55,14 @@ public class FileServiceImpl extends FileServiceUtil implements Serializable{
      * 没有处理404情况，controller级别再获取
     * */
 
-/*    public FileServiceImpl(String destination,User user) throws FileNotFoundException {
+    public FileServiceImpl(String destination,User user) throws FileNotFoundException {
         this.user = user;
         this.destination = destination;
 
         SqlSession session = MybatisConnect.getSession();
-        LinkedList<File_Map> list = session.getMapper(FileMap.class).getFileMap(user.getUSER_ID(),destination);
+        File_Map get = session.getMapper(FileMap.class).getFileMap(user.getUSER_ID(),destination);
 
-        if(list.isEmpty()){
+        if(get == null){
             this.file = new File(getAbsolutePath(destination));
             try {
                 this.path = file.getCanonicalPath();
@@ -71,7 +71,6 @@ public class FileServiceImpl extends FileServiceUtil implements Serializable{
             }
         }else {
             this.isMapper = true;
-            File_Map get = list.getFirst();
             FileHash_Map hashMap = session.getMapper(FileHashMap.class).getFileMapByHash(get.getFile_Hash());
             this.destination = get.getFile_Destination();
             this.path = hashMap.getPath();
@@ -86,12 +85,12 @@ public class FileServiceImpl extends FileServiceUtil implements Serializable{
         }
 
         try {
-            this.file_type = this.file_name.substring(this.file_name.lastIndexOf("."));
+            this.file_type = this.file_name.substring(this.file_name.lastIndexOf(".") + 1);
         } catch (IndexOutOfBoundsException e) {
             e.printStackTrace();
         }
-    }*/
-    public FileServiceImpl(String path,User user) throws FileNotFoundException {
+    }
+    public FileServiceImpl(User user,String path) throws FileNotFoundException {
         this.user = user;
         this.path = path;
 
@@ -100,12 +99,7 @@ public class FileServiceImpl extends FileServiceUtil implements Serializable{
         File_Map map = session.getMapper(FileMap.class).getFileMapByPath(path,user.getUSER_ID());
 
         if(map == null){
-            this.file = new File(getAbsolutePath(destination));
-            try {
-                this.path = file.getCanonicalPath();
-            } catch (IOException e) {
-                this.path = file.getAbsolutePath();
-            }
+            this.file = new File(path);
         }else {
             this.isMapper = true;
             this.destination = map.getFile_Destination();
@@ -130,8 +124,7 @@ public class FileServiceImpl extends FileServiceUtil implements Serializable{
     public static FileServiceImpl getInstanceByPath(String path,String userID) throws FileNotFoundException{
         SqlSession session = MybatisConnect.getSession();
         User user = session.getMapper(UserMap.class).getUserByID(userID).getFirst();
-        String destination = path.substring(defaultWare.length() + user.getURL().length());
-        return new FileServiceImpl(destination,user);
+        return new FileServiceImpl(user,path);
     }
     public static FileServiceImpl getInstance(String destination,String userID) throws FileNotFoundException{
         SqlSession session = MybatisConnect.getSession();
