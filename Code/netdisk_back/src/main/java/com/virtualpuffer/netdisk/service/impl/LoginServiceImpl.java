@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class LoginService extends BaseServiceImpl {
+public class LoginServiceImpl extends BaseServiceImpl {
     /**
     * 初始阶段只传入账号密码，登录状态
      * 解析token
@@ -25,26 +25,26 @@ public class LoginService extends BaseServiceImpl {
     private static final long time = 7*24*60*60;
     private static final String secretKey = "c7fp2dh6msk0";
 
-    public LoginService(User loginUser){
+    public LoginServiceImpl(User loginUser){
         this.user = loginUser;
         user.setToken(createToken(time));
     }
 
 
-    public static LoginService getInstance(String token) throws RuntimeException{
+    public static LoginServiceImpl getInstance(String token) throws RuntimeException{
         Map map = parseJWT(token);
         return getInstance((String)map.get("username"),(String)map.get("password"));
     }
-    public static LoginService getInstance(User user)throws RuntimeException{
+    public static LoginServiceImpl getInstance(User user)throws RuntimeException{
         return getInstance(user.getUsername(),user.getPassword());
     }
-    public static LoginService getInstance(String username,String password) throws RuntimeException{
+    public static LoginServiceImpl getInstance(String username, String password) throws RuntimeException{
         SqlSession session = MybatisConnect.getSession();
         User user = session.getMapper(UserMap.class).getUserByUsername(username,password);
         if(user == null ){
             throw new RuntimeException("用户名或者密码错误");
         }
-        return new LoginService(user);
+        return new LoginServiceImpl(user);
     }
 
     public String createToken(long time) {
@@ -76,14 +76,6 @@ public class LoginService extends BaseServiceImpl {
         }
         return builder.compact();
     }
-    public static Claims parseJWT(String token) {
-        Claims claims = Jwts.parser()
-                .setSigningKey(secretKey)
-                .parseClaimsJws(token)
-                .getBody();
-        return claims;
-    }
-
     public User getUser() {
         return user;
     }

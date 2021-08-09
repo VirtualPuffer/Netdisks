@@ -1,9 +1,7 @@
 package com.virtualpuffer.netdisk.Security.securityFilter;
 
 
-import com.virtualpuffer.netdisk.Security.TokenUtils;
-
-import com.virtualpuffer.netdisk.service.impl.LoginService;
+import com.virtualpuffer.netdisk.service.impl.LoginServiceImpl;
 import org.springframework.http.MediaType;
 
 
@@ -14,8 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
-import java.util.Map;
 
 
 /**
@@ -46,11 +42,6 @@ public class APIAuthorizationFilter implements Filter {
             return;
         }
         System.out.println("???");
-        if(request.getServletPath().equals("/login")){
-            //放行登录和直链下载请求
-            filterChain.doFilter(request,response);
-            return;
-        }
 
         String type = request.getContentType();
         if(type.equals(MediaType.APPLICATION_JSON_VALUE)||type.equals(MediaType.APPLICATION_JSON_UTF8_VALUE)){
@@ -62,7 +53,7 @@ public class APIAuthorizationFilter implements Filter {
             String token = request.getHeader("Authorization");
             System.out.println(token);
             if(token != null && !token.equals("") ){
-                LoginService service = LoginService.getInstance(token);
+                LoginServiceImpl service = LoginServiceImpl.getInstance(token);
                 request.setAttribute("AuthService",service);
             }else {
                 throw new RuntimeException();

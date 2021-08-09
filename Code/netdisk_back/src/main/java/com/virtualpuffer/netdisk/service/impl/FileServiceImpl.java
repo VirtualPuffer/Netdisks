@@ -12,10 +12,7 @@ import com.virtualpuffer.netdisk.mapper.*;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
 import java.util.zip.ZipOutputStream;
 
 
@@ -37,7 +34,7 @@ import java.util.zip.ZipOutputStream;
  * @para destination    文件的相对路径
 * */
 @Service
-public class FileServiceImpl extends FileServiceUtil{
+public class FileServiceImpl extends FileServiceUtil implements Serializable{
     private User user;
     private File file;
     private String file_type;
@@ -104,6 +101,17 @@ public class FileServiceImpl extends FileServiceUtil{
         return new FileServiceImpl(destination,user);
     }
     /**
+     * @param token 需要解析的token
+     * 解析token里的FileService对象
+    * */
+    public static FileServiceImpl getInstanceByToken(String token) throws FileNotFoundException {
+        Map map = parseJWT(token);
+        LinkedHashMap<String,Object> hashMap = (LinkedHashMap) map.get("FileService");
+        String id = (String) ((Map)hashMap.get("User")).get("user_ID");
+        return getInstanceByPath((String) hashMap.get("Path"),id);
+
+    }
+    /**
     * 物理路径计算
      * @param destination 相对路径位置（网盘）
     * */
@@ -115,7 +123,7 @@ public class FileServiceImpl extends FileServiceUtil{
     * */
     public String getDownloadURL(long time){
         Map<String,Object> map = new HashMap();
-        map.put("path",this.path);
+        map.put("FileService",this);
         return  downloadAPI + createToken(time,map,user.getUsername());
     }
 

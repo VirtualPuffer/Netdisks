@@ -1,5 +1,6 @@
 package com.virtualpuffer.netdisk.service.impl;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -64,6 +65,14 @@ public class BaseServiceImpl {
             builder.setExpiration(exp);
         }
         return builder.compact();
+    }
+    //token解码
+    public static Claims parseJWT(String token) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(secretKey)
+                .parseClaimsJws(token)
+                .getBody();
+        return claims;
     }
     protected  static int getMessByInt(String source){
         return Integer.parseInt(getMess(source));

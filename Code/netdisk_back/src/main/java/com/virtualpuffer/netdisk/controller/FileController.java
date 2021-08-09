@@ -12,7 +12,6 @@ public class FileController {
     @RequestMapping(value = "/download/{fileCode}")
     public static String test(@PathVariable String fileCode){
 
-        System.out.println(fileCode);
         return fileCode;
     }
 }
