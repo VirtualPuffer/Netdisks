@@ -16,13 +16,14 @@ public class LoginController extends BaseController {
 
     @ResponseBody
     @RequestMapping(value = "/login",method = RequestMethod.POST)
-    public void doLogin(@RequestBody User user, HttpServletRequest request , HttpServletResponse response){
+    public String doLogin(@RequestBody User user, HttpServletRequest request , HttpServletResponse response){
         try {
-            LoginServiceImpl service = LoginServiceImpl.getInstance(user);
+            user.setIp((String) request.getAttribute("ip"));
+            LoginServiceImpl service = LoginServiceImpl.getInstance(user,request);
             result(service.getUser().getToken());
-            return /*service.getUser().getToken()*/;
+            return service.getUser().getToken();
         } catch (RuntimeException e) {
-            return ;
+            return "";
         }
     }
 

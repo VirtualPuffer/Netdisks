@@ -3,6 +3,7 @@ package com.virtualpuffer.netdisk.entity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.awt.*;
 import java.util.Collection;
 
 public class User/* implements UserDetails */{
@@ -14,6 +15,7 @@ public class User/* implements UserDetails */{
     private int USER_ID;
     private String photo;
     private String token;
+    private String ip;
 
     public User() { }
 
@@ -59,7 +61,13 @@ public class User/* implements UserDetails */{
         this.photo = photo;
     }
 
+    public String getIp() {
+        return ip;
+    }
 
+    public void setIp(String ip) {
+        this.ip = ip;
+    }
 
     public String getUsername() {
         return username;

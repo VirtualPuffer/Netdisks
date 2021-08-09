@@ -34,25 +34,25 @@ public class APIAuthorizationFilter implements Filter {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
-        if(!request.getMethod().equals("POST")){
+/*        if(!request.getMethod().equals("POST")){
             response.setStatus(200);
             response.addHeader("Content-Encoding","UTF-8");
             response.setContentType("text/html;charset=utf-8");
             response.getWriter().write("老子要post");
             return;
-        }
+        }*/
 
         String type = request.getContentType();
         if(type.equals(MediaType.APPLICATION_JSON_VALUE)||type.equals(MediaType.APPLICATION_JSON_UTF8_VALUE)){
 
         }
-
         try {
             //解析token
             String token = request.getHeader("Authorization");
             System.out.println(token);
             if(token != null && !token.equals("") ){
-                LoginServiceImpl service = LoginServiceImpl.getInstance(token);
+                String ip = (String) request.getAttribute("ip");
+                LoginServiceImpl service = LoginServiceImpl.getInstance(token,ip);
                 request.setAttribute("AuthService",service);
                 request.getAttribute("AuthService");
             }else {
@@ -67,7 +67,6 @@ public class APIAuthorizationFilter implements Filter {
         }
         //放行
         filterChain.doFilter(request,response);
-
     }
 
     public static String getStringFromInputStream(InputStream inputStream) {
