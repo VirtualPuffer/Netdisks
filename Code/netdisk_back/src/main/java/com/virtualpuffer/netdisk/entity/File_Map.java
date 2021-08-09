@@ -5,6 +5,7 @@ public class File_Map {
     String File_Name;
     String File_Destination;
     String File_Hash;
+    String path;
 
     public File_Map() {
     }
@@ -31,4 +32,9 @@ public class File_Map {
     public String getFile_Hash() {
         return File_Hash;
     }
+
+    public String getPath() {
+        return path;
+    }
+
 }

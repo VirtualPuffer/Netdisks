@@ -41,7 +41,6 @@ public class APIAuthorizationFilter implements Filter {
             response.getWriter().write("老子要post");
             return;
         }
-        System.out.println("???");
 
         String type = request.getContentType();
         if(type.equals(MediaType.APPLICATION_JSON_VALUE)||type.equals(MediaType.APPLICATION_JSON_UTF8_VALUE)){
@@ -55,6 +54,7 @@ public class APIAuthorizationFilter implements Filter {
             if(token != null && !token.equals("") ){
                 LoginServiceImpl service = LoginServiceImpl.getInstance(token);
                 request.setAttribute("AuthService",service);
+                request.getAttribute("AuthService");
             }else {
                 throw new RuntimeException();
             }
