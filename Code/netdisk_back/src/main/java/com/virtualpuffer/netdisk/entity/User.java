@@ -80,4 +80,17 @@ public class User/* implements UserDetails */{
     public String getPhoto() {
         return photo;
     }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", URL='" + URL + '\'' +
+                ", name='" + name + '\'' +
+                ", USER_ID=" + USER_ID +
+                ", photo='" + photo + '\'' +
+                ", token='" + token + '\'' +
+                '}';
+    }
 }

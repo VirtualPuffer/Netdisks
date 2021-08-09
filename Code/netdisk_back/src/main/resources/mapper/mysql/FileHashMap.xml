@@ -17,6 +17,9 @@
     <insert id="addHashMap">
         insert into FileHash_Map (File_Hash,File_Path,USER_ID) values (#{hash},#{path},#{userID});
     </insert>
+    <select id="getFileMapByHash" resultType="com.virtualpuffer.netdisk.entity.FileHash_Map">
+        select * from FileHash_Map where File_Hash = #{hash};
+    </select>
 
 
 </mapper>

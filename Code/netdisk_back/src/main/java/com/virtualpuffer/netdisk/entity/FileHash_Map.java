@@ -3,7 +3,7 @@ package com.virtualpuffer.netdisk.entity;
 public class FileHash_Map {
     String File_Hash;
     int USER_ID;
-    String path;
+    String File_Path;
 
     public FileHash_Map() {
     }
@@ -11,7 +11,7 @@ public class FileHash_Map {
     public FileHash_Map(String File_Hash, int USER_ID, String path) {
         this.File_Hash = File_Hash;
         this.USER_ID = USER_ID;
-        this.path = path;
+        this.File_Path = path;
     }
 
     public String getFile_Hash() {
@@ -31,10 +31,10 @@ public class FileHash_Map {
     }
 
     public String getPath() {
-        return path;
+        return File_Path;
     }
 
     public void setPath(String path) {
-        this.path = path;
+        this.File_Path = path;
     }
 }

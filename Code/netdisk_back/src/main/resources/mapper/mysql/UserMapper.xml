@@ -4,6 +4,9 @@
     <select id="getUserByUsername" resultType="com.virtualpuffer.netdisk.entity.User">
         select  * from user where username = #{username};
     </select>
+    <select id="getUserByID" resultType="com.virtualpuffer.netdisk.entity.User">
+        select  * from user where USER_ID = #{userID};
+    </select>
     <!--<select id="getName" resultType="com.virtualpuffer.netdisk.mapper.User">
         select user.username from user left join login_verify on user.USER_ID=Ver.USER_ID where login_verify.verCode = #{verCode};
     </select>

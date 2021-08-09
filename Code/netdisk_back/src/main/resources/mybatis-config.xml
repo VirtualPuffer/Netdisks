@@ -23,6 +23,7 @@
         <!--这是告诉Mybatis区哪找持久化类的映射文件，对于在src下的文件直接写文件名，
             如果在某包下，则要写明路径,如：com/mybatistest/config/User.xml-->
         <mapper resource="mapper/mysql/FileMap.xml"></mapper>
+        <mapper resource="mapper/mysql/FileHashMap.xml"></mapper>
         <mapper resource="mapper/mysql/UserMapper.xml"></mapper>
         <mapper resource="mapper/mysql/LoginVerifyMap.xml"></mapper>
        <!-- <mapper class="mapper.UserMap"></mapper>-->

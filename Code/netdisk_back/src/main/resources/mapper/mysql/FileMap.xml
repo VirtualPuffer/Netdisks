@@ -3,10 +3,10 @@
 <mapper namespace="com.virtualpuffer.netdisk.mapper.FileMap">
     <!--删除文件映射,删除文件时直接匹配，目录时相对路径+'/'后正则匹配-->
     <delete id="deleteFileMap">
-        delete from File_Map where File_Path = #{path} and USER_ID = #{userID};
+        delete from File_Map where File_Destination = #{path} and USER_ID = #{userID};
     </delete>
     <delete id="deleteDirectoryMap">
-        delete from File_Map where File_Destination like "#{path}%" and USER_ID = #{userID};
+        delete from File_Map where File_Destination like #{path}% and USER_ID = #{userID};
     </delete>
 
     <select id="invokeOnExit" resultType="com.virtualpuffer.netdisk.mapper.FileMap">
@@ -35,6 +35,14 @@
 
     <select id="getFileMap" resultType="com.virtualpuffer.netdisk.entity.File_Map">
         select * from File_Map where USER_ID = #{userID} and File_Destination = #{destination};
+    </select>
+
+    <select id="getFileMapByPath" resultType="com.virtualpuffer.netdisk.entity.File_Map">
+        select * from File_Map,FileHash_Map
+        where
+        File_Map.USER_ID = #{userID}
+        and File_Map.File_Hash = FileHash_Map.File_Hash
+        and FileHash_Map.File_Path = #{path};
     </select>
 
 

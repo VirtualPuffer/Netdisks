@@ -44,6 +44,16 @@ public class BaseController extends BaseLogger {
 
     }
 
+    protected static void close(Closeable cos){
+        try {
+            if(cos!=null){
+                cos.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     protected Map<String, String> parseParamsToMap(String paramsStr) {
         return (Map) JSON.parseObject(paramsStr, Map.class);
     }

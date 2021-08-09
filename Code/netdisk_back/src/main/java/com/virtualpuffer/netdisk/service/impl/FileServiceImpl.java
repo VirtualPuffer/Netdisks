@@ -55,7 +55,7 @@ public class FileServiceImpl extends FileServiceUtil implements Serializable{
      * 没有处理404情况，controller级别再获取
     * */
 
-    public FileServiceImpl(String destination,User user) throws FileNotFoundException {
+/*    public FileServiceImpl(String destination,User user) throws FileNotFoundException {
         this.user = user;
         this.destination = destination;
 
@@ -72,7 +72,45 @@ public class FileServiceImpl extends FileServiceUtil implements Serializable{
         }else {
             this.isMapper = true;
             File_Map get = list.getFirst();
-            this.path = getAbsolutePath(this.destination);
+            FileHash_Map hashMap = session.getMapper(FileHashMap.class).getFileMapByHash(get.getFile_Hash());
+            this.destination = get.getFile_Destination();
+            this.path = hashMap.getPath();
+            this.file = new File(this.path);
+            //File拿真实路径回来
+        }
+
+        this.file_name = file.getName();
+        //长度判断，过短说明跳到上级路径
+        if(this.path.length() < defaultWare.length() && this.path.length() < duplicateFileWare.length()){
+            throw new SecurityException();
+        }
+
+        try {
+            this.file_type = this.file_name.substring(this.file_name.lastIndexOf("."));
+        } catch (IndexOutOfBoundsException e) {
+            e.printStackTrace();
+        }
+    }*/
+    public FileServiceImpl(String path,User user) throws FileNotFoundException {
+        this.user = user;
+        this.path = path;
+
+        SqlSession session = MybatisConnect.getSession();
+        FileHash_Map hashmap = session.getMapper(FileHashMap.class).getFileMapByPath(path);
+        File_Map map = session.getMapper(FileMap.class).getFileMapByPath(path,user.getUSER_ID());
+
+        if(map == null){
+            this.file = new File(getAbsolutePath(destination));
+            try {
+                this.path = file.getCanonicalPath();
+            } catch (IOException e) {
+                this.path = file.getAbsolutePath();
+            }
+        }else {
+            this.isMapper = true;
+            this.destination = map.getFile_Destination();
+            this.path = hashmap.getPath();
+            this.file = new File(this.path);
             //File拿真实路径回来
         }
 
@@ -98,6 +136,7 @@ public class FileServiceImpl extends FileServiceUtil implements Serializable{
     public static FileServiceImpl getInstance(String destination,String userID) throws FileNotFoundException{
         SqlSession session = MybatisConnect.getSession();
         User user = session.getMapper(UserMap.class).getUserByID(userID).getFirst();
+
         return new FileServiceImpl(destination,user);
     }
     /**
@@ -106,9 +145,9 @@ public class FileServiceImpl extends FileServiceUtil implements Serializable{
     * */
     public static FileServiceImpl getInstanceByToken(String token) throws FileNotFoundException {
         Map map = parseJWT(token);
-        LinkedHashMap<String,Object> hashMap = (LinkedHashMap) map.get("FileService");
-        String id = (String) ((Map)hashMap.get("User")).get("user_ID");
-        return getInstanceByPath((String) hashMap.get("Path"),id);
+        String id = String.valueOf(map.get("userID"));
+        String path = (String) map.get("path");
+        return getInstanceByPath(path,id);
 
     }
     /**
@@ -123,7 +162,8 @@ public class FileServiceImpl extends FileServiceUtil implements Serializable{
     * */
     public String getDownloadURL(long time){
         Map<String,Object> map = new HashMap();
-        map.put("FileService",this);
+        map.put("path",this.path);
+        map.put("userID",this.user.getUSER_ID());
         return  downloadAPI + createToken(time,map,user.getUsername());
     }
 
@@ -237,7 +277,7 @@ public class FileServiceImpl extends FileServiceUtil implements Serializable{
         FileMap fileMap = session.getMapper(FileMap.class);
 
         int count = fileMap.deleteFileMap(destination,user.getUSER_ID());
-        count += fileMap.deleteDirectoryMap(destination + "/",user.getUSER_ID());
+   /*     count += fileMap.deleteDirectoryMap(destination + "/",user.getUSER_ID());*/
         if(count > 0){
             session.commit();
             return ;
@@ -307,5 +347,18 @@ public class FileServiceImpl extends FileServiceUtil implements Serializable{
 
     public String getFile_name() {
         return file_name;
+    }
+
+    @Override
+    public String toString() {
+        return "FileServiceImpl{" +
+                "user=" + user +
+                ", file=" + file +
+                ", file_type='" + file_type + '\'' +
+                ", file_name='" + file_name + '\'' +
+                ", path='" + path + '\'' +
+                ", destination='" + destination + '\'' +
+                ", isMapper=" + isMapper +
+                '}';
     }
 }
