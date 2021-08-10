@@ -56,7 +56,7 @@ public class LoginServiceImpl extends BaseServiceImpl {
     }
     //登录这里过来
     public static LoginServiceImpl getInstance(User user,@Nullable HttpServletRequest request)throws RuntimeException{
-        return getInstance(user.getUsername(),user.getPassword(),request == null ? true : false , request);
+        return getInstance(user.getUsername(),user.getPassword(),!(user.getIp() == null || user.getIp().equals("")) ? true : false , user.getIp());
     }
     /**
      * @param username 用户名
@@ -64,13 +64,14 @@ public class LoginServiceImpl extends BaseServiceImpl {
      * @param persistence 是否记录登录
     * 顶级方法，生成登录对象
     * */
-    public static LoginServiceImpl getInstance(String username, String password, @NonNull boolean persistence , @Nullable HttpServletRequest request) throws RuntimeException{
+    public static LoginServiceImpl getInstance(String username, String password, @NonNull boolean persistence , String ip) throws RuntimeException{
+        System.out.println(persistence + "///////////////////////////////////////////////////");
         SqlSession session = MybatisConnect.getSession();
         User user = session.getMapper(UserMap.class).getUserByUsername(username,password);
         if(user == null ){
             throw new RuntimeException("用户名或者密码错误");
-        }else if(persistence && request != null){
-            int x = session.getMapper(LoginHistory.class).loginPersistence(user.getUSER_ID(),request.getRemoteAddr(),new Timestamp(System.currentTimeMillis()),0);
+        }else if(persistence && !(ip == null || ip.equals(""))){
+            int x = session.getMapper(LoginHistory.class).loginPersistence(user.getUSER_ID(),ip,new Timestamp(System.currentTimeMillis()),0,System.currentTimeMillis());
         }
         session.commit();
         close(session);

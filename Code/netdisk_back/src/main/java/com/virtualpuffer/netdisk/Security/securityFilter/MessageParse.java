@@ -1,10 +1,13 @@
 package com.virtualpuffer.netdisk.Security.securityFilter;
 
+import org.apache.catalina.util.ParameterMap;
+
 import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Map;
 
 @WebFilter(urlPatterns = "/*",filterName = "messageFilter")
 public class MessageParse implements Filter {
@@ -26,6 +29,22 @@ public class MessageParse implements Filter {
         }else {
             request.setAttribute("ip",request.getHeader("x-forwarded-for"));
         }
+
+        if(request.getMethod().equals("GET")){
+            for(String[] get : request.getParameterMap().values() ){
+                for(String on : get){
+                    System.out.println();
+                }
+            }
+            System.out.println(request.getClass());
+/*            String [] a = {"/asd"};
+            System.out.println(request.getParameterMap().getClass());
+            ParameterMap met = (ParameterMap)(request.getParameterMap());
+            met.setLocked(false);
+            System.out.println(met.isLocked());
+            met.replace("destination",a);*/
+        }
+
         filterChain.doFilter(request,response);
     }
 }

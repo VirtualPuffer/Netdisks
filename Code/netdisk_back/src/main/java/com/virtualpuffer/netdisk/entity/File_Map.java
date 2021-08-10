@@ -37,4 +37,14 @@ public class File_Map {
         return path;
     }
 
+    @Override
+    public String toString() {
+        return "File_Map{" +
+                "USER_ID='" + USER_ID + '\'' +
+                ", File_Name='" + File_Name + '\'' +
+                ", File_Destination='" + File_Destination + '\'' +
+                ", File_Hash='" + File_Hash + '\'' +
+                ", path='" + path + '\'' +
+                '}';
+    }
 }

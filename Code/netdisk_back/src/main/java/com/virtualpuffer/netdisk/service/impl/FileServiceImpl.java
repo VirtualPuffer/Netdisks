@@ -12,6 +12,7 @@ import com.virtualpuffer.netdisk.mapper.*;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
+import java.nio.file.NoSuchFileException;
 import java.util.*;
 import java.util.zip.ZipOutputStream;
 
@@ -121,12 +122,12 @@ public class FileServiceImpl extends FileServiceUtil implements Serializable{
         }
     }
 
-    public static FileServiceImpl getInstanceByPath(String path,String userID) throws FileNotFoundException{
+    public static FileServiceImpl getInstanceByPath(String path,int userID) throws FileNotFoundException{
         SqlSession session = MybatisConnect.getSession();
         User user = session.getMapper(UserMap.class).getUserByID(userID).getFirst();
         return new FileServiceImpl(user,path);
     }
-    public static FileServiceImpl getInstance(String destination,String userID) throws FileNotFoundException{
+    public static FileServiceImpl getInstance(String destination,int userID) throws FileNotFoundException{
         SqlSession session = MybatisConnect.getSession();
         User user = session.getMapper(UserMap.class).getUserByID(userID).getFirst();
 
@@ -138,7 +139,7 @@ public class FileServiceImpl extends FileServiceUtil implements Serializable{
     * */
     public static FileServiceImpl getInstanceByToken(String token) throws FileNotFoundException {
         Map map = parseJWT(token);
-        String id = String.valueOf(map.get("userID"));
+        int id = (Integer) map.get("userID");
         String path = (String) map.get("path");
         return getInstanceByPath(path,id);
 
@@ -164,10 +165,11 @@ public class FileServiceImpl extends FileServiceUtil implements Serializable{
     /**
      * 获取路径下文件
      * */
-    public ArrayList<String> getDirectory(){
+    public ArrayList<String> getDirectory() throws NoSuchFileException {
         SqlSession session = MybatisConnect.getSession();
         ArrayList<String> arrayList = new ArrayList();
         LinkedList<File_Map> list = session.getMapper(FileMap.class).getDirectoryMap(destination,user.getUSER_ID());
+
         if(!list.isEmpty()){
             for(File_Map fileMap : list){
                 if(!fileMap.getFile_Destination().substring(this.destination.length()).contains("/")){
@@ -175,6 +177,10 @@ public class FileServiceImpl extends FileServiceUtil implements Serializable{
                 }
             }
         }
+        if(!file.isDirectory()&&arrayList.isEmpty()){
+            throw new NoSuchFileException("不是文件夹");
+        }
+
         if(file.isDirectory()){
             for (File dirFile : file.listFiles()){
                 arrayList.add(dirFile.getName());
@@ -226,7 +232,9 @@ public class FileServiceImpl extends FileServiceUtil implements Serializable{
             if (session.getMapper(FileMap.class).invokeOnExit(hash).isEmpty()) {
                 //查询文件当前位置
                 LinkedList<FileHash_Map> list = session.getMapper(FileHashMap.class).getFilePath(hash);
-                String file_path = list.getFirst().getPath();
+                FileHash_Map map = list.getFirst();
+                String file_path = map.getPath();
+                int id = map.getUSER_ID();
                 String hashFile_path = duplicateFileWare;
                 //更新hash表路径
                 session.getMapper(FileHashMap.class).updatePath(hash,hashFile_path);
@@ -234,7 +242,7 @@ public class FileServiceImpl extends FileServiceUtil implements Serializable{
                 copy(new FileInputStream(file_path),new FileOutputStream(hashFile_path));
                 new File(file_path).delete();
                 //源文件映射建立
-                FileServiceImpl original = getInstanceByPath("",file_path);//操作对象
+                FileServiceImpl original = getInstanceByPath(file_path,id);//操作对象
                 session.getMapper(FileMap.class).buildFileMap(original.getDestination(),original.getFile_name(),hash,original.getUser().getUSER_ID());
             }
             session.getMapper(FileMap.class).buildFileMap(this.destination,this.file.getName(),hash,this.user.getUSER_ID());

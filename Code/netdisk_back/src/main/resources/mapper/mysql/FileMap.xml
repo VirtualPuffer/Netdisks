@@ -29,8 +29,8 @@
           #{fileHash} as File_Hash from File_Map where File_Hash = #{fileHash};
     </insert>
 
-    <select id="getDirectoryMap" resultType="com.virtualpuffer.netdisk.mapper.FileMap">
-        select File_Path from File_Map where File_Path like "#{destination}%",USER_ID = #{userID};
+    <select id="getDirectoryMap" resultType="com.virtualpuffer.netdisk.entity.File_Map">
+        select File_Destination from File_Map where File_Destination like #{destination}"%" and USER_ID = #{userID};
     </select>
 
     <select id="getFileMap" resultType="com.virtualpuffer.netdisk.entity.File_Map">
