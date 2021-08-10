@@ -14,7 +14,7 @@ public interface UserMap {
 
 
 
-    User getUserByUsername(String username,String password);
+    User userLogin(String username,String password);
     LinkedList<User> getName(String verCode);
 /*    LinkedList contain();*/
     LinkedList verCodeVerify(String verCode);

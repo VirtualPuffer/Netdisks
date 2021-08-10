@@ -1,7 +1,7 @@
 package com.virtualpuffer.netdisk.Security.securityFilter;
 
 
-import com.virtualpuffer.netdisk.service.impl.LoginServiceImpl;
+import com.virtualpuffer.netdisk.service.impl.UserServiceImpl;
 import org.springframework.http.MediaType;
 
 
@@ -34,13 +34,6 @@ public class APIAuthorizationFilter implements Filter {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
-/*        if(!request.getMethod().equals("POST")){
-            response.setStatus(200);
-            response.addHeader("Content-Encoding","UTF-8");
-            response.setContentType("text/html;charset=utf-8");
-            response.getWriter().write("老子要post");
-            return;
-        }*/
 
         String type = request.getContentType();
         if(type.equals(MediaType.APPLICATION_JSON_VALUE)||type.equals(MediaType.APPLICATION_JSON_UTF8_VALUE)){
@@ -52,7 +45,7 @@ public class APIAuthorizationFilter implements Filter {
             System.out.println(token);
             if(token != null && !token.equals("") ){
                 String ip = (String) request.getAttribute("ip");
-                LoginServiceImpl service = LoginServiceImpl.getInstance(token,ip);
+                UserServiceImpl service = UserServiceImpl.getInstance(token,ip);
                 request.setAttribute("AuthService",service);
                 request.getAttribute("AuthService");
             }else {
