@@ -4,11 +4,15 @@ import com.virtualpuffer.netdisk.MybatisConnect;
 import com.virtualpuffer.netdisk.entity.User;
 import com.virtualpuffer.netdisk.mapper.LoginHistory;
 import com.virtualpuffer.netdisk.mapper.UserMap;
+import org.apache.catalina.Session;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
+import javax.management.RuntimeErrorException;
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,6 +26,7 @@ public class UserServiceImpl extends BaseServiceImpl {
     * */
     private User  user;
     private static final long time = 7*24*60*60;
+    public static final String DefaultWare = getMess("defaultWare");
 
     public UserServiceImpl(User loginUser){
         this.user = loginUser;
@@ -68,6 +73,51 @@ public class UserServiceImpl extends BaseServiceImpl {
         session.commit();
         close(session);
         return new UserServiceImpl(user);
+    }
+
+    public static void registerUser(User user){
+        registerUser(user.getUsername(),user.getPassword(),user.getName());
+    }
+
+    public static void registerUser(String username,String password,String name)throws RuntimeException,Error{
+        if(username == null || password == null || name == null){
+            StringBuffer buffer = new StringBuffer("缺少参数:");
+            buffer.append(username == null ? "username" : " ");
+            buffer.append(password == null ? "username" : " ");
+            buffer.append(name == null ? "username" : " ");
+            throw new RuntimeException(buffer.toString());
+        }
+        SqlSession session = MybatisConnect.getSession();
+        UserMap map = session.getMapper(UserMap.class);
+        User user = map.duplicationUsername(username);
+        if(user != null){
+            throw new RuntimeException("用户名已经存在");
+        }else {
+            int count = map.register(username,password,name);
+            map.updateURL();
+            if(count!=1){
+                throw new Error("注册失败");
+            }
+        }
+        int userID = map.getIDbyName(username);
+        if(registerBuild(userID)){//创建仓库
+            session.commit();
+        }else {
+            throw new Error("boom");
+        };
+    }
+    public static boolean registerBuild(int userID){
+        String path = DefaultWare + userID;
+        File on = new File(path);
+        try {
+            System.out.println(on.getCanonicalPath());
+        } catch (IOException e) {
+            System.out.println(on.getAbsolutePath());
+        }
+        if(on.exists() || on.mkdir()){
+            return true;
+        }
+        return false;
     }
 
     public User getUser() {

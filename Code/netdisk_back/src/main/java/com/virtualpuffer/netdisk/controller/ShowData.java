@@ -45,8 +45,8 @@ public class ShowData {
         // strend.append("</tr></table>");
         strend.append("</body></head>");
         strhead.append(strend);
-        System.out.println(strhead);
-        System.out.println(json.toString());
+ /*       System.out.println(strhead);
+        System.out.println(json.toString());*/
         response.setHeader("Custom-Header", "foo");
         response.setStatus(200);
 

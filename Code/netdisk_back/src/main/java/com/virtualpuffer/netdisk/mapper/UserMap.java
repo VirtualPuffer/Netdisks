@@ -24,7 +24,7 @@ public interface UserMap {
     LinkedList<User> getUserByID(int userID);
 
     /*注册逻辑线*/
-    LinkedList duplicationUsername(String username);
+    User duplicationUsername(String username);
     int register(String username,String password,String name);
     int updateURL();
     int getIDbyName(String username);

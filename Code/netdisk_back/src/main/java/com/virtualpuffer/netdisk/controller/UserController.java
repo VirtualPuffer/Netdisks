@@ -29,7 +29,23 @@ public class UserController extends BaseController {
             return ResponseMessage.getSuccessInstance(200,"登录成功",hashMap);
         } catch (RuntimeException e) {
             return ResponseMessage.getSuccessInstance(300,e.getMessage(),null);
-        } catch (Exception e){
+        } catch (Throwable e){
+                e.printStackTrace();//打印异常情况
+            return ResponseMessage.getErrorInstance(500,"系统错误",null);
+        }
+    }
+
+    //三个参数：username,password,name
+    @ResponseBody
+    @RequestMapping(value = "/register",method = RequestMethod.POST)
+    public ResponseMessage doRegister(@RequestBody User user, HttpServletRequest request , HttpServletResponse response){
+        try {
+            UserServiceImpl.registerUser(user);
+            return ResponseMessage.getSuccessInstance(200,"注册成功",null);
+        } catch (RuntimeException e) {
+            return ResponseMessage.getExceptionInstance(300,e.getMessage(),null);
+        } catch (Throwable e){
+                e.printStackTrace();//打印异常情况
             return ResponseMessage.getErrorInstance(500,"系统错误",null);
         }
     }
