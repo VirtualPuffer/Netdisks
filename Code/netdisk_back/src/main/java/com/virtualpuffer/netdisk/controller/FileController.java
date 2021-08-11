@@ -7,6 +7,7 @@ import com.virtualpuffer.netdisk.data.ResponseMessage;
 import com.virtualpuffer.netdisk.entity.File_Map;
 import com.virtualpuffer.netdisk.service.impl.FileServiceImpl;
 import com.virtualpuffer.netdisk.service.impl.UserServiceImpl;
+import com.virtualpuffer.netdisk.utils.RandomString;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 
@@ -79,7 +80,7 @@ public class FileController extends BaseController {
     }
     @ResponseBody
     @RequestMapping(value = "shareFile",method = RequestMethod.GET)
-    public static ResponseMessage shareFile(String destination, @Nullable String second, HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException {
+    public static ResponseMessage shareFile(String destination, @Nullable String second,@Nullable String key, HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException {
         FileServiceImpl service = null;
         try {
             UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
@@ -92,7 +93,10 @@ public class FileController extends BaseController {
             if (second!=null) {
                 time = Integer.parseInt(second);
             }
-            String url = service.getDownloadURL(time);
+            if (key == null) {
+                key = RandomString.ranStr(6);//随机生成提取码
+            }
+            String url = service.getDownloadURL(time,key);
             String date = getTime(System.currentTimeMillis() + time * 1000);
             HashMap hashMap = new HashMap();
             hashMap.put("downloadURL",url);//token

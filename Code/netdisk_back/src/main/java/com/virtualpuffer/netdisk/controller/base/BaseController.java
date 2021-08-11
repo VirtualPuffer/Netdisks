@@ -89,7 +89,6 @@ public class BaseController extends BaseLogger {
         if (StringUtils.isBlank(timeFormat)) {
             JSON.DEFFAULT_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
         }
-
         SerializerFeature[] serializerFeatures = new SerializerFeature[]{SerializerFeature.WriteMapNullValue, SerializerFeature.WriteDateUseDateFormat, SerializerFeature.WriteNullStringAsEmpty};
         String jsonpCallback = this.request.getParameter("jsonpcallback");
         return !StringUtils.isBlank(jsonpCallback) ? jsonpCallback + "(" + JSON.toJSONString(obj, serializerFeatures) + ")" : JSON.toJSONString(obj, serializerFeatures);

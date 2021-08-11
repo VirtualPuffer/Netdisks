@@ -9,6 +9,7 @@ import com.virtualpuffer.netdisk.entity.User;
 import com.virtualpuffer.netdisk.utils.Message;
 import org.apache.ibatis.session.SqlSession;
 import com.virtualpuffer.netdisk.mapper.*;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -156,11 +157,11 @@ public class FileServiceImpl extends FileServiceUtil implements Serializable{
     /**
      * 下载链接获取
     * */
-    public String getDownloadURL(long time){
+    public String getDownloadURL(long time,@Nullable String key){
         Map<String,Object> map = new HashMap();
         map.put("path",this.path);
         map.put("userID",this.user.getUSER_ID());
-        return  downloadAPI + createToken(time,map,user.getUsername());
+        return  downloadAPI + createToken(time,map,user.getUsername(),key);
     }
 
 

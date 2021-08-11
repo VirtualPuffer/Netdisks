@@ -59,6 +59,7 @@ public class FileServiceUtil extends BaseServiceImpl{
             }
     }
     /**
+     * 关闭Zip流时会把输出流也同时关闭，慎用！
      * 递归压缩方法
      * @param sourceFile 源文件
      * @param zos        zip输出流

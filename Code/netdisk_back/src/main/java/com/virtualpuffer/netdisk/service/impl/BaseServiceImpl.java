@@ -43,9 +43,18 @@ public class BaseServiceImpl {
         }
         return get.getProperty(source);
     }
-    public String createToken(long time,Map<String,Object> claims,String subject) {
+    /**
+     * @param claims 加密集合
+     * @param time 有效时间（秒）
+     * @param subject 拥有者
+     * @param key 密钥
+    * */
+    public String createToken(long time,Map<String,Object> claims,String subject,String key) {
         SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
-
+        String currentKey = secretKey;//默认密钥
+        if(key!=null){
+            currentKey = key;
+        }
         long nowMillis = System.currentTimeMillis();
         Date now = new Date(nowMillis);
 
@@ -58,7 +67,7 @@ public class BaseServiceImpl {
                 //代表这个JWT的主体，即它的所有人，这个是一个json格式的字符串，可以存放什么userid，roldid之类的，作为什么用户的唯一标志。
                 .setSubject(subject)
                 //设置签名使用的签名算法和签名使用的秘钥
-                .signWith(signatureAlgorithm,secretKey);
+                .signWith(signatureAlgorithm,currentKey);
         if (time >= 0) {
             long expMillis = nowMillis + time * 1000;
             Date exp = new Date(expMillis);

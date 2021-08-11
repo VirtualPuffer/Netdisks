@@ -35,7 +35,7 @@ public class UserServiceImpl extends BaseServiceImpl {
         map.put("password",user.getPassword());
         map.put("userID",user.getUSER_ID());
         map.put("ip",user.getIp());
-        String token = createToken(1000,map,user.getUsername());
+        String token = createToken(1000,map,user.getUsername(),null);
         user.setToken(token);
     }
 
