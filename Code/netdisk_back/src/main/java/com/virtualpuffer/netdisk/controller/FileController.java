@@ -30,12 +30,12 @@ public class FileController extends BaseController {
         UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
         try {
             FileServiceImpl service = FileServiceImpl.getInstance(on.getFile_Destination(), loginService.getUser().getUSER_ID());
-            int length = service.downloadFile(response.getOutputStream());
+            int length = (int)service.downloadFile(response.getOutputStream());
             response.addHeader("Content-Disposition", "attachment; filename=" + URLEncoder.encode(service.getFile_name(), "UTF-8"));
             response.setContentLength(length);
         } catch (FileNotFoundException e) {
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return "";
@@ -47,8 +47,11 @@ public class FileController extends BaseController {
         UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
         try {
             FileServiceImpl service = FileServiceImpl.getInstance(on.getFile_Destination(), loginService.getUser().getUSER_ID());
+            service.deleteFileMap();
         } catch (FileNotFoundException e) {
             response.sendError(404,"目标不存在");
+        } catch (IOException e){
+
         }
         return "";
     }

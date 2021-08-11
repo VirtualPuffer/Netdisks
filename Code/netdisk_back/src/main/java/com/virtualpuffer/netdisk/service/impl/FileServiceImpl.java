@@ -85,7 +85,9 @@ public class FileServiceImpl extends FileServiceUtil implements Serializable{
         }
 
         try {
-            this.file_type = this.file_name.substring(this.file_name.lastIndexOf(".") + 1);
+            if (file.isFile()) {
+                this.file_type = this.file_name.substring(this.file_name.lastIndexOf(".") + 1);
+            }
         } catch (IndexOutOfBoundsException e) {
             e.printStackTrace();
         }
@@ -117,7 +119,6 @@ public class FileServiceImpl extends FileServiceUtil implements Serializable{
         try {
             this.file_type = this.file_name.substring(this.file_name.lastIndexOf("."));
         } catch (IndexOutOfBoundsException e) {
-            e.printStackTrace();
         }
     }
 
@@ -205,14 +206,22 @@ public class FileServiceImpl extends FileServiceUtil implements Serializable{
     }
 
     /*public boolean duplicateUpload(String hash,String)*/
-    public int downloadFile(OutputStream outputStream) throws IOException{
+    public long downloadFile(OutputStream outputStream) throws Exception {
         InputStream inputStream = null;
+        ZipOutputStream zipOutputStream = null;
         try {
+        if(this.file.isDirectory()){
+            zipOutputStream = new ZipOutputStream(outputStream);
+            compress(this.file,zipOutputStream,this.getFile_name());
+            return count();
+        }else {
             inputStream = new FileInputStream(this.file);
             copy(inputStream,outputStream);
             return inputStream.available();
+        }
         } finally {
             close(inputStream);
+            close(zipOutputStream);
         }
     }
     /**
@@ -276,28 +285,33 @@ public class FileServiceImpl extends FileServiceUtil implements Serializable{
      * 检查映射表，存在则删除
      * 映射表不存在，检查
      * */
-    private void deleteFileMap(){
-        if(file.exists()){
-            delete(file);
-        };
-        SqlSession session = MybatisConnect.getSession();
-        FileMap fileMap = session.getMapper(FileMap.class);
+    public void deleteFileMap(){
+        SqlSession session = null;
+        try {
+            if(file.exists()){
+                delete(file);
+            }
+            ;
+            session = MybatisConnect.getSession();
+            FileMap fileMap = session.getMapper(FileMap.class);
 
-        int count = fileMap.deleteFileMap(destination,user.getUSER_ID());
-   /*     count += fileMap.deleteDirectoryMap(destination + "/",user.getUSER_ID());*/
-        if(count > 0){
-            session.commit();
+            int count = fileMap.deleteFileMap(destination,user.getUSER_ID());
+            /*     count += fileMap.deleteDirectoryMap(destination + "/",user.getUSER_ID());*/
+            if(count > 0){
+                session.commit();
+                return ;
+            }
+            delete(this.file);
             return ;
+        } finally {
+            close(session);
         }
-        delete(this.file);
-        session.close();
-        return ;
     }
 
     /**
      * 是文件则后序遍历删除，否则直接删除
      * */
-    public static void delete(File on){
+    private static void delete(File on){
         if(on.isDirectory()){
             File[] get = on.listFiles();
             if(get.length!=0){
@@ -311,29 +325,33 @@ public class FileServiceImpl extends FileServiceUtil implements Serializable{
         }
     }
 
-    public long count(String srcDir) throws RuntimeException {
+    public long count() throws RuntimeException {
         ZipOutputStream zos = null;
         String fileName = this.file_name;
         String path = getMess("compressTemp") + fileName.hashCode();
-        File a = new File(path);
+        File temp = null;
         try {
-            a.createNewFile();
-        } catch (IOException e) {
-            System.out.println("没出来？");
+            temp = new File(path);
+            try {
+                temp.createNewFile();
+            } catch (IOException e) {
+                System.out.println("没出来？");
+            }
+            try {
+                OutputStream out = new FileOutputStream(path);
+                zos = new ZipOutputStream(out);
+                compress(this.file, zos, this.getFile_name());
+            } catch (Exception e) {
+                throw new RuntimeException("zip error from ZipUtils", e);
+            } finally {
+                close(zos);
+            }
+            long ret = temp.length();
+
+            return ret;
+        }finally {
+            temp.delete();
         }
-        try {
-            OutputStream out = new FileOutputStream(path);
-            zos = new ZipOutputStream(out);
-            compress(this.file, zos, this.file_name);
-        } catch (Exception e) {
-            throw new RuntimeException("zip error from ZipUtils", e);
-        } finally {
-            close(zos);
-        }
-        File temp = new File(path);
-        long ret = temp.length();
-        temp.delete();
-        return ret;
     }
 
     public User getUser() {

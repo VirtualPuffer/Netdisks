@@ -127,14 +127,14 @@ public class BaseController extends BaseLogger {
         }
     }
 
-    protected void sendFileStream(User user,String destination,OutputStream outputStream) throws IOException{
+    protected void sendFileStream(User user,String destination,OutputStream outputStream) throws Exception {
         FileServiceImpl fileService = null;
         try {
             fileService = new FileServiceImpl(destination,user);
         } catch (FileNotFoundException e) {
             //找不到
         }
-        int length = fileService.downloadFile(outputStream);
+        int length = (int) fileService.downloadFile(outputStream);
         response.setContentType("application/force-download");
         this.response.setContentLength(length);
         this.response.addHeader("Content-Disposition", "attachment; filename=" + URLEncoder.encode(fileService.getFile_name(), "UTF-8"));

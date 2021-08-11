@@ -65,8 +65,7 @@ public class FileServiceUtil extends BaseServiceImpl{
      * @param name       压缩后的名称
      * @throws Exception
      */
-    protected static int compress(File sourceFile, ZipOutputStream zos, String name) throws Exception {
-        int size = 0;
+    protected static void compress(File sourceFile, ZipOutputStream zos, String name) throws Exception {
         byte[] buf = new byte[BUFFER_SIZE];
         if (sourceFile.isFile()) {
             zos.putNextEntry(new ZipEntry(name));
@@ -84,11 +83,10 @@ public class FileServiceUtil extends BaseServiceImpl{
                     zos.closeEntry();
             } else {
                 for (File file : listFiles) {
-                        size = size + compress(file, zos, name + "/" + file.getName());
+                    compress(file, zos, name + "/" + file.getName());
                 }
             }
         }
-        return size;
     }
     /**
      * 源文件获取zip键值对文件集合
