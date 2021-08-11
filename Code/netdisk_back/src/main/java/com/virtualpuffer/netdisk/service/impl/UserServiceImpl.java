@@ -80,11 +80,11 @@ public class UserServiceImpl extends BaseServiceImpl {
     }
 
     public static void registerUser(String username,String password,String name)throws RuntimeException,Error{
-        if(username == null || password == null || name == null){
+        if(username == null || password == null || name == null || username.equals("") || password.equals("") || name.equals("")){
             StringBuffer buffer = new StringBuffer("缺少参数:");
-            buffer.append(username == null ? "username" : " ");
-            buffer.append(password == null ? "username" : " ");
-            buffer.append(name == null ? "username" : " ");
+            buffer.append(username == null || username.equals("") ? "username " : "");
+            buffer.append(password == null || password.equals("")? "password " : "");
+            buffer.append(name == null || name.equals("") ? "name " : "");
             throw new RuntimeException(buffer.toString());
         }
         SqlSession session = MybatisConnect.getSession();
@@ -106,6 +106,7 @@ public class UserServiceImpl extends BaseServiceImpl {
             throw new Error("boom");
         };
     }
+
     public static boolean registerBuild(int userID){
         String path = DefaultWare + userID;
         File on = new File(path);

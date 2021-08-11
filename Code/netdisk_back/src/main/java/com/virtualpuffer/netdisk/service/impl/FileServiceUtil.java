@@ -52,11 +52,11 @@ public class FileServiceUtil extends BaseServiceImpl{
     * 文件、文件流复制
     * */
     protected static void copy(InputStream inputStream,OutputStream outputStream)throws IOException{
-        byte[] buffer = new byte[BUFFER_SIZE];
-        int length;
-        while ((length = inputStream.read(buffer)) != -1) {
-            outputStream.write(buffer, 0, length);
-        }
+            byte[] buffer = new byte[BUFFER_SIZE];
+            int length;
+            while ((length = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, length);
+            }
     }
     /**
      * 递归压缩方法

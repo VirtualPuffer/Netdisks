@@ -1,6 +1,7 @@
 package com.virtualpuffer.netdisk.Security.securityFilter;
 
 import org.apache.catalina.util.ParameterMap;
+import org.springframework.core.annotation.Order;
 
 import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
@@ -9,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Map;
 
+@Order()
 @WebFilter(urlPatterns = "/*",filterName = "messageFilter")
 public class MessageParse implements Filter {
     @Override
@@ -36,13 +38,6 @@ public class MessageParse implements Filter {
                     System.out.println();
                 }
             }
-            System.out.println(request.getClass());
-/*            String [] a = {"/asd"};
-            System.out.println(request.getParameterMap().getClass());
-            ParameterMap met = (ParameterMap)(request.getParameterMap());
-            met.setLocked(false);
-            System.out.println(met.isLocked());
-            met.replace("destination",a);*/
         }
 
         filterChain.doFilter(request,response);

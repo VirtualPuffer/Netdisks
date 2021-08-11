@@ -42,6 +42,7 @@ public class FileServiceImpl extends FileServiceUtil implements Serializable{
     private String file_name;
     private String path;//绝对路径
     private String destination;//相对路径
+    private int file_length;
     private boolean isMapper = false;
     private static final int BUFFER_SIZE = 4 * 1024;
     public static final String downloadAPI = Message.getMess("downloadAPI");
@@ -59,10 +60,8 @@ public class FileServiceImpl extends FileServiceUtil implements Serializable{
     public FileServiceImpl(String destination,User user) throws FileNotFoundException {
         this.user = user;
         this.destination = destination;
-
         SqlSession session = MybatisConnect.getSession();
         File_Map get = session.getMapper(FileMap.class).getFileMap(user.getUSER_ID(),destination);
-
         if(get == null){
             this.file = new File(getAbsolutePath(destination));
             try {
@@ -128,9 +127,11 @@ public class FileServiceImpl extends FileServiceUtil implements Serializable{
         return new FileServiceImpl(user,path);
     }
     public static FileServiceImpl getInstance(String destination,int userID) throws FileNotFoundException{
+        if(destination == null){
+            throw new FileNotFoundException("缺少参数:destination");
+        }
         SqlSession session = MybatisConnect.getSession();
         User user = session.getMapper(UserMap.class).getUserByID(userID).getFirst();
-
         return new FileServiceImpl(destination,user);
     }
     /**
@@ -204,10 +205,15 @@ public class FileServiceImpl extends FileServiceUtil implements Serializable{
     }
 
     /*public boolean duplicateUpload(String hash,String)*/
-    public InputStream downloadFile(OutputStream outputStream) throws IOException{
-        InputStream inputStream = new FileInputStream(this.file);
-        copy(inputStream,outputStream);
-        return inputStream;
+    public int downloadFile(OutputStream outputStream) throws IOException{
+        InputStream inputStream = null;
+        try {
+            inputStream = new FileInputStream(this.file);
+            copy(inputStream,outputStream);
+            return inputStream.available();
+        } finally {
+            close(inputStream);
+        }
     }
     /**
      * 操作流程：
@@ -270,7 +276,7 @@ public class FileServiceImpl extends FileServiceUtil implements Serializable{
      * 检查映射表，存在则删除
      * 映射表不存在，检查
      * */
-    public void deleteFileMap(){
+    private void deleteFileMap(){
         if(file.exists()){
             delete(file);
         };

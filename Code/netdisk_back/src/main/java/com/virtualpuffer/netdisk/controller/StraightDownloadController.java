@@ -19,8 +19,8 @@ public class StraightDownloadController extends BaseController {
         InputStream inputStream = null;
         try {
             FileServiceImpl fileService = FileServiceImpl.getInstanceByToken(token);
-            inputStream = fileService.downloadFile(response.getOutputStream());
-            response.setContentLength(inputStream.available());
+            int length = fileService.downloadFile(response.getOutputStream());
+            response.setContentLength(length);
             response.addHeader("Content-Disposition", "attachment; filename=" + URLEncoder.encode(fileService.getFile_name(), "UTF-8"));
             return;
         } /*catch (Exception A){

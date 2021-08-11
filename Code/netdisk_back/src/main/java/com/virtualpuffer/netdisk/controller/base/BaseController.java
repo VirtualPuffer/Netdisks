@@ -44,6 +44,15 @@ public class BaseController extends BaseLogger {
 
     }
 
+    public static String getTime(long get){
+        Date getDate = new Date(get);
+        SimpleDateFormat sip = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return sip.format(getDate);
+    }
+    public static String getTime(){
+        return getTime(System.currentTimeMillis());
+    }
+
     protected static void close(Closeable cos){
         try {
             if(cos!=null){
@@ -125,9 +134,9 @@ public class BaseController extends BaseLogger {
         } catch (FileNotFoundException e) {
             //找不到
         }
-        InputStream inputStream = fileService.downloadFile(outputStream);
+        int length = fileService.downloadFile(outputStream);
         response.setContentType("application/force-download");
-        this.response.setContentLength(inputStream.available());
+        this.response.setContentLength(length);
         this.response.addHeader("Content-Disposition", "attachment; filename=" + URLEncoder.encode(fileService.getFile_name(), "UTF-8"));
 
     }
