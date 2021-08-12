@@ -28,10 +28,4 @@ public class LoginFilter implements Filter {
 
         filterChain.doFilter(request,response);
     }
-    public static String StringFilterUtil(String get){
-        String ill = "[ !@#$%^&*()_+-={};':,./<>?！@#￥%……&*（）]";
-        Pattern pattern = Pattern.compile(ill);
-        Matcher matcher = pattern.matcher(get);
-        return matcher.replaceAll("").trim();
-    }
 }

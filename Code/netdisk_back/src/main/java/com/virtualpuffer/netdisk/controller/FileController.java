@@ -27,34 +27,35 @@ public class FileController extends BaseController {
 
     @ResponseBody
     @RequestMapping(value = "/downloadFile",method = RequestMethod.GET)
-    public static String get(@RequestBody File_Map on, HttpServletRequest request, HttpServletResponse response){
+    public static ResponseMessage get(@RequestBody File_Map on, HttpServletRequest request, HttpServletResponse response){
         UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
         try {
             FileServiceImpl service = FileServiceImpl.getInstance(on.getFile_Destination(), loginService.getUser().getUSER_ID());
             int length = (int)service.downloadFile(response.getOutputStream());
             response.addHeader("Content-Disposition", "attachment; filename=" + URLEncoder.encode(service.getFile_name(), "UTF-8"));
             response.setContentLength(length);
+            return ResponseMessage.getSuccessInstance(200,"传输成功",null);
         } catch (FileNotFoundException e) {
-
+            return ResponseMessage.getExceptionInstance(404,"文件未找到",null);
         } catch (Exception e) {
             e.printStackTrace();
+            return ResponseMessage.getErrorInstance(500,"系统错误",null);
         }
-        return "";
     }
 
     @ResponseBody
     @RequestMapping(value = "/deleteFile")
-    public static String delete(@RequestBody File_Map on, HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public static ResponseMessage delete(@RequestBody File_Map on, HttpServletRequest request, HttpServletResponse response) throws IOException {
         UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
         try {
             FileServiceImpl service = FileServiceImpl.getInstance(on.getFile_Destination(), loginService.getUser().getUSER_ID());
             service.deleteFileMap();
+            return ResponseMessage.getSuccessInstance(200,"删除成功",null);
         } catch (FileNotFoundException e) {
-            response.sendError(404,"目标不存在");
+            return ResponseMessage.getExceptionInstance(404,"文件不存在",null);
         } catch (IOException e){
-
+            return ResponseMessage.getErrorInstance(500,"系统错误",null);
         }
-        return "";
     }
 
     @ResponseBody
@@ -65,12 +66,12 @@ public class FileController extends BaseController {
             FileServiceImpl service = FileServiceImpl.getInstance(destination, loginService.getUser().getUSER_ID());
             return JSON.toJSON(service.getDirectory());
         } catch (FileNotFoundException e) {
-            System.out.println("?");
-            response.sendError(404,"文件不存在");
+            return ResponseMessage.getExceptionInstance(404,"文件不存在",null);
         }  catch (NoSuchFileException e){
-            response.sendError(200,"目标不是文件夹");
+            return ResponseMessage.getExceptionInstance(300,"目标不是文件夹",null);
+        }   catch (Exception e){
+            return ResponseMessage.getErrorInstance(500,"系统错误",null);
         }
-        return "";
     }
 
     @ResponseBody
@@ -80,7 +81,7 @@ public class FileController extends BaseController {
     }
     @ResponseBody
     @RequestMapping(value = "shareFile",method = RequestMethod.GET)
-    public static ResponseMessage shareFile(String destination, @Nullable String second,@Nullable String key, HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException {
+    public static ResponseMessage shareFile(String destination, @Nullable String second,@Nullable String key,boolean getRandom, HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException {
         FileServiceImpl service = null;
         try {
             UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
@@ -93,7 +94,7 @@ public class FileController extends BaseController {
             if (second!=null) {
                 time = Integer.parseInt(second);
             }
-            if (key == null) {
+            if (key == null && getRandom) {
                 key = RandomString.ranStr(6);//随机生成提取码
             }
             String url = service.getDownloadURL(time,key);
@@ -102,6 +103,7 @@ public class FileController extends BaseController {
             hashMap.put("downloadURL",url);//token
             hashMap.put("destination",destination);//名字
             hashMap.put("efficient time",date);
+            hashMap.put("key",key);
             return ResponseMessage.getSuccessInstance(200,"获取成功",hashMap);
         } catch (Exception e) {
             System.out.println(getTime() + "   ->   未捕获异常: ");

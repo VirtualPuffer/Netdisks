@@ -7,6 +7,8 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class RandomString {
     static final int A_Z_MIN = 65;
@@ -45,6 +47,13 @@ public class RandomString {
     public static int filter(boolean A,boolean a,boolean N){
 
         return 1;
+    }
+
+    public static String StringFilterUtil(String get){
+        String ill = "[ !@#$%^&*()_+-={};':,./<>?！@#￥%……&*（）]";
+        Pattern pattern = Pattern.compile(ill);
+        Matcher matcher = pattern.matcher(get);
+        return matcher.replaceAll("").trim();
     }
 
     public static String ranStr(int num){

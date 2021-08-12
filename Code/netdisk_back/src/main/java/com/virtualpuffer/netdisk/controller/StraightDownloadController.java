@@ -20,7 +20,7 @@ import java.net.URLEncoder;
 public class StraightDownloadController extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/download/{token}")
-    public ResponseMessage test(@PathVariable String token, HttpServletResponse response)throws IOException{
+    public ResponseMessage test(@PathVariable String token,String key, HttpServletResponse response)throws IOException{
         InputStream inputStream = null;
         try {
             FileServiceImpl fileService = FileServiceImpl.getInstanceByToken(token);
