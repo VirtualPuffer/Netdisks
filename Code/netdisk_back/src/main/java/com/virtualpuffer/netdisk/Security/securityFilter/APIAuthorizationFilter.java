@@ -1,6 +1,8 @@
 package com.virtualpuffer.netdisk.Security.securityFilter;
 
 
+import com.alibaba.fastjson.JSON;
+import com.virtualpuffer.netdisk.data.ResponseMessage;
 import com.virtualpuffer.netdisk.service.impl.UserServiceImpl;
 import org.springframework.http.MediaType;
 
@@ -42,7 +44,6 @@ public class APIAuthorizationFilter implements Filter {
         try {
             //解析token
             String token = request.getHeader("Authorization");
-            System.out.println(token);
             if(token != null && !token.equals("") ){
                 String ip = (String) request.getAttribute("ip");
                 UserServiceImpl service = UserServiceImpl.getInstance(token,ip);
@@ -55,7 +56,10 @@ public class APIAuthorizationFilter implements Filter {
             response.setStatus(200);
             response.addHeader("Content-Encoding","UTF-8");
             response.setContentType("text/html;charset=utf-8");
-            response.getWriter().write("权限校验失败，请重新登录");
+            ResponseMessage responseMessage =
+                    ResponseMessage.getExceptionInstance
+                            (1000,"权限校验失败，请重新登录",null);
+            response.getWriter().write(JSON.toJSONString(responseMessage));
             return;
         }
         //放行

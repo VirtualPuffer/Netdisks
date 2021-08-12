@@ -1,9 +1,10 @@
 package com.virtualpuffer.netdisk.data;
 
 
+import java.io.Serializable;
 import java.util.Map;
 
-public class ResponseMessage {
+public class ResponseMessage implements Serializable {
      public int code;
      public String state;
      public String msg;

@@ -6,6 +6,7 @@ public class File_Map {
     String File_Destination;
     String File_Hash;
     String path;
+    String destination;
 
     public File_Map() {
     }
@@ -35,6 +36,18 @@ public class File_Map {
 
     public String getPath() {
         return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    public String getDestination() {
+        return destination;
+    }
+
+    public void setDestination(String destination) {
+        this.destination = destination;
     }
 
     @Override

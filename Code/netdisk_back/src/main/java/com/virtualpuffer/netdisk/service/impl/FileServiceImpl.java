@@ -3,6 +3,7 @@ package com.virtualpuffer.netdisk.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.virtualpuffer.netdisk.MybatisConnect;
+import com.virtualpuffer.netdisk.data.FileCollection;
 import com.virtualpuffer.netdisk.entity.FileHash_Map;
 import com.virtualpuffer.netdisk.entity.File_Map;
 import com.virtualpuffer.netdisk.entity.User;
@@ -129,9 +130,15 @@ public class FileServiceImpl extends FileServiceUtil implements Serializable{
         return new FileServiceImpl(user,path);
     }
     public static FileServiceImpl getInstance(String destination,int userID) throws FileNotFoundException{
+
         if(destination == null){
             throw new FileNotFoundException("缺少参数:destination");
+        }else if(!destination.startsWith("/")){//防止路径没/
+            destination = new StringBuffer().append("/").append(destination).toString();
+        }else if(destination.contains("..")){
+            throw new RuntimeException("路径非法");
         }
+
         SqlSession session = MybatisConnect.getSession();
         User user = session.getMapper(UserMap.class).getUserByID(userID).getFirst();
         return new FileServiceImpl(destination,user);
@@ -262,12 +269,9 @@ public class FileServiceImpl extends FileServiceUtil implements Serializable{
                 session.getMapper(FileMap.class).buildFileMap(original.getDestination(),original.getFile_name(),hash,original.getUser().getUSER_ID());
             }
             session.getMapper(FileMap.class).buildFileMap(this.destination,this.file.getName(),hash,this.user.getUSER_ID());
-
         }else {
-
             session.getMapper(FileHashMap.class).addHashMap(hash,path,user.getUSER_ID());
             outputStream = new FileOutputStream(path);
-
             try {
                 copy(inputStream,outputStream);
             } catch (IOException e) {
@@ -276,7 +280,6 @@ public class FileServiceImpl extends FileServiceUtil implements Serializable{
                 close(inputStream);
                 close(outputStream);
             }
-
             session.commit();/*提交*/
         }
     }
@@ -336,7 +339,7 @@ public class FileServiceImpl extends FileServiceUtil implements Serializable{
             try {
                 temp.createNewFile();
             } catch (IOException e) {
-                System.out.println("没出来？");
+                throw new RuntimeException("预压缩失败");
             }
             try {
                 OutputStream out = new FileOutputStream(path);
@@ -352,6 +355,44 @@ public class FileServiceImpl extends FileServiceUtil implements Serializable{
             return ret;
         }finally {
             temp.delete();
+        }
+    }
+
+    public FileCollection searchFile(String name,String type) throws FileNotFoundException{
+        SqlSession session = null;
+        try {
+            session = MybatisConnect.getSession();
+            FileCollection collection = FileCollection.getInstance(this.file,name,destination,type);
+            LinkedList fileList = collection.getFile();
+            LinkedList dirList = collection.getDir();
+            LinkedList<File_Map> list = session.getMapper(FileMap.class).getDirectoryMap(destination,user.getUSER_ID());
+            if(!list.isEmpty()){
+                for(File_Map fileMap : list){
+                    try {
+                        if(!fileMap.getFile_Destination().substring(fileMap.getFile_Destination().lastIndexOf("/" + 1)).equals(name)){
+                            fileList.add(fileMap.getFile_Destination());
+                        }
+                    } catch (Exception e) {//防止爆掉
+                    }
+                }
+            }
+            if(fileList.isEmpty()&&!dirList.isEmpty()){
+                collection.setMsg("没有找到匹配的文件");
+                collection.setCode(300);
+            }else {
+                collection.setMsg("已找到匹配的文件");
+                collection.setCode(200);
+            }
+            return collection;
+        } finally {
+            close(session);
+        }
+    }
+    public void mkdir() throws RuntimeException{
+        if(this.file.exists()){
+            throw new RuntimeException("同名文件或文件夹已经存在");
+        }else {
+            this.file.mkdir();
         }
     }
 

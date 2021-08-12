@@ -3,6 +3,7 @@ package com.virtualpuffer.netdisk.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.virtualpuffer.netdisk.controller.base.BaseController;
+import com.virtualpuffer.netdisk.data.FileCollection;
 import com.virtualpuffer.netdisk.data.ResponseMessage;
 import com.virtualpuffer.netdisk.entity.File_Map;
 import com.virtualpuffer.netdisk.service.impl.FileServiceImpl;
@@ -30,31 +31,72 @@ public class FileController extends BaseController {
     public static ResponseMessage get(@RequestBody File_Map on, HttpServletRequest request, HttpServletResponse response){
         UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
         try {
-            FileServiceImpl service = FileServiceImpl.getInstance(on.getFile_Destination(), loginService.getUser().getUSER_ID());
+            FileServiceImpl service = FileServiceImpl.getInstance(on.getDestination(), loginService.getUser().getUSER_ID());
             int length = (int)service.downloadFile(response.getOutputStream());
             response.addHeader("Content-Disposition", "attachment; filename=" + URLEncoder.encode(service.getFile_name(), "UTF-8"));
             response.setContentLength(length);
             return ResponseMessage.getSuccessInstance(200,"传输成功",null);
         } catch (FileNotFoundException e) {
             return ResponseMessage.getExceptionInstance(404,"文件未找到",null);
-        } catch (Exception e) {
+        }  catch (RuntimeException e){
+            return ResponseMessage.getExceptionInstance(300,e.getMessage(),null);
+        }catch (Exception e) {
             e.printStackTrace();
             return ResponseMessage.getErrorInstance(500,"系统错误",null);
         }
     }
 
     @ResponseBody
+    @RequestMapping(value = "/uploadFile",method = RequestMethod.POST)
+    public static ResponseMessage upload(@RequestBody File_Map on, HttpServletRequest request, HttpServletResponse response){
+        UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
+        try {
+            FileServiceImpl service = FileServiceImpl.getInstance(on.getDestination(), loginService.getUser().getUSER_ID());
+            service.uploadFile(request.getInputStream());
+            return ResponseMessage.getSuccessInstance(200,"传输成功",null);
+        } catch (FileNotFoundException e) {
+            return ResponseMessage.getExceptionInstance(404,"传输地址无效",null);
+        }  catch (RuntimeException e){
+            return ResponseMessage.getExceptionInstance(300,e.getMessage(),null);
+        }catch (Exception e) {
+            e.printStackTrace();
+            return ResponseMessage.getErrorInstance(500,"系统错误",null);
+        }
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/mkdir",method = RequestMethod.POST)
+    public static ResponseMessage mkdir(@RequestBody File_Map on, HttpServletRequest request, HttpServletResponse response){
+        UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
+        try {
+            FileServiceImpl service = FileServiceImpl.getInstance(on.getDestination(),loginService.getUser().getUSER_ID());
+            service.mkdir();
+            return ResponseMessage.getSuccessInstance(200,"文件夹创建成功",null);
+        } catch (FileNotFoundException e) {
+            return ResponseMessage.getExceptionInstance(404,e.getMessage(),null);
+        } catch (RuntimeException e){
+            return ResponseMessage.getExceptionInstance(300,e.getMessage(),null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseMessage.getErrorInstance(500,"系统错误",null);
+        }
+    }
+
+
+    @ResponseBody
     @RequestMapping(value = "/deleteFile")
     public static ResponseMessage delete(@RequestBody File_Map on, HttpServletRequest request, HttpServletResponse response) throws IOException {
         UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
         try {
-            FileServiceImpl service = FileServiceImpl.getInstance(on.getFile_Destination(), loginService.getUser().getUSER_ID());
+            FileServiceImpl service = FileServiceImpl.getInstance(on.getDestination(), loginService.getUser().getUSER_ID());
             service.deleteFileMap();
             return ResponseMessage.getSuccessInstance(200,"删除成功",null);
         } catch (FileNotFoundException e) {
             return ResponseMessage.getExceptionInstance(404,"文件不存在",null);
         } catch (IOException e){
             return ResponseMessage.getErrorInstance(500,"系统错误",null);
+        } catch (RuntimeException e){
+            return ResponseMessage.getExceptionInstance(300,e.getMessage(),null);
         }
     }
 
@@ -69,15 +111,45 @@ public class FileController extends BaseController {
             return ResponseMessage.getExceptionInstance(404,"文件不存在",null);
         }  catch (NoSuchFileException e){
             return ResponseMessage.getExceptionInstance(300,"目标不是文件夹",null);
-        }   catch (Exception e){
+        } catch (RuntimeException e){
+            return ResponseMessage.getExceptionInstance(300,e.getMessage(),null);
+        }  catch (Exception e){
             return ResponseMessage.getErrorInstance(500,"系统错误",null);
         }
     }
 
     @ResponseBody
-    @RequestMapping(value = "searchDir")
-    public static String searchDir(@RequestBody File_Map on, HttpServletRequest request, HttpServletResponse response){
-        return "";
+    @RequestMapping(value = "searchFile")
+    public static ResponseMessage searchDir(String destination,
+                                            String fileName,
+                                            String type,
+                                            HttpServletRequest request,
+                                            HttpServletResponse response){
+        FileServiceImpl service = null;
+        if(destination == null){
+            destination = "/";
+        }
+        try {
+            UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
+            service = FileServiceImpl.getInstance(destination, loginService.getUser().getUSER_ID());
+            FileCollection collection = service.searchFile(fileName,type);
+            HashMap map = new HashMap();
+            map.put("directory",collection.getDir());
+            map.put("file",collection.getFile());
+            map.put("code",collection.getCode());
+            map.put("message",collection.getMsg());
+            return ResponseMessage.getSuccessInstance(200,"",map);
+        } catch (FileNotFoundException e) {
+            return ResponseMessage.getSuccessInstance(300,e.getMessage(),null);
+        } catch (RuntimeException e){
+            return ResponseMessage.getExceptionInstance(300,e.getMessage(),null);
+        } catch (Exception e) {
+            System.out.println(getTime() + "   ->   未捕获异常: ");
+            System.out.println("_______________________________>");
+            e.printStackTrace();
+            System.out.println("<_______________________________");
+            return ResponseMessage.getErrorInstance(500,"系统错误",null);
+        }
     }
     @ResponseBody
     @RequestMapping(value = "shareFile",method = RequestMethod.GET)
@@ -87,7 +159,7 @@ public class FileController extends BaseController {
             UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
             service = FileServiceImpl.getInstance(destination, loginService.getUser().getUSER_ID());
         } catch (FileNotFoundException e) {
-            return ResponseMessage.getSuccessInstance(300,e.getMessage(),null);
+            return ResponseMessage.getExceptionInstance(300,e.getMessage(),null);
         }
         try {
             int time = 900;
@@ -105,6 +177,8 @@ public class FileController extends BaseController {
             hashMap.put("efficient time",date);
             hashMap.put("key",key);
             return ResponseMessage.getSuccessInstance(200,"获取成功",hashMap);
+        } catch (RuntimeException e){
+            return ResponseMessage.getExceptionInstance(300,e.getMessage(),null);
         } catch (Exception e) {
             System.out.println(getTime() + "   ->   未捕获异常: ");
             System.out.println("_______________________________>");
