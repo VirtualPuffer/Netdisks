@@ -3,10 +3,13 @@ package com.virtualpuffer.netdisk.Security;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
-public class RequestParse extends HttpServletRequestWrapper {
+/**
+ * 调用上级方法获取值后处理再返回
+* */
+public class XssProtection extends HttpServletRequestWrapper {
         HttpServletRequest orgRequest = null;
 
-        public RequestParse(HttpServletRequest request) {
+        public XssProtection(HttpServletRequest request) {
             super(request);
             orgRequest = request;
         }
@@ -116,8 +119,8 @@ public class RequestParse extends HttpServletRequestWrapper {
          * @return
          */
         public static HttpServletRequest getOrgRequest(HttpServletRequest req) {
-            if (req instanceof RequestParse) {
-                return ((RequestParse) req).getOrgRequest();
+            if (req instanceof XssProtection) {
+                return ((XssProtection) req).getOrgRequest();
             }
             return req;
         }
