@@ -4,6 +4,7 @@ import com.virtualpuffer.netdisk.MybatisConnect;
 import com.virtualpuffer.netdisk.entity.User;
 import com.virtualpuffer.netdisk.mapper.LoginHistory;
 import com.virtualpuffer.netdisk.mapper.UserMap;
+import com.virtualpuffer.netdisk.utils.TestTime;
 import org.apache.catalina.Session;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.lang.NonNull;
@@ -47,8 +48,6 @@ public class UserServiceImpl extends BaseServiceImpl {
     * */
     public static UserServiceImpl getInstance(String token, String ip) throws RuntimeException{
         Map map = parseJWT(token);
-        System.out.println(ip);
-        System.out.println(map.get("ip"));
   /*      if(map.get("ip").equals(ip)){*/
             return getInstance((String)map.get("username"),(String)map.get("password"),false , null);
       /*  }
@@ -65,16 +64,21 @@ public class UserServiceImpl extends BaseServiceImpl {
     * 顶级方法，生成登录对象
     * */
     public static UserServiceImpl getInstance(String username, String password, @NonNull boolean persistence , String ip) throws RuntimeException{
-        SqlSession session = MybatisConnect.getSession();
-        User user = session.getMapper(UserMap.class).userLogin(username,password);
-        if(user == null || password == null || username == null){
-            throw new RuntimeException("用户名或者密码错误");
-        }else if(persistence && !(ip == null || ip.equals(""))){
-            int x = session.getMapper(LoginHistory.class).loginPersistence(user.getUSER_ID(),ip,new Timestamp(System.currentTimeMillis()),0,System.currentTimeMillis());
+        SqlSession session = null;
+        try {
+            session = MybatisConnect.getSession();
+            User user = session.getMapper(UserMap.class).userLogin(username,password);
+            ;
+            if(user == null || password == null || username == null){
+                throw new RuntimeException("用户名或者密码错误");
+            }else if(persistence && !(ip == null || ip.equals(""))){
+                int x = session.getMapper(LoginHistory.class).loginPersistence(user.getUSER_ID(),ip,new Timestamp(System.currentTimeMillis()),0,System.currentTimeMillis());
+            }
+            session.commit();
+            return new UserServiceImpl(user);
+        } finally {
+            close(session);
         }
-        session.commit();
-        close(session);
-        return new UserServiceImpl(user);
     }
 
     public static void registerUser(User user){
@@ -89,24 +93,30 @@ public class UserServiceImpl extends BaseServiceImpl {
             buffer.append(name == null || name.equals("") ? "name " : "");
             throw new RuntimeException(buffer.toString());
         }
-        SqlSession session = MybatisConnect.getSession();
-        UserMap map = session.getMapper(UserMap.class);
-        User user = map.duplicationUsername(username);
-        if(user != null){
-            throw new RuntimeException("用户名已经存在");
-        }else {
-            int count = map.register(username,password,name);
-            map.updateURL();
-            if(count!=1){
-                throw new Error("注册失败");
+        SqlSession session = null;
+        try {
+            session = MybatisConnect.getSession();
+            UserMap map = session.getMapper(UserMap.class);
+            User user = map.duplicationUsername(username);
+            if(user != null){
+                throw new RuntimeException("用户名已经存在");
+            }else {
+                int count = map.register(username,password,name);
+                map.updateURL();
+                if(count!=1){
+                    throw new Error("注册失败");
+                }
             }
+            int userID = map.getIDbyName(username);
+            if(registerBuild(userID)){//创建仓库
+                session.commit();
+            }else {
+                throw new Error("boom");
+            }
+            ;
+        } finally {
+            close(session);
         }
-        int userID = map.getIDbyName(username);
-        if(registerBuild(userID)){//创建仓库
-            session.commit();
-        }else {
-            throw new Error("boom");
-        };
     }
 
     public static boolean registerBuild(int userID){

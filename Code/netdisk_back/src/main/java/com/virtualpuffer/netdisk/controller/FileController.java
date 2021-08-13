@@ -27,10 +27,12 @@ import java.util.Map;
 @RestController
 @RequestMapping(value = "/api")
 public class FileController extends BaseController {
+    public FileController() {
+    }
 
     @ResponseBody
     @RequestMapping(value = "/downloadFile",method = RequestMethod.GET)
-    public static ResponseMessage get(@RequestBody File_Map on, HttpServletRequest request, HttpServletResponse response){
+    public ResponseMessage get(@RequestBody File_Map on, HttpServletRequest request, HttpServletResponse response){
         UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
         try {
             FileServiceImpl service = FileServiceImpl.getInstance(on.getDestination(), loginService.getUser().getUSER_ID());
@@ -50,7 +52,7 @@ public class FileController extends BaseController {
 
     @ResponseBody
     @RequestMapping(value = "/uploadFile",method = RequestMethod.POST,produces = "application/json")
-    public static ResponseMessage upload(@RequestBody File_Map on, HttpServletRequest request, HttpServletResponse response){
+    public ResponseMessage upload(@RequestBody File_Map on, HttpServletRequest request, HttpServletResponse response){
         UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
         if(on.getGetFile() == null){
             return ResponseMessage.getExceptionInstance(404,"未找到上传的文件流",null);
@@ -75,7 +77,7 @@ public class FileController extends BaseController {
 
     @ResponseBody
     @RequestMapping(value = "/mkdir",method = RequestMethod.POST,produces = "application/json")
-    public static ResponseMessage mkdir(@RequestBody File_Map on, HttpServletRequest request, HttpServletResponse response){
+    public ResponseMessage mkdir(@RequestBody File_Map on, HttpServletRequest request, HttpServletResponse response){
         UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
         try {
             FileServiceImpl service = FileServiceImpl.getInstance(on.getDestination(),loginService.getUser().getUSER_ID());
@@ -94,10 +96,10 @@ public class FileController extends BaseController {
 
     @ResponseBody
     @RequestMapping(value = "/deleteFile",method = RequestMethod.GET)
-    public static ResponseMessage delete(@RequestBody File_Map on, HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public ResponseMessage delete(String destination, HttpServletRequest request, HttpServletResponse response) throws IOException {
         UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
         try {
-            FileServiceImpl service = FileServiceImpl.getInstance(on.getDestination(), loginService.getUser().getUSER_ID());
+            FileServiceImpl service = FileServiceImpl.getInstance(destination, loginService.getUser().getUSER_ID());
             service.deleteFileMap();
             return ResponseMessage.getSuccessInstance(200,"文件删除成功",null);
         } catch (FileNotFoundException e) {
@@ -111,7 +113,7 @@ public class FileController extends BaseController {
 
     @ResponseBody
     @RequestMapping(value = "getDir",method = RequestMethod.GET)
-    public static ResponseMessage getDir(String destination, HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public ResponseMessage getDir(String destination, HttpServletRequest request, HttpServletResponse response) throws IOException {
         UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
         try {
             FileServiceImpl service = FileServiceImpl.getInstance(destination, loginService.getUser().getUSER_ID());
@@ -130,7 +132,7 @@ public class FileController extends BaseController {
 
     @ResponseBody
     @RequestMapping(value = "searchFile",method = RequestMethod.GET)
-    public static ResponseMessage searchDir(String destination,
+    public ResponseMessage searchDir(String destination,
                                             String fileName,
                                             String type,
                                             HttpServletRequest request,
@@ -165,7 +167,7 @@ public class FileController extends BaseController {
     }
     @ResponseBody
     @RequestMapping(value = "shareFile",method = RequestMethod.GET)
-    public static ResponseMessage shareFile(String destination, @Nullable String second,@Nullable String key,boolean getRandom, HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException {
+    public ResponseMessage shareFile(String destination, @Nullable String second,@Nullable String key,boolean getRandom, HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException {
         FileServiceImpl service = null;
         try {
             UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
@@ -199,5 +201,39 @@ public class FileController extends BaseController {
             return ResponseMessage.getErrorInstance(500,"系统错误",null);
         }
     }
-
+    @ResponseBody
+    @RequestMapping(value = "/compression",method = RequestMethod.GET)
+    public ResponseMessage Compress(String destination,HttpServletResponse response,HttpServletRequest request){
+        if(destination == null){
+            return ResponseMessage.getExceptionInstance(300,"目标未找到",null);
+        }
+        FileServiceImpl service = null;
+        try {
+            UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
+            service = FileServiceImpl.getInstance(destination, loginService.getUser().getUSER_ID());
+            service.deCompress();
+            return ResponseMessage.getSuccessInstance(200,"文件压缩成功",null);
+        } catch (FileNotFoundException e) {
+            return ResponseMessage.getExceptionInstance(300,"指定压缩文件未找到",null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseMessage.getErrorInstance(500,"系统错误",null);
+        }
+    }
+    @ResponseBody
+    @RequestMapping(value = "/deCompression",method = RequestMethod.GET)
+    public ResponseMessage deCompress(String destination,HttpServletResponse response,HttpServletRequest request){
+        FileServiceImpl service = null;
+        try {
+            UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
+            service = FileServiceImpl.getInstance(destination, loginService.getUser().getUSER_ID());
+            service.deCompress();
+            return ResponseMessage.getSuccessInstance(200,"文件解压成功",null);
+        } catch (FileNotFoundException e) {
+            return ResponseMessage.getExceptionInstance(300,"指定解压文件未找到",null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseMessage.getErrorInstance(500,"系统错误",null);
+        }
+    }
 }

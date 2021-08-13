@@ -48,7 +48,7 @@ public class FileServiceImpl extends FileServiceUtil implements Serializable{
     private int file_length;
     private boolean isMapper = false;
     private static final int BUFFER_SIZE = 4 * 1024;
-    public static final String downloadAPI = Message.getMess("downloadAPI");
+    public static final String downloadAPI = Message.getMess("downloadAPI");//下载链接前缀
     public static final String defaultWare = Message.getMess("defaultWare");
     public static final String duplicateFileWare = Message.getMess("duplicateFileWare");
     public FileServiceImpl(){}
@@ -177,14 +177,15 @@ public class FileServiceImpl extends FileServiceUtil implements Serializable{
      * 获取路径下文件
      * */
     public Map getDirectory() throws NoSuchFileException {
+        TestTime testTime = new TestTime();
+        testTime.start();
         Map ret = new HashMap();
         ArrayList filelist = new ArrayList();
         SqlSession session = MybatisConnect.getSession();
         ArrayList<String> dirList = new ArrayList();
-        TestTime testTime = new TestTime();
-        testTime.start();
+
         LinkedList<File_Map> list = session.getMapper(FileMap.class).getDirectoryMap(destination,user.getUSER_ID());
-        testTime.end();
+
         ret.put("file",filelist);
         ret.put("dir",dirList);
 
@@ -208,6 +209,7 @@ public class FileServiceImpl extends FileServiceUtil implements Serializable{
                 }
             }
         }
+        testTime.end();
         return ret;
     }
     /**
@@ -220,8 +222,14 @@ public class FileServiceImpl extends FileServiceUtil implements Serializable{
     }
     //重复返回true
     public boolean checkDuplicate(String hash){
-        SqlSession session = MybatisConnect.getSession();
-        LinkedList list = session.getMapper(FileHashMap.class).checkDuplicate(hash);
+        SqlSession session = null;
+        LinkedList list;
+        try {
+            session = MybatisConnect.getSession();
+            list = session.getMapper(FileHashMap.class).checkDuplicate(hash);
+        } finally {
+            close(session);
+        }
         return !list.isEmpty();
     }
 
@@ -291,6 +299,7 @@ public class FileServiceImpl extends FileServiceUtil implements Serializable{
             } finally {
                 close(inputStream);
                 close(outputStream);
+                close(session);
             }
             session.commit();/*提交*/
         }
@@ -407,6 +416,15 @@ public class FileServiceImpl extends FileServiceUtil implements Serializable{
             this.file.mkdir();
         }
     }
+    public void deCompress()throws Exception{
+        System.out.println(path);
+        deCompress(this.file,path.substring(0,path.lastIndexOf("/")));
+    }
+    public void compression() throws Exception {
+        String path = this.path.substring(0,this.path.lastIndexOf("/"));
+        compress(this.file,new ZipOutputStream(new FileOutputStream(path)),this.file_name);
+    }
+
 
     public User getUser() {
         return user;

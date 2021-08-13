@@ -4,6 +4,7 @@ package com.virtualpuffer.netdisk.Security.securityFilter;
 import com.alibaba.fastjson.JSON;
 import com.virtualpuffer.netdisk.data.ResponseMessage;
 import com.virtualpuffer.netdisk.service.impl.UserServiceImpl;
+import com.virtualpuffer.netdisk.utils.TestTime;
 import org.springframework.http.MediaType;
 
 
@@ -36,7 +37,6 @@ public class APIAuthorizationFilter implements Filter {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
-
 /*        String type = request.getContentType();
         if(type.equals(MediaType.APPLICATION_JSON_VALUE)||type.equals(MediaType.APPLICATION_JSON_UTF8_VALUE)){
 

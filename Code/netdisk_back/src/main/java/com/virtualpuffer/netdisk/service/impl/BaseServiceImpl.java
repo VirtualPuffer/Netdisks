@@ -1,5 +1,6 @@
 package com.virtualpuffer.netdisk.service.impl;
 
+import com.virtualpuffer.netdisk.utils.TestTime;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
@@ -77,6 +78,7 @@ public class BaseServiceImpl {
     }
     //token解码
     public static Claims parseJWT(String token) {
+
         Claims claims = Jwts.parser()
                 .setSigningKey(secretKey)
                 .parseClaimsJws(token)
