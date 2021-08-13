@@ -34,7 +34,7 @@ public class FileCollection{
 
     public static FileCollection getInstance(File file,String name,String path,String type)throws FileNotFoundException{
         if(file.exists()){
-            return new FileCollection(file,name,path,"");
+            return new FileCollection(file,name,path,type);
         }else {
             throw new FileNotFoundException("源路径为空");
         }
@@ -62,6 +62,7 @@ public class FileCollection{
 
     }
     public void search(File file, String name,String path,String type){
+
         //文件本身
         if(file.getName().matches("(?i).*"+ name +".*")){
             String retPath = file.getPath().substring(path.length());

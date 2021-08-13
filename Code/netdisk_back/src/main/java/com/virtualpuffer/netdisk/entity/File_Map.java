@@ -1,5 +1,7 @@
 package com.virtualpuffer.netdisk.entity;
 
+import org.springframework.web.multipart.MultipartFile;
+
 public class File_Map {
     String USER_ID;
     String File_Name;
@@ -7,6 +9,7 @@ public class File_Map {
     String File_Hash;
     String path;
     String destination;
+    MultipartFile getFile;
 
     public File_Map() {
     }
@@ -48,6 +51,14 @@ public class File_Map {
 
     public void setDestination(String destination) {
         this.destination = destination;
+    }
+
+    public MultipartFile getGetFile() {
+        return getFile;
+    }
+
+    public void setGetFile(MultipartFile getFile) {
+        this.getFile = getFile;
     }
 
     @Override

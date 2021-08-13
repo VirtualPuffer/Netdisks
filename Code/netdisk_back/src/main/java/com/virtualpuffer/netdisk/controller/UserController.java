@@ -50,4 +50,29 @@ public class UserController extends BaseController {
         }
     }
 
+    @ResponseBody
+    @RequestMapping(value="freeLogin",method = RequestMethod.POST)
+    public ResponseMessage freeLogin(@RequestBody User user, HttpServletRequest request , HttpServletResponse response){
+        try {
+            String token = request.getHeader("Authorization");
+            if(token!=null){
+                String ip = (String) request.getAttribute("ip");
+                UserServiceImpl service = UserServiceImpl.getInstance(token,ip);
+                request.setAttribute("AuthService",service);
+                request.getAttribute("AuthService");
+            }
+            user.setIp((String) request.getAttribute("ip"));
+            UserServiceImpl service = UserServiceImpl.getInstance(user,request);
+            HashMap hashMap = new HashMap();
+            hashMap.put("token",service.getUser().getToken());//token
+            hashMap.put("name",service.getUser().getName());//名字
+            return ResponseMessage.getSuccessInstance(200,"登录成功",hashMap);
+        } catch (RuntimeException e) {
+            return ResponseMessage.getSuccessInstance(300,e.getMessage(),null);
+        } catch (Throwable e){
+            e.printStackTrace();//打印异常情况
+            return ResponseMessage.getErrorInstance(500,"系统错误",null);
+        }
+    }
+
 }

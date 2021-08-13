@@ -17,13 +17,12 @@ import java.util.NoSuchElementException;
 
 @org.springframework.stereotype.Controller
 @RestController
-@RequestMapping("/a")
 public class ShowData {
 
     static LinkedList<String> test;
     static HashMap<String,LinkedList<String>> hasf;
 
-    @RequestMapping("/aa")
+    @RequestMapping("/")
     public static String a(){
         System.out.println(1);
         return "HelloWorld";

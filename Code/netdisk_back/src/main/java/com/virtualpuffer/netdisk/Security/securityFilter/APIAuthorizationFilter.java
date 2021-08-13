@@ -22,7 +22,7 @@ import java.io.InputStream;
  * LoginService检测token真实性
  * 出问题直接抛出异常
 * */
-@WebFilter(urlPatterns = "/api/*",filterName = "apiControlFilter")
+@WebFilter(urlPatterns = "/api/*",filterName = "xapiControlFilter")
 public class APIAuthorizationFilter implements Filter {
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -37,10 +37,10 @@ public class APIAuthorizationFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
 
-        String type = request.getContentType();
+/*        String type = request.getContentType();
         if(type.equals(MediaType.APPLICATION_JSON_VALUE)||type.equals(MediaType.APPLICATION_JSON_UTF8_VALUE)){
 
-        }
+        }*/
         try {
             //解析token
             String token = request.getHeader("Authorization");

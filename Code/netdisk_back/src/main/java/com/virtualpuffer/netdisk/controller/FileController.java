@@ -11,6 +11,7 @@ import com.virtualpuffer.netdisk.service.impl.UserServiceImpl;
 import com.virtualpuffer.netdisk.utils.RandomString;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -21,9 +22,10 @@ import java.net.URLEncoder;
 import java.nio.file.NoSuchFileException;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 
 @RestController
-@RequestMapping(value = "/api",produces = "application/json")
+@RequestMapping(value = "/api")
 public class FileController extends BaseController {
 
     @ResponseBody
@@ -47,16 +49,23 @@ public class FileController extends BaseController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/uploadFile",method = RequestMethod.POST)
+    @RequestMapping(value = "/uploadFile",method = RequestMethod.POST,produces = "application/json")
     public static ResponseMessage upload(@RequestBody File_Map on, HttpServletRequest request, HttpServletResponse response){
         UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
+        if(on.getGetFile() == null){
+            return ResponseMessage.getExceptionInstance(404,"未找到上传的文件流",null);
+        }
+        MultipartFile file = on.getGetFile();
         try {
-            FileServiceImpl service = FileServiceImpl.getInstance(on.getDestination(), loginService.getUser().getUSER_ID());
-            service.uploadFile(request.getInputStream());
-            return ResponseMessage.getSuccessInstance(200,"传输成功",null);
+            String path = on.getDestination() + "/" + file.getOriginalFilename();
+            FileServiceImpl service = FileServiceImpl.getInstance(path, loginService.getUser().getUSER_ID());
+            service.uploadFile(file.getInputStream());
+            return ResponseMessage.getSuccessInstance(200,"文件上传成功",null);
         } catch (FileNotFoundException e) {
+            e.printStackTrace();
             return ResponseMessage.getExceptionInstance(404,"传输地址无效",null);
         }  catch (RuntimeException e){
+            e.printStackTrace();
             return ResponseMessage.getExceptionInstance(300,e.getMessage(),null);
         }catch (Exception e) {
             e.printStackTrace();
@@ -65,7 +74,7 @@ public class FileController extends BaseController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/mkdir",method = RequestMethod.POST)
+    @RequestMapping(value = "/mkdir",method = RequestMethod.POST,produces = "application/json")
     public static ResponseMessage mkdir(@RequestBody File_Map on, HttpServletRequest request, HttpServletResponse response){
         UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
         try {
@@ -84,13 +93,13 @@ public class FileController extends BaseController {
 
 
     @ResponseBody
-    @RequestMapping(value = "/deleteFile")
+    @RequestMapping(value = "/deleteFile",method = RequestMethod.GET)
     public static ResponseMessage delete(@RequestBody File_Map on, HttpServletRequest request, HttpServletResponse response) throws IOException {
         UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
         try {
             FileServiceImpl service = FileServiceImpl.getInstance(on.getDestination(), loginService.getUser().getUSER_ID());
             service.deleteFileMap();
-            return ResponseMessage.getSuccessInstance(200,"删除成功",null);
+            return ResponseMessage.getSuccessInstance(200,"文件删除成功",null);
         } catch (FileNotFoundException e) {
             return ResponseMessage.getExceptionInstance(404,"文件不存在",null);
         } catch (IOException e){
@@ -102,11 +111,12 @@ public class FileController extends BaseController {
 
     @ResponseBody
     @RequestMapping(value = "getDir",method = RequestMethod.GET)
-    public static Object getDir(String destination, HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public static ResponseMessage getDir(String destination, HttpServletRequest request, HttpServletResponse response) throws IOException {
         UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
         try {
             FileServiceImpl service = FileServiceImpl.getInstance(destination, loginService.getUser().getUSER_ID());
-            return JSON.toJSON(service.getDirectory());
+            Map map = service.getDirectory();
+            return ResponseMessage.getSuccessInstance(200,"路径获取成功",map);
         } catch (FileNotFoundException e) {
             return ResponseMessage.getExceptionInstance(404,"文件不存在",null);
         }  catch (NoSuchFileException e){
@@ -119,7 +129,7 @@ public class FileController extends BaseController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "searchFile")
+    @RequestMapping(value = "searchFile",method = RequestMethod.GET)
     public static ResponseMessage searchDir(String destination,
                                             String fileName,
                                             String type,
@@ -138,10 +148,12 @@ public class FileController extends BaseController {
             map.put("file",collection.getFile());
             map.put("code",collection.getCode());
             map.put("message",collection.getMsg());
-            return ResponseMessage.getSuccessInstance(200,"",map);
+            return ResponseMessage.getSuccessInstance(200,"搜索成功",map);
         } catch (FileNotFoundException e) {
+            e.printStackTrace();
             return ResponseMessage.getSuccessInstance(300,e.getMessage(),null);
         } catch (RuntimeException e){
+            e.printStackTrace();
             return ResponseMessage.getExceptionInstance(300,e.getMessage(),null);
         } catch (Exception e) {
             System.out.println(getTime() + "   ->   未捕获异常: ");
@@ -176,7 +188,7 @@ public class FileController extends BaseController {
             hashMap.put("destination",destination);//名字
             hashMap.put("efficient time",date);
             hashMap.put("key",key);
-            return ResponseMessage.getSuccessInstance(200,"获取成功",hashMap);
+            return ResponseMessage.getSuccessInstance(200,"链接获取成功",hashMap);
         } catch (RuntimeException e){
             return ResponseMessage.getExceptionInstance(300,e.getMessage(),null);
         } catch (Exception e) {

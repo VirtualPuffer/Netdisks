@@ -35,7 +35,7 @@ public class UserServiceImpl extends BaseServiceImpl {
         map.put("password",user.getPassword());
         map.put("userID",user.getUSER_ID());
         map.put("ip",user.getIp());
-        String token = createToken(1000,map,user.getUsername(),null);
+        String token = createToken(60*60*24,map,user.getUsername(),null);
         user.setToken(token);
     }
 
@@ -47,10 +47,12 @@ public class UserServiceImpl extends BaseServiceImpl {
     * */
     public static UserServiceImpl getInstance(String token, String ip) throws RuntimeException{
         Map map = parseJWT(token);
-        if(map.get("ip") == ip){
+        System.out.println(ip);
+        System.out.println(map.get("ip"));
+  /*      if(map.get("ip").equals(ip)){*/
             return getInstance((String)map.get("username"),(String)map.get("password"),false , null);
-        }
-        throw new RuntimeException("ip验证失败");
+      /*  }
+        throw new RuntimeException("ip验证失败");*/
     }
     //登录这里过来
     public static UserServiceImpl getInstance(User user, @Nullable HttpServletRequest request)throws RuntimeException{

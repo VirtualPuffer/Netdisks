@@ -8,6 +8,7 @@ import com.virtualpuffer.netdisk.entity.FileHash_Map;
 import com.virtualpuffer.netdisk.entity.File_Map;
 import com.virtualpuffer.netdisk.entity.User;
 import com.virtualpuffer.netdisk.utils.Message;
+import com.virtualpuffer.netdisk.utils.TestTime;
 import org.apache.ibatis.session.SqlSession;
 import com.virtualpuffer.netdisk.mapper.*;
 import org.springframework.lang.Nullable;
@@ -175,28 +176,39 @@ public class FileServiceImpl extends FileServiceUtil implements Serializable{
     /**
      * 获取路径下文件
      * */
-    public ArrayList<String> getDirectory() throws NoSuchFileException {
+    public Map getDirectory() throws NoSuchFileException {
+        Map ret = new HashMap();
+        ArrayList filelist = new ArrayList();
         SqlSession session = MybatisConnect.getSession();
-        ArrayList<String> arrayList = new ArrayList();
+        ArrayList<String> dirList = new ArrayList();
+        TestTime testTime = new TestTime();
+        testTime.start();
         LinkedList<File_Map> list = session.getMapper(FileMap.class).getDirectoryMap(destination,user.getUSER_ID());
+        testTime.end();
+        ret.put("file",filelist);
+        ret.put("dir",dirList);
 
         if(!list.isEmpty()){
             for(File_Map fileMap : list){
                 if(!fileMap.getFile_Destination().substring(this.destination.length()).contains("/")){
-                    arrayList.add(fileMap.getFile_Destination());
+                    dirList.add(fileMap.getFile_Destination());
                 }
             }
         }
-        if(!file.isDirectory()&&arrayList.isEmpty()){
+        if(!file.isDirectory()&&dirList.isEmpty()){
             throw new NoSuchFileException("不是文件夹");
         }
 
         if(file.isDirectory()){
             for (File dirFile : file.listFiles()){
-                arrayList.add(dirFile.getName());
+                if(dirFile.isFile()){
+                    filelist.add(dirFile.getName());
+                }else if(dirFile.isDirectory()){
+                    dirList.add(dirFile.getName());
+                }
             }
         }
-        return arrayList;
+        return ret;
     }
     /**
      * 文件上传
@@ -362,7 +374,7 @@ public class FileServiceImpl extends FileServiceUtil implements Serializable{
         SqlSession session = null;
         try {
             session = MybatisConnect.getSession();
-            FileCollection collection = FileCollection.getInstance(this.file,name,destination,type);
+            FileCollection collection = FileCollection.getInstance(this.file,name,getAbsolutePath("/"),type);
             LinkedList fileList = collection.getFile();
             LinkedList dirList = collection.getDir();
             LinkedList<File_Map> list = session.getMapper(FileMap.class).getDirectoryMap(destination,user.getUSER_ID());
@@ -376,7 +388,7 @@ public class FileServiceImpl extends FileServiceUtil implements Serializable{
                     }
                 }
             }
-            if(fileList.isEmpty()&&!dirList.isEmpty()){
+            if(fileList.isEmpty()&&dirList.isEmpty()){
                 collection.setMsg("没有找到匹配的文件");
                 collection.setCode(300);
             }else {
