@@ -32,10 +32,10 @@ public class FileController extends BaseController {
 
     @ResponseBody
     @RequestMapping(value = "/downloadFile",method = RequestMethod.GET)
-    public ResponseMessage get(@RequestBody File_Map on, HttpServletRequest request, HttpServletResponse response){
+    public ResponseMessage get(String destination, HttpServletRequest request, HttpServletResponse response){
         UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
         try {
-            FileServiceImpl service = FileServiceImpl.getInstance(on.getDestination(), loginService.getUser().getUSER_ID());
+            FileServiceImpl service = FileServiceImpl.getInstance(destination, loginService.getUser().getUSER_ID());
             int length = (int)service.downloadFile(response.getOutputStream());
             response.addHeader("Content-Disposition", "attachment; filename=" + URLEncoder.encode(service.getFile_name(), "UTF-8"));
             response.setContentLength(length);

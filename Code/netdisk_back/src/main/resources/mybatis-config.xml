@@ -18,6 +18,7 @@
                 <property name="password" value="123456"></property>
                 <property name="poolMaximumActiveConnections" value="100"></property> <!--最大活跃连接数 -->
                 <property name="poolMaximumIdleConnections" value="15"></property>  <!--最大空闲连接数-->
+                <property name="poolTimeToWait" value="20000"></property>
             <!--    <property name="poolTimeToWait" value="20000"></property>　　&lt;!&ndash;创建连接时最大等待时间20s&ndash;&gt;-->
             </dataSource>
         </environment>

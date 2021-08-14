@@ -4,6 +4,7 @@ import com.virtualpuffer.netdisk.MybatisConnect;
 import com.virtualpuffer.netdisk.entity.User;
 import com.virtualpuffer.netdisk.mapper.LoginHistory;
 import com.virtualpuffer.netdisk.mapper.UserMap;
+import com.virtualpuffer.netdisk.service.LoginService;
 import com.virtualpuffer.netdisk.utils.TestTime;
 import org.apache.catalina.Session;
 import org.apache.ibatis.session.SqlSession;
@@ -18,7 +19,7 @@ import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
 
-public class UserServiceImpl extends BaseServiceImpl {
+public class UserServiceImpl extends BaseServiceImpl implements LoginService {
     /**
     * 初始阶段只传入账号密码，登录状态
      * 解析token
