@@ -35,7 +35,6 @@ public class MessageParse implements Filter {
         if(request.getMethod().equals("GET")){
             for(String[] get : request.getParameterMap().values() ){
                 for(String on : get){
-                    System.out.println();
                 }
             }
         }

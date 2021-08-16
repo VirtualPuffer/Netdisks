@@ -33,6 +33,9 @@ public class FileController extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/downloadFile",method = RequestMethod.GET)
     public ResponseMessage get(String destination, HttpServletRequest request, HttpServletResponse response){
+
+        System.out.println(destination + "des ______________________________________>>>>>>>>>>>>>>>");
+
         UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
         try {
             FileServiceImpl service = FileServiceImpl.getInstance(destination, loginService.getUser().getUSER_ID());
@@ -51,16 +54,21 @@ public class FileController extends BaseController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/uploadFile",method = RequestMethod.POST,produces = "application/json")
-    public ResponseMessage upload(@RequestBody File_Map on, HttpServletRequest request, HttpServletResponse response){
+    @RequestMapping(value = "/uploadFile",method = RequestMethod.POST)
+    public ResponseMessage upload(String filePath,MultipartFile file, HttpServletRequest request, HttpServletResponse response){
         UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
-        if(on.getGetFile() == null){
+        if(filePath == null || filePath.equals("")){
+            filePath = "";
+        }
+        if(file == null){
             return ResponseMessage.getExceptionInstance(404,"未找到上传的文件流",null);
         }
-        MultipartFile file = on.getGetFile();
         try {
-            String path = on.getDestination() + "/" + file.getOriginalFilename();
+            String path = filePath + "/" + file.getOriginalFilename();
             FileServiceImpl service = FileServiceImpl.getInstance(path, loginService.getUser().getUSER_ID());
+
+            System.out.println(file.getInputStream().available());
+
             service.uploadFile(file.getInputStream());
             return ResponseMessage.getSuccessInstance(200,"文件上传成功",null);
         } catch (FileNotFoundException e) {

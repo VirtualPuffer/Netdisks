@@ -31,10 +31,10 @@ public class FileServiceUtil extends BaseServiceImpl{
         InputStream inputStream = new FileInputStream(file);
         return getHash(inputStream,type);
     }
-    protected static String getHash(InputStream inputStream, String type)throws Exception{
+    protected static String getHash(InputStream input, String type)throws Exception{
         MessageDigest instance = MessageDigest.getInstance(type);
         byte buffer[] = new byte[1024];
-        for (int numRead = 0; (numRead = inputStream.read(buffer)) > 0; ) {
+        for (int numRead = 0; (numRead = input.read(buffer)) > 0; ) {
             instance.update(buffer, 0, numRead);
         }
         return toHexString(instance.digest());
@@ -53,8 +53,9 @@ public class FileServiceUtil extends BaseServiceImpl{
     * */
     protected static void copy(InputStream inputStream,OutputStream outputStream)throws IOException{
             byte[] buffer = new byte[BUFFER_SIZE];
-            int length;
+            int length = 0;
             while ((length = inputStream.read(buffer)) != -1) {
+                System.out.println("_____________________________________>");
                 outputStream.write(buffer, 0, length);
             }
     }

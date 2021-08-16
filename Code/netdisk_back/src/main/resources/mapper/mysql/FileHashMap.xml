@@ -3,7 +3,7 @@
 <mapper namespace="com.virtualpuffer.netdisk.mapper.FileHashMap">
 
     <select id="checkDuplicate" resultType="com.virtualpuffer.netdisk.entity.FileHash_Map">
-        select * from FileHash_Map where hash = #{hash};
+        select * from FileHash_Map where File_Hash = #{hash};
     </select>
 
     <insert id="insertMap">
@@ -23,6 +23,14 @@
     <select id="getFileMapByPath" resultType="com.virtualpuffer.netdisk.entity.FileHash_Map">
         select * from FileHash_Map where File_Path = #{path};
     </select>
+
+    <select id="getFilePath" resultType="com.virtualpuffer.netdisk.entity.FileHash_Map">
+        select * from FileHash_Map where File_Hash = #{hash};
+    </select>
+
+    <update id="updatePath">
+        update FileHash_Map set File_Path = #{filePath} where File_Hash = #{fileHash};
+    </update>
 
 
 </mapper>

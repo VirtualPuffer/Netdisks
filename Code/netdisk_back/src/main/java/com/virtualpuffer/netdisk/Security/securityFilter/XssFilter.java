@@ -1,6 +1,5 @@
 package com.virtualpuffer.netdisk.Security.securityFilter;
 
-import com.virtualpuffer.netdisk.Security.SecurityRequest;
 import com.virtualpuffer.netdisk.Security.XssProtection;
 
 import javax.servlet.*;

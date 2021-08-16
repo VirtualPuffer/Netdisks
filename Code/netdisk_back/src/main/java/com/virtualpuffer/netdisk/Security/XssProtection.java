@@ -54,6 +54,7 @@ public class XssProtection extends HttpServletRequestWrapper {
          * @return
          */
         private static String xssEncode(String s) {
+            System.out.println(s + "-=========================================");
             if (s == null || s.isEmpty()) {
                 return s;
             }
@@ -90,6 +91,7 @@ public class XssProtection extends HttpServletRequestWrapper {
                         break;
                 }
             }
+            System.out.println("_________________" + sb);
             return sb.toString();
         }
         public static void processUrlEncoder(StringBuilder sb, String s, int index){

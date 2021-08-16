@@ -105,6 +105,14 @@ public class FileServiceImpl extends FileServiceUtil implements Serializable{
 
         if(map == null){
             this.file = new File(path);
+            try {
+                String tem = this.file.getCanonicalPath().substring(defaultWare.length());
+                System.out.println(tem + "_____________________________>");
+                this.destination = tem.substring(tem.indexOf("/"));
+                System.out.println(destination);
+            } catch (IOException e) {
+
+            }
         }else {
             this.isMapper = true;
             this.destination = map.getFile_Destination();
@@ -131,11 +139,10 @@ public class FileServiceImpl extends FileServiceUtil implements Serializable{
         return new FileServiceImpl(user,path);
     }
     public static FileServiceImpl getInstance(String destination,int userID) throws FileNotFoundException{
-
         if(destination == null){
             throw new FileNotFoundException("缺少参数:destination");
         }else if(!destination.startsWith("/")){//防止路径没/
-            destination = new StringBuffer().append("/").append(destination).toString();
+            destination = new StringBuffer().append("").append(destination).toString();
         }else if(destination.contains("..")){
             throw new RuntimeException("路径非法");
         }
@@ -184,7 +191,7 @@ public class FileServiceImpl extends FileServiceUtil implements Serializable{
         SqlSession session = MybatisConnect.getSession();
         ArrayList<String> dirList = new ArrayList();
 
-        LinkedList<File_Map> list = session.getMapper(FileMap.class).getDirectoryMap(destination,user.getUSER_ID());
+        LinkedList<File_Map> list = session.getMapper(FileMap.class).getDirectoryMap(destination.substring(1),user.getUSER_ID());
 
         ret.put("file",filelist);
         ret.put("dir",dirList);
@@ -192,7 +199,7 @@ public class FileServiceImpl extends FileServiceUtil implements Serializable{
         if(!list.isEmpty()){
             for(File_Map fileMap : list){
                 if(!fileMap.getFile_Destination().substring(this.destination.length()).contains("/")){
-                    dirList.add(fileMap.getFile_Destination());
+                    filelist.add(fileMap.getFile_Destination());
                 }
             }
         }
@@ -241,11 +248,12 @@ public class FileServiceImpl extends FileServiceUtil implements Serializable{
         if(this.file.isDirectory()){
             zipOutputStream = new ZipOutputStream(outputStream);
             compress(this.file,zipOutputStream,this.getFile_name());
+            zipOutputStream.finish();
             return count();
         }else {
-            inputStream = new FileInputStream(this.file);
-            copy(inputStream,outputStream);
-            return inputStream.available();
+                inputStream = new FileInputStream(this.file);
+                copy(inputStream,outputStream);
+                return inputStream.available();
         }
         } finally {
             close(inputStream);
@@ -264,44 +272,54 @@ public class FileServiceImpl extends FileServiceUtil implements Serializable{
      *  hashmap 维护文件物理路径和hash值的对应关系
      *  map     维护hash值和文件拥有者以及相对路径的对应关系
      *
-    * @param inputStream 上传文件的输入流
+    * @param input 上传文件的输入流
     * */
-    public void uploadFile(InputStream inputStream)throws Exception{
+    public void uploadFile(InputStream input)throws Exception{
         OutputStream outputStream;
-        String hash = getSH256(inputStream);
+        InputStream[] inputStreams = copyStream(input);
+        InputStream inputStream = inputStreams[1];
+
+        String hash = getSH256(inputStreams[0]);
         SqlSession session = MybatisConnect.getSession();
-        if (checkDuplicate(inputStream)) {
-            //看看有没有创建映射,
-            if (session.getMapper(FileMap.class).invokeOnExit(hash).isEmpty()) {
-                //查询文件当前位置
-                LinkedList<FileHash_Map> list = session.getMapper(FileHashMap.class).getFilePath(hash);
-                FileHash_Map map = list.getFirst();
-                String file_path = map.getPath();
-                int id = map.getUSER_ID();
-                String hashFile_path = duplicateFileWare;
-                //更新hash表路径
-                session.getMapper(FileHashMap.class).updatePath(hash,hashFile_path);
-                //复制
-                copy(new FileInputStream(file_path),new FileOutputStream(hashFile_path));
-                new File(file_path).delete();
-                //源文件映射建立
-                FileServiceImpl original = getInstanceByPath(file_path,id);//操作对象
-                session.getMapper(FileMap.class).buildFileMap(original.getDestination(),original.getFile_name(),hash,original.getUser().getUSER_ID());
+        try {
+            if (checkDuplicate(hash)) {
+                //看看有没有创建映射,
+                if (session.getMapper(FileMap.class).invokeOnExit(hash).isEmpty()) {
+                    //查询文件当前位置
+                    FileHash_Map map = session.getMapper(FileHashMap.class).getFilePath(hash);
+                    String file_path = map.getPath();
+                    int id = map.getUSER_ID();
+                    String hashFile_path = duplicateFileWare + hash;
+                    //复制
+                    copy(new FileInputStream(file_path),new FileOutputStream(hashFile_path));
+
+                    //更新hash表路径
+                    session.getMapper(FileHashMap.class).updatePath(hash,hashFile_path);
+
+                    new File(file_path).delete();
+                    //源文件映射建立
+                    FileServiceImpl original = getInstanceByPath(file_path,id);//操作对象
+                    session.getMapper(FileMap.class).buildFileMap(original.getDestination().substring(1),original.getFile_name(),hash,original.getUser().getUSER_ID());
+                }
+                session.getMapper(FileMap.class).buildFileMap(this.destination.substring(1),this.file.getName(),hash,this.user.getUSER_ID());
+                session.commit();
+            }else {
+                session.getMapper(FileHashMap.class).addHashMap(hash,path,user.getUSER_ID());
+                outputStream = new FileOutputStream(path);
+                try {
+                    copy(inputStream,outputStream);
+                    session.commit();
+                } catch (IOException e) {
+                    //日志工厂
+                    e.printStackTrace();
+                } finally {
+                    close(outputStream);
+                }
             }
-            session.getMapper(FileMap.class).buildFileMap(this.destination,this.file.getName(),hash,this.user.getUSER_ID());
-        }else {
-            session.getMapper(FileHashMap.class).addHashMap(hash,path,user.getUSER_ID());
-            outputStream = new FileOutputStream(path);
-            try {
-                copy(inputStream,outputStream);
-            } catch (IOException e) {
-                //日志工厂
-            } finally {
-                close(inputStream);
-                close(outputStream);
-                close(session);
-            }
-            session.commit();/*提交*/
+        } finally {
+            /*提交*/
+            close(inputStream);
+            close(session);
         }
     }
 

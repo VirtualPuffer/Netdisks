@@ -7,9 +7,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.stereotype.Service;
 
-import java.io.Closeable;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.*;
 
 
@@ -84,6 +82,28 @@ public class BaseServiceImpl {
                 .parseClaimsJws(token)
                 .getBody();
         return claims;
+    }
+    public static InputStream[] copyStream(InputStream inputStream) throws FileNotFoundException {
+        ByteArrayOutputStream baos = cloneInputStream(inputStream);
+        InputStream[] ret = {new ByteArrayInputStream(baos.toByteArray())
+                ,new ByteArrayInputStream(baos.toByteArray())};
+        return ret;
+    }
+
+    private static ByteArrayOutputStream cloneInputStream(InputStream input) {
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            byte[] buffer = new byte[1024];
+            int len;
+            while ((len = input.read(buffer)) > -1) {
+                baos.write(buffer, 0, len);
+            }
+            baos.flush();
+            return baos;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
     protected  static int getMessByInt(String source){
         return Integer.parseInt(getMess(source));

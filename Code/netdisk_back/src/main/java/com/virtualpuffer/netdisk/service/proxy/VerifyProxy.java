@@ -1,4 +1,4 @@
 package com.virtualpuffer.netdisk.service.proxy;
 
-public class VerifyProxy {
+public class VerifyProxy extends ServiceProxy{
 }
