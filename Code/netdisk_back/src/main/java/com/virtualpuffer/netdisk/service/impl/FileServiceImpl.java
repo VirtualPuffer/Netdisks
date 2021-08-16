@@ -8,6 +8,7 @@ import com.virtualpuffer.netdisk.entity.FileHash_Map;
 import com.virtualpuffer.netdisk.entity.File_Map;
 import com.virtualpuffer.netdisk.entity.User;
 import com.virtualpuffer.netdisk.utils.Message;
+import com.virtualpuffer.netdisk.utils.StringUtils;
 import com.virtualpuffer.netdisk.utils.TestTime;
 import org.apache.ibatis.session.SqlSession;
 import com.virtualpuffer.netdisk.mapper.*;
@@ -136,17 +137,17 @@ public class FileServiceImpl extends FileServiceUtil implements Serializable{
     public static FileServiceImpl getInstanceByPath(String path,int userID) throws FileNotFoundException{
         SqlSession session = MybatisConnect.getSession();
         User user = session.getMapper(UserMap.class).getUserByID(userID).getFirst();
-        return new FileServiceImpl(user,path);
+        return new FileServiceImpl(user,StringUtils.filePathDeal(path));
     }
     public static FileServiceImpl getInstance(String destination,int userID) throws FileNotFoundException{
         if(destination == null){
             throw new FileNotFoundException("缺少参数:destination");
         }else if(!destination.startsWith("/")){//防止路径没/
-            destination = new StringBuffer().append("").append(destination).toString();
+            destination = new StringBuffer().append("/").append(destination).toString();
         }else if(destination.contains("..")){
             throw new RuntimeException("路径非法");
         }
-
+        destination = StringUtils.filePathDeal(destination);
         SqlSession session = MybatisConnect.getSession();
         User user = session.getMapper(UserMap.class).getUserByID(userID).getFirst();
         return new FileServiceImpl(destination,user);

@@ -1,14 +1,13 @@
 package com.virtualpuffer.netdisk.controller;
 
 
-import com.alibaba.fastjson.JSON;
 import com.virtualpuffer.netdisk.controller.base.BaseController;
 import com.virtualpuffer.netdisk.data.FileCollection;
 import com.virtualpuffer.netdisk.data.ResponseMessage;
 import com.virtualpuffer.netdisk.entity.File_Map;
 import com.virtualpuffer.netdisk.service.impl.FileServiceImpl;
 import com.virtualpuffer.netdisk.service.impl.UserServiceImpl;
-import com.virtualpuffer.netdisk.utils.RandomString;
+import com.virtualpuffer.netdisk.utils.StringUtils;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,10 +16,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URLEncoder;
 import java.nio.file.NoSuchFileException;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -55,16 +52,16 @@ public class FileController extends BaseController {
 
     @ResponseBody
     @RequestMapping(value = "/uploadFile",method = RequestMethod.POST)
-    public ResponseMessage upload(String filePath,MultipartFile file, HttpServletRequest request, HttpServletResponse response){
+    public ResponseMessage upload(String destination,MultipartFile file, HttpServletRequest request, HttpServletResponse response){
         UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
-        if(filePath == null || filePath.equals("")){
-            filePath = "";
+        if(destination == null || destination.equals("")){
+            destination = "";
         }
         if(file == null){
             return ResponseMessage.getExceptionInstance(404,"未找到上传的文件流",null);
         }
         try {
-            String path = filePath + "/" + file.getOriginalFilename();
+            String path = destination + "/" + file.getOriginalFilename();
             FileServiceImpl service = FileServiceImpl.getInstance(path, loginService.getUser().getUSER_ID());
 
             System.out.println(file.getInputStream().available());
@@ -189,7 +186,7 @@ public class FileController extends BaseController {
                 time = Integer.parseInt(second);
             }
             if (key == null && getRandom) {
-                key = RandomString.ranStr(6);//随机生成提取码
+                key = StringUtils.ranStr(6);//随机生成提取码
             }
             String url = service.getDownloadURL(time,key);
             String date = getTime(System.currentTimeMillis() + time * 1000);

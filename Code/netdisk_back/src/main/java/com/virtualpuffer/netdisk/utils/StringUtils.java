@@ -10,7 +10,7 @@ import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class RandomString {
+public class StringUtils {
     static final int A_Z_MIN = 65;
     static final int a_z_MIN = 97;
     static final int A_Z_MAX = 90;
@@ -43,6 +43,29 @@ public class RandomString {
     public static int getHash(Object obj){
         return  obj.hashCode() ^ (obj.hashCode() >>> 16);
     }
+
+    public static String filePathDeal(String s ){
+        if(s.length() <= 1){return s;}
+        return filePathDeal(new StringBuilder(),s,0);
+    }
+
+    public static String filePathDeal(StringBuilder sb,String s ,int index){
+        while(s.length() > index + 1){
+            if(s.charAt(index) == '/' && (s.charAt(index+1) == '/')){
+                index = index + 1;
+            }else if(s.charAt(index) == '/' && (s.charAt(index+1) == '.')){
+                index = index + 2;
+            }else {
+                sb.append(s.charAt(index));
+                index ++;
+            }
+        }
+        sb.append(s.charAt(index++));
+        sb.append(s.charAt(index++));
+        return sb.toString();
+    }
+
+
 
     public static int filter(boolean A,boolean a,boolean N){
 
