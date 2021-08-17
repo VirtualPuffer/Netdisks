@@ -2,6 +2,10 @@ package com.virtualpuffer.netdisk.entity;
 
 import com.virtualpuffer.netdisk.utils.StringUtils;
 
+import javax.ws.rs.core.Link;
+import java.util.Iterator;
+import java.util.LinkedList;
+
 import static com.virtualpuffer.netdisk.utils.StringUtils.filePathDeal;
 
 public class NetdiskFile {
@@ -34,9 +38,21 @@ public class NetdiskFile {
         }
     }
 
-    public void filePathHandle(String path){
+    public LinkedList filePathHandle(String path){
         String[] dir = path.split("/");
+        LinkedList<String> list = new LinkedList<>();
+        for(String file : dir){
+            if(file.equals("..")){
+                list.removeLast();
+            }else if(file.equals(".")){
+
+            }else {
+                list.add(file);
+            }
+        }
+        return list;
     }
+
     //将文件数组转换回文件路径
     public void buildPath(String[] dir){
         StringBuilder builder = new StringBuilder();
@@ -46,6 +62,39 @@ public class NetdiskFile {
                 builder.append(file);
             }
         }
+    }
+
+    public String buildPath(LinkedList list){
+        StringBuilder builder = new StringBuilder();
+        Iterator<String> iterator = list.iterator();
+        String[] ret = new String[list.size()];
+        int index = 0;
+        while (iterator.hasNext()){
+            String file = iterator.next();
+            if (file!=null && !file.equals("")) {
+                builder.append("/");
+                builder.append(file);
+            }
+        }
+        return builder.toString();
+    }
+    //将path转化为destination
+    public String destinationHandle(String defaultPath,String path){
+        StringBuilder builder = new StringBuilder();
+        LinkedList deflist = filePathHandle(defaultPath);
+        LinkedList pathlist = filePathHandle(path);
+        Iterator<String> defIterator = deflist.iterator();
+        Iterator<String> pathIterator = pathlist.iterator();
+        while (defIterator.hasNext() && pathIterator.hasNext()){
+            if(defIterator.next() != pathIterator.next()){
+                throw new RuntimeException("unMatch path " + defaultPath + "   " + path);
+            }
+        }
+        while (pathIterator.hasNext()){
+            builder.append("/");
+            builder.append(pathIterator.next());
+        }
+        return builder.toString();
     }
 
 
