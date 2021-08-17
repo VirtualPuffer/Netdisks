@@ -1,10 +1,14 @@
 package com.virtualpuffer.netdisk.service.impl;
 
+import com.virtualpuffer.netdisk.entity.File_Map;
+import com.virtualpuffer.netdisk.entity.NetdiskFile;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.security.MessageDigest;
 import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
@@ -55,9 +59,27 @@ public class FileServiceUtil extends BaseServiceImpl{
             byte[] buffer = new byte[BUFFER_SIZE];
             int length = 0;
             while ((length = inputStream.read(buffer)) != -1) {
-                System.out.println("_____________________________________>");
                 outputStream.write(buffer, 0, length);
             }
+    }
+
+    protected static ZipOutputStream cpmpresss(File sourceFile,ZipOutputStream outputStream, LinkedList<NetdiskFile> list){
+        byte[] buf = new byte[BUFFER_SIZE];
+        Iterator<NetdiskFile> iterator = list.iterator();
+        while (iterator.hasNext()){
+            try {
+                NetdiskFile file = iterator.next();
+                outputStream.putNextEntry(new ZipEntry(file.getFile_Destination()));
+                FileInputStream inputStream = new FileInputStream(file.getFile_Path());
+                int length;
+                while ((length = inputStream.read(buf)) != -1){
+                    outputStream.write(buf,0,length);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return outputStream;
     }
     /**
      * 关闭Zip流时会把输出流也同时关闭，慎用！

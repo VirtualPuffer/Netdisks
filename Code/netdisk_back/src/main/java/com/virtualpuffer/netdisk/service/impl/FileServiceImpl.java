@@ -155,10 +155,14 @@ public class FileServiceImpl extends FileServiceUtil implements Serializable{
 
     public static FileServiceImpl getInstanceByHash(String hash) throws FileNotFoundException {
         SqlSession session = null;
-        FileHash_Map map = session.getMapper(FileHashMap.class).getFileMapByHash(hash);
-        String path = map.getPath();
-        int id = map.getUSER_ID();
-        return getInstanceByPath(path,id);
+        try {
+            FileHash_Map map = session.getMapper(FileHashMap.class).getFileMapByHash(hash);
+            String path = map.getPath();
+            int id = map.getUSER_ID();
+            return getInstanceByPath(path,id);
+        } finally {
+            close(session);
+        }
     }
     /**
      * @param token 需要解析的token
@@ -171,7 +175,7 @@ public class FileServiceImpl extends FileServiceUtil implements Serializable{
             return getInstanceByHash(hash);
         } catch (RuntimeException e) {
             String path = (String) map.get("path");
-            int id = (Integer) map.get("id");
+            int id = (Integer) map.get("userID");
             return getInstanceByPath(path,id);
         }
     }
