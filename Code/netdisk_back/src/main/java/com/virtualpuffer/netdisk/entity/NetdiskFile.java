@@ -23,13 +23,28 @@ public class NetdiskFile {
     }
 
     public NetdiskFile handleInstance(String source)throws RuntimeException{
-        if(this.lock == false){
+        if(source == null || source.equals("")){return handleInstance();}
+        if(!lock){
             int length = filePathDeal(source).length();
             this.File_Destination = filePathDeal(this.File_Destination.substring(length));
             this.lock = true;
             return this;
         }else {
             throw new RuntimeException("NetdiskFile has been handle");
+        }
+    }
+
+    public void filePathHandle(String path){
+        String[] dir = path.split("/");
+    }
+    //将文件数组转换回文件路径
+    public void buildPath(String[] dir){
+        StringBuilder builder = new StringBuilder();
+        for(String file : dir){
+            if (file!=null && !file.equals("")) {
+                builder.append("/");
+                builder.append(file);
+            }
         }
     }
 

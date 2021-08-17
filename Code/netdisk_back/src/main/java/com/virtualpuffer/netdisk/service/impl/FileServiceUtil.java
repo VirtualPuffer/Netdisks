@@ -63,12 +63,12 @@ public class FileServiceUtil extends BaseServiceImpl{
             }
     }
 
-    protected static ZipOutputStream cpmpresss(File sourceFile,ZipOutputStream outputStream, LinkedList<NetdiskFile> list){
+    protected static ZipOutputStream compress(File sourceFile,ZipOutputStream outputStream, LinkedList<NetdiskFile> list){
         byte[] buf = new byte[BUFFER_SIZE];
         Iterator<NetdiskFile> iterator = list.iterator();
         while (iterator.hasNext()){
             try {
-                NetdiskFile file = iterator.next();
+                NetdiskFile file = iterator.next().handleInstance();
                 outputStream.putNextEntry(new ZipEntry(file.getFile_Destination()));
                 FileInputStream inputStream = new FileInputStream(file.getFile_Path());
                 int length;
