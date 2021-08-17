@@ -152,16 +152,28 @@ public class FileServiceImpl extends FileServiceUtil implements Serializable{
         User user = session.getMapper(UserMap.class).getUserByID(userID).getFirst();
         return new FileServiceImpl(destination,user);
     }
+
+    public static FileServiceImpl getInstanceByHash(String hash) throws FileNotFoundException {
+        SqlSession session = null;
+        FileHash_Map map = session.getMapper(FileHashMap.class).getFileMapByHash(hash);
+        String path = map.getPath();
+        int id = map.getUSER_ID();
+        return getInstanceByPath(path,id);
+    }
     /**
      * @param token 需要解析的token
      * 解析token里的FileService对象
     * */
     public static FileServiceImpl getInstanceByToken(String token) throws FileNotFoundException {
         Map map = parseJWT(token);
-        int id = (Integer) map.get("userID");
-        String path = (String) map.get("path");
-        return getInstanceByPath(path,id);
-
+        try {
+            String hash = (String) map.get("hash");
+            return getInstanceByHash(hash);
+        } catch (RuntimeException e) {
+            String path = (String) map.get("path");
+            int id = (Integer) map.get("id");
+            return getInstanceByPath(path,id);
+        }
     }
     /**
     * 物理路径计算
@@ -173,8 +185,9 @@ public class FileServiceImpl extends FileServiceUtil implements Serializable{
     /**
      * 下载链接获取
     * */
-    public String getDownloadURL(long time,@Nullable String key){
+    public String getDownloadURL(long time,@Nullable String key) throws Exception {
         Map<String,Object> map = new HashMap();
+        map.put("hash",getSH256(this.file));
         map.put("path",this.path);
         map.put("userID",this.user.getUSER_ID());
         return  downloadAPI + createToken(time,map,user.getUsername(),key);

@@ -61,7 +61,7 @@ public class StringUtils {
             }
         }
         sb.append(s.charAt(index++));
-        sb.append(s.charAt(index++));
+      /*  sb.append(s.charAt(index++));*/
         return sb.toString();
     }
 
