@@ -63,6 +63,10 @@ public class FileServiceUtil extends BaseServiceImpl{
             }
     }
 
+    /**
+     * 获取映射文件并放入压缩集合中
+     *
+     * */
     protected static ZipOutputStream compress(File sourceFile,ZipOutputStream outputStream, LinkedList<NetdiskFile> list){
         byte[] buf = new byte[BUFFER_SIZE];
         Iterator<NetdiskFile> iterator = list.iterator();

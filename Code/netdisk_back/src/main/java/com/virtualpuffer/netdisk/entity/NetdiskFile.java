@@ -1,20 +1,32 @@
 package com.virtualpuffer.netdisk.entity;
 
+import com.virtualpuffer.netdisk.utils.Message;
 import com.virtualpuffer.netdisk.utils.StringUtils;
 
 import javax.ws.rs.core.Link;
+import java.io.File;
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.LinkedList;
 
 import static com.virtualpuffer.netdisk.utils.StringUtils.filePathDeal;
 
-public class NetdiskFile {
+
+/**
+ * 文件对象
+ * 通过path映射或者destination反向映射
+ *
+ * */
+public class NetdiskFile implements Serializable {
     private String File_Name;
-    private String File_Path;
-    private String File_Destination;
-    private String File_Hash;
+    private String File_Path;//真实路径
+    private String File_Destination;//映射路径（客户真实看到的）
+    private String File_Hash;//计算SHA256
     private int userID;//拥有者ID
     private boolean lock = false;
+    public static final String downloadAPI = Message.getMess("downloadAPI");//下载链接前缀
+    public static final String defaultWare = Message.getMess("defaultWare");
+    public static final String duplicateFileWare = Message.getMess("duplicateFileWare");
 
     public NetdiskFile handleInstance()throws RuntimeException{
         if(this.lock == false){

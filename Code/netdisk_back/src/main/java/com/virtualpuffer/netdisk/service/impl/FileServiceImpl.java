@@ -6,6 +6,7 @@ import com.virtualpuffer.netdisk.MybatisConnect;
 import com.virtualpuffer.netdisk.data.FileCollection;
 import com.virtualpuffer.netdisk.entity.FileHash_Map;
 import com.virtualpuffer.netdisk.entity.File_Map;
+import com.virtualpuffer.netdisk.entity.NetdiskFile;
 import com.virtualpuffer.netdisk.entity.User;
 import com.virtualpuffer.netdisk.utils.Message;
 import com.virtualpuffer.netdisk.utils.StringUtils;
@@ -39,13 +40,14 @@ import java.util.zip.ZipOutputStream;
  * @para destination    文件的相对路径
 * */
 @Service
-public class FileServiceImpl extends FileServiceUtil implements Serializable{
+public class FileServiceImpl extends FileServiceUtil{
     private User user;
     private File file;
     private String file_type;
     private String file_name;
     private String path;//绝对路径
     private String destination;//相对路径
+    private NetdiskFile netdiskFile;
     private int file_length;
     private boolean isMapper = false;
     private static final int BUFFER_SIZE = 4 * 1024;
