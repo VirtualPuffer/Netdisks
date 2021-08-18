@@ -43,10 +43,6 @@ import java.util.zip.ZipOutputStream;
 public class FileServiceImpl extends FileServiceUtil{
     private User user;
     private File file;
-    private String file_type1;
-    private String file_name1;
-    private String path1;//绝对路径
-    private String destination1;//相对路径
     private NetdiskFile netdiskFile;
     private int file_length;
     private boolean isMapper = false;
@@ -66,15 +62,7 @@ public class FileServiceImpl extends FileServiceUtil{
     public FileServiceImpl(String destination,User user) throws FileNotFoundException {
         this.user = user;
         this.netdiskFile = NetdiskFile.getInstance(destination,user.getUSER_ID());
-        /*SqlSession session = MybatisConnect.getSession();
-        File_Map get = session.getMapper(FileMap.class).getFileMap(user.getUSER_ID(),destination);
-        if(get == null){
-            this.file = new File(getAbsolutePath(destination));
-        }else {
-            this.isMapper = true;
-            FileHash_Map hashMap = session.getMapper(FileHashMap.class).getFileMapByHash(get.getFile_Hash());
-            this.file = new File(netdiskFile.getFile_Path());
-        }*/
+        this.file = netdiskFile.getFile();
     }
     public FileServiceImpl(User user,String path) throws FileNotFoundException {
         this.user = user;

@@ -3,6 +3,7 @@ package com.virtualpuffer.netdisk.entity;
 import com.virtualpuffer.netdisk.MybatisConnect;
 import com.virtualpuffer.netdisk.mapper.FileHashMap;
 import com.virtualpuffer.netdisk.mapper.FileMap;
+import com.virtualpuffer.netdisk.mapper.UserMap;
 import com.virtualpuffer.netdisk.service.impl.BaseServiceImpl;
 import com.virtualpuffer.netdisk.service.impl.FileServiceUtil;
 import com.virtualpuffer.netdisk.utils.Message;
@@ -55,15 +56,25 @@ public class NetdiskFile extends BaseServiceImpl implements Serializable {
 
     public static NetdiskFile getInstance(String destination,int id) throws FileNotFoundException{
         SqlSession session = null;
+        NetdiskFile netdiskFile = null;
         try {
-            session = MybatisConnect.getSession();
-            NetdiskFile netdiskFile = session.getMapper(FileMap.class).getFileMap(id,destination);
-            String file_Destination = StringUtils.filePathDeal(destination);
+
+            try {
+                netdiskFile = checkMap(destination,id);
+            } catch (FileNotFoundException e) {
+                netdiskFile = new NetdiskFile();
+                User user = session.getMapper(UserMap.class).getUserByID(id).getFirst();
+                netdiskFile.setFile_Path(getAbsolutePath(destination,user));
+                netdiskFile.setFile_Destination(destination);
+                netdiskFile.setUserID(id);
+            }
+
             if (netdiskFile != null) {
                 return netdiskFile;
             }else {
                 throw new FileNotFoundException("路径构建失败");
             }
+
         } finally {
             close(session);
         }
@@ -80,6 +91,23 @@ public class NetdiskFile extends BaseServiceImpl implements Serializable {
             }
         } finally {
             close(session);
+        }
+    }
+
+    public static NetdiskFile checkMap(String destination,int id) throws FileNotFoundException{
+        SqlSession session = null;
+        NetdiskFile netdiskFile = null;
+        String file_Destination = StringUtils.filePathDeal(destination);
+        try {
+            session = MybatisConnect.getSession();
+            netdiskFile = session.getMapper(FileMap.class).getFileMap(id,destination);
+            if(netdiskFile == null){
+                throw new FileNotFoundException();
+            }else {
+                return netdiskFile;
+            }
+        } finally {
+            session.close();
         }
     }
 
@@ -164,8 +192,20 @@ public class NetdiskFile extends BaseServiceImpl implements Serializable {
         return builder.toString();
     }
 
+    public static String getAbsolutePath(String destination,User user){
+        return defaultWare + user.getURL() + destination;
+    }
+
 
     public NetdiskFile(){}
+
+    public File getFile() {
+        return file;
+    }
+
+    public void setFile(File file) {
+        this.file = file;
+    }
 
     public String getFile_Name() {
         return File_Name;
