@@ -3,6 +3,7 @@ package com.virtualpuffer.netdisk.mapper;
 
 
 import com.virtualpuffer.netdisk.entity.File_Map;
+import com.virtualpuffer.netdisk.entity.NetdiskFile;
 
 import java.util.LinkedList;
 
@@ -38,7 +39,7 @@ public interface FileMap {
      * */
     int insertMap(int userID,String fileHash,String fileName);
 
-    File_Map getFileMap(int userID,String destination);
+    NetdiskFile getFileMap(int userID, String destination);
 
     File_Map getFileMapByPath(String path,int userID);
 

@@ -1,10 +1,18 @@
 package com.virtualpuffer.netdisk.entity;
 
+import com.virtualpuffer.netdisk.MybatisConnect;
+import com.virtualpuffer.netdisk.mapper.FileHashMap;
+import com.virtualpuffer.netdisk.mapper.FileMap;
+import com.virtualpuffer.netdisk.service.impl.BaseServiceImpl;
+import com.virtualpuffer.netdisk.service.impl.FileServiceUtil;
 import com.virtualpuffer.netdisk.utils.Message;
 import com.virtualpuffer.netdisk.utils.StringUtils;
+import org.apache.ibatis.session.SqlSession;
 
 import javax.ws.rs.core.Link;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -17,16 +25,63 @@ import static com.virtualpuffer.netdisk.utils.StringUtils.filePathDeal;
  * 通过path映射或者destination反向映射
  *
  * */
-public class NetdiskFile implements Serializable {
+public class NetdiskFile extends BaseServiceImpl implements Serializable {
     private String File_Name;
     private String File_Path;//真实路径
     private String File_Destination;//映射路径（客户真实看到的）
     private String File_Hash;//计算SHA256
     private int userID;//拥有者ID
+    private File file;
     private boolean lock = false;
     public static final String downloadAPI = Message.getMess("downloadAPI");//下载链接前缀
     public static final String defaultWare = Message.getMess("defaultWare");
     public static final String duplicateFileWare = Message.getMess("duplicateFileWare");
+
+    /**
+     * 构造方法有两种：
+     * 1.在sql中查询
+     * 2.物理路径构造
+    * */
+    public NetdiskFile(String path){
+        String file_Path = StringUtils.filePathDeal(path);
+        this.file = new File(file_Path);
+        try {
+            this.File_Path = this.file.getCanonicalPath();
+        } catch (IOException e) {
+            this.File_Path = this.file.getAbsolutePath();
+        }
+    }
+
+
+    public static NetdiskFile getInstance(String destination,int id) throws FileNotFoundException{
+        SqlSession session = null;
+        try {
+            session = MybatisConnect.getSession();
+            NetdiskFile netdiskFile = session.getMapper(FileMap.class).getFileMap(id,destination);
+            String file_Destination = StringUtils.filePathDeal(destination);
+            if (netdiskFile != null) {
+                return netdiskFile;
+            }else {
+                throw new FileNotFoundException("路径构建失败");
+            }
+        } finally {
+            close(session);
+        }
+    }
+    public static NetdiskFile getInstance(String hash) throws FileNotFoundException{
+        SqlSession session = null;
+        try {
+            session = MybatisConnect.getSession();
+            NetdiskFile netdiskFile = session.getMapper(FileHashMap.class).getFileMapByHash(hash);
+            if (netdiskFile != null) {
+                return netdiskFile;
+            }else {
+                throw new FileNotFoundException("路径构建失败");
+            }
+        } finally {
+            close(session);
+        }
+    }
 
     public NetdiskFile handleInstance()throws RuntimeException{
         if(this.lock == false){
@@ -136,7 +191,10 @@ public class NetdiskFile implements Serializable {
         File_Destination = file_Destination;
     }
 
-    public String getFile_Hash() {
+    public String getFile_Hash() throws Exception {
+        if(this.File_Hash == null || this.File_Hash.equals("")){
+            this.File_Hash = FileServiceUtil.getSH256(this.file);
+        }
         return File_Hash;
     }
 

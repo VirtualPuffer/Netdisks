@@ -65,7 +65,8 @@ public class FileServiceImpl extends FileServiceUtil{
 
     public FileServiceImpl(String destination,User user) throws FileNotFoundException {
         this.user = user;
-        SqlSession session = MybatisConnect.getSession();
+        this.netdiskFile = NetdiskFile.getInstance(destination,user.getUSER_ID());
+        /*SqlSession session = MybatisConnect.getSession();
         File_Map get = session.getMapper(FileMap.class).getFileMap(user.getUSER_ID(),destination);
         if(get == null){
             this.file = new File(getAbsolutePath(destination));
@@ -73,7 +74,7 @@ public class FileServiceImpl extends FileServiceUtil{
             this.isMapper = true;
             FileHash_Map hashMap = session.getMapper(FileHashMap.class).getFileMapByHash(get.getFile_Hash());
             this.file = new File(netdiskFile.getFile_Path());
-        }
+        }*/
     }
     public FileServiceImpl(User user,String path) throws FileNotFoundException {
         this.user = user;

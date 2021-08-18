@@ -25,7 +25,7 @@ public class FileServiceUtil extends BaseServiceImpl{
      * @param file  待计算文件
      * @param1 type  加密类型
      */
-    protected static String getSH256(File file)throws Exception{
+    public static String getSH256(File file)throws Exception{
         return getHash(file,"SHA-256");
     }
     protected static String getSH256(InputStream inputStream)throws Exception{
