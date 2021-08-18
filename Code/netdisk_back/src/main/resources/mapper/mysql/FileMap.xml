@@ -12,6 +12,7 @@
     <select id="invokeOnExit" resultType="com.virtualpuffer.netdisk.mapper.FileMap">
         select * from File_Map where File_Hash = #{hash};
     </select>
+
     <insert id="buildFileMap">
         insert into File_Map (USER_ID,File_Name,File_Destination,File_Hash) values (#{userID},#{fileName},#{destination},#{hash});
     </insert>

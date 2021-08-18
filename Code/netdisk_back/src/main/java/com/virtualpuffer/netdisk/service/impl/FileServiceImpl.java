@@ -43,10 +43,10 @@ import java.util.zip.ZipOutputStream;
 public class FileServiceImpl extends FileServiceUtil{
     private User user;
     private File file;
-    private String file_type;
-    private String file_name;
-    private String path;//绝对路径
-    private String destination;//相对路径
+    private String file_type1;
+    private String file_name1;
+    private String path1;//绝对路径
+    private String destination1;//相对路径
     private NetdiskFile netdiskFile;
     private int file_length;
     private boolean isMapper = false;
@@ -65,42 +65,18 @@ public class FileServiceImpl extends FileServiceUtil{
 
     public FileServiceImpl(String destination,User user) throws FileNotFoundException {
         this.user = user;
-        this.destination = destination;
         SqlSession session = MybatisConnect.getSession();
         File_Map get = session.getMapper(FileMap.class).getFileMap(user.getUSER_ID(),destination);
         if(get == null){
             this.file = new File(getAbsolutePath(destination));
-            try {
-                this.path = file.getCanonicalPath();
-            } catch (IOException e) {
-                this.path = file.getAbsolutePath();
-            }
         }else {
             this.isMapper = true;
             FileHash_Map hashMap = session.getMapper(FileHashMap.class).getFileMapByHash(get.getFile_Hash());
-            this.destination = get.getFile_Destination();
-            this.path = hashMap.getPath();
-            this.file = new File(this.path);
-            //File拿真实路径回来
-        }
-
-        this.file_name = file.getName();
-        //长度判断，过短说明跳到上级路径
-        if(this.path.length() < defaultWare.length() && this.path.length() < duplicateFileWare.length()){
-            throw new SecurityException();
-        }
-
-        try {
-            if (file.isFile()) {
-                this.file_type = this.file_name.substring(this.file_name.lastIndexOf(".") + 1);
-            }
-        } catch (IndexOutOfBoundsException e) {
-            e.printStackTrace();
+            this.file = new File(netdiskFile.getFile_Path());
         }
     }
     public FileServiceImpl(User user,String path) throws FileNotFoundException {
         this.user = user;
-        this.path = path;
 
         SqlSession session = MybatisConnect.getSession();
         FileHash_Map hashmap = session.getMapper(FileHashMap.class).getFileMapByPath(path);
@@ -111,28 +87,13 @@ public class FileServiceImpl extends FileServiceUtil{
             try {
                 String tem = this.file.getCanonicalPath().substring(defaultWare.length());
                 System.out.println(tem + "_____________________________>");
-                this.destination = tem.substring(tem.indexOf("/"));
-                System.out.println(destination);
             } catch (IOException e) {
 
             }
         }else {
             this.isMapper = true;
-            this.destination = map.getFile_Destination();
-            this.path = hashmap.getPath();
-            this.file = new File(this.path);
+            this.file = new File(netdiskFile.getFile_Path());
             //File拿真实路径回来
-        }
-
-        this.file_name = file.getName();
-        //长度判断，过短说明跳到上级路径
-        if(this.path.length() < defaultWare.length() && this.path.length() < duplicateFileWare.length()){
-            throw new SecurityException();
-        }
-
-        try {
-            this.file_type = this.file_name.substring(this.file_name.lastIndexOf("."));
-        } catch (IndexOutOfBoundsException e) {
         }
     }
 
@@ -194,7 +155,7 @@ public class FileServiceImpl extends FileServiceUtil{
     public String getDownloadURL(long time,@Nullable String key) throws Exception {
         Map<String,Object> map = new HashMap();
         map.put("hash",getSH256(this.file));
-        map.put("path",this.path);
+        map.put("path",netdiskFile.getFile_Path());
         map.put("userID",this.user.getUSER_ID());
         return  downloadAPI + createToken(time,map,user.getUsername(),key);
     }
@@ -211,14 +172,14 @@ public class FileServiceImpl extends FileServiceUtil{
         SqlSession session = MybatisConnect.getSession();
         ArrayList<String> dirList = new ArrayList();
 
-        LinkedList<File_Map> list = session.getMapper(FileMap.class).getDirectoryMap(destination.substring(1),user.getUSER_ID());
+        LinkedList<File_Map> list = session.getMapper(FileMap.class).getDirectoryMap(netdiskFile.getFile_Destination().substring(1),user.getUSER_ID());
 
         ret.put("file",filelist);
         ret.put("dir",dirList);
 
         if(!list.isEmpty()){
             for(File_Map fileMap : list){
-                if(!fileMap.getFile_Destination().substring(this.destination.length()).contains("/")){
+                if(!fileMap.getFile_Destination().substring(netdiskFile.getFile_Destination().length()).contains("/")){
                     filelist.add(fileMap.getFile_Destination());
                 }
             }
@@ -267,7 +228,7 @@ public class FileServiceImpl extends FileServiceUtil{
         try {
         if(this.file.isDirectory()){
             zipOutputStream = new ZipOutputStream(outputStream);
-            compress(this.file,zipOutputStream,this.getFile_name());
+            compress(this.file,zipOutputStream,netdiskFile.getFile_Name());
             zipOutputStream.finish();
             return count();
         }else {
@@ -324,8 +285,8 @@ public class FileServiceImpl extends FileServiceUtil{
                 session.getMapper(FileMap.class).buildFileMap(this.destination.substring(1),this.file.getName(),hash,this.user.getUSER_ID());
                 session.commit();
             }else {
-                session.getMapper(FileHashMap.class).addHashMap(hash,path,user.getUSER_ID());
-                outputStream = new FileOutputStream(path);
+                session.getMapper(FileHashMap.class).addHashMap(hash,netdiskFile.getFile_Path(),user.getUSER_ID());
+                outputStream = new FileOutputStream(netdiskFile.getFile_Path());
                 try {
                     copy(inputStream,outputStream);
                     session.commit();
@@ -358,7 +319,7 @@ public class FileServiceImpl extends FileServiceUtil{
             session = MybatisConnect.getSession();
             FileMap fileMap = session.getMapper(FileMap.class);
 
-            int count = fileMap.deleteFileMap(destination,user.getUSER_ID());
+            int count = fileMap.deleteFileMap(netdiskFile.getFile_Destination(),user.getUSER_ID());
             /*     count += fileMap.deleteDirectoryMap(destination + "/",user.getUSER_ID());*/
             if(count > 0){
                 session.commit();
@@ -390,7 +351,7 @@ public class FileServiceImpl extends FileServiceUtil{
 
     public long count() throws RuntimeException {
         ZipOutputStream zos = null;
-        String fileName = this.file_name;
+        String fileName = this.netdiskFile.getFile_Name();
         String path = getMess("compressTemp") + fileName.hashCode();
         File temp = null;
         try {
@@ -403,7 +364,7 @@ public class FileServiceImpl extends FileServiceUtil{
             try {
                 OutputStream out = new FileOutputStream(path);
                 zos = new ZipOutputStream(out);
-                compress(this.file, zos, this.getFile_name());
+                compress(this.file, zos, fileName);
             } catch (Exception e) {
                 throw new RuntimeException("zip error from ZipUtils", e);
             } finally {
@@ -424,7 +385,7 @@ public class FileServiceImpl extends FileServiceUtil{
             FileCollection collection = FileCollection.getInstance(this.file,name,getAbsolutePath("/"),type);
             LinkedList fileList = collection.getFile();
             LinkedList dirList = collection.getDir();
-            LinkedList<File_Map> list = session.getMapper(FileMap.class).getDirectoryMap(destination,user.getUSER_ID());
+            LinkedList<File_Map> list = session.getMapper(FileMap.class).getDirectoryMap(netdiskFile.getFile_Destination(),user.getUSER_ID());
             if(!list.isEmpty()){
                 for(File_Map fileMap : list){
                     try {
@@ -455,12 +416,11 @@ public class FileServiceImpl extends FileServiceUtil{
         }
     }
     public void deCompress()throws Exception{
-        System.out.println(path);
-        deCompress(this.file,path.substring(0,path.lastIndexOf("/")));
+        deCompress(this.file,netdiskFile.getFile_Path().substring(0,netdiskFile.getFile_Path().lastIndexOf("/")));
     }
     public void compression() throws Exception {
-        String path = this.path.substring(0,this.path.lastIndexOf("/"));
-        compress(this.file,new ZipOutputStream(new FileOutputStream(path)),this.file_name);
+        String path = netdiskFile.getFile_Path().substring(0,netdiskFile.getFile_Path().lastIndexOf("/"));
+        compress(this.file,new ZipOutputStream(new FileOutputStream(path)),netdiskFile.getFile_Name());
     }
 
 
@@ -468,31 +428,17 @@ public class FileServiceImpl extends FileServiceUtil{
         return user;
     }
 
-    public File getFile() {
-        return file;
-    }
-
-    public String getPath() {
-        return path;
-    }
-
-    public String getDestination() {
-        return destination;
-    }
-
-    public String getFile_name() {
-        return file_name;
-    }
-
     @Override
     public String toString() {
         return "FileServiceImpl{" +
                 "user=" + user +
                 ", file=" + file +
-                ", file_type='" + file_type + '\'' +
-                ", file_name='" + file_name + '\'' +
-                ", path='" + path + '\'' +
-                ", destination='" + destination + '\'' +
+                ", file_type1='" + file_type1 + '\'' +
+                ", file_name1='" + file_name1 + '\'' +
+                ", path1='" + path1 + '\'' +
+                ", destination1='" + destination1 + '\'' +
+                ", netdiskFile=" + netdiskFile +
+                ", file_length=" + file_length +
                 ", isMapper=" + isMapper +
                 '}';
     }
