@@ -54,71 +54,53 @@ public class FileServiceImpl extends FileServiceUtil{
 
     /**
     * 构造服务对象
-     * @param destination 相对文件路径
+     * @param netdiskFile 目标文件对象
      * @param user 用户对象
      * 没有处理404情况，controller级别再获取
     * */
-
-    public FileServiceImpl(String destination,User user) throws FileNotFoundException {
+    public FileServiceImpl(NetdiskFile netdiskFile,User user) throws FileNotFoundException {
         this.user = user;
-        this.netdiskFile = NetdiskFile.getInstance(destination,user.getUSER_ID());
+        this.netdiskFile = netdiskFile;
         this.file = netdiskFile.getFile();
-    }
-    public FileServiceImpl(User user,String path) throws FileNotFoundException {
-        this.user = user;
-
-        SqlSession session = MybatisConnect.getSession();
-        FileHash_Map hashmap = session.getMapper(FileHashMap.class).getFileMapByPath(path);
-        File_Map map = session.getMapper(FileMap.class).getFileMapByPath(path,user.getUSER_ID());
-
-        if(map == null){
-            this.file = new File(path);
-            try {
-                String tem = this.file.getCanonicalPath().substring(defaultWare.length());
-                System.out.println(tem + "_____________________________>");
-            } catch (IOException e) {
-
-            }
-        }else {
-            this.isMapper = true;
-            this.file = new File(netdiskFile.getFile_Path());
-            //File拿真实路径回来
-        }
     }
 
     public static FileServiceImpl getInstanceByPath(String path,int userID) throws FileNotFoundException{
         SqlSession session = MybatisConnect.getSession();
-        User user = session.getMapper(UserMap.class).getUserByID(userID).getFirst();
-        return new FileServiceImpl(user,StringUtils.filePathDeal(path));
+        User user = session.getMapper(UserMap.class).getUserByID(userID);
+        NetdiskFile netdiskFile = new NetdiskFile(path);
+        return new FileServiceImpl(netdiskFile,user);
     }
     public static FileServiceImpl getInstance(String destination,int userID) throws FileNotFoundException{
-        if(destination == null){
-            throw new FileNotFoundException("缺少参数:destination");
-        }else if(!destination.startsWith("/")){//防止路径没/
-            destination = new StringBuffer().append("/").append(destination).toString();
-        }else if(destination.contains("..")){
-            throw new RuntimeException("路径非法");
-        }
-        destination = StringUtils.filePathDeal(destination);
-        SqlSession session = MybatisConnect.getSession();
-        User user = session.getMapper(UserMap.class).getUserByID(userID).getFirst();
-        return new FileServiceImpl(destination,user);
-    }
-
-    public static FileServiceImpl getInstanceByHash(String hash) throws FileNotFoundException {
         SqlSession session = null;
         try {
-            FileHash_Map map = session.getMapper(FileHashMap.class).getFileMapByHash(hash);
-            String path = map.getPath();
-            int id = map.getUSER_ID();
-            return getInstanceByPath(path,id);
+            session = MybatisConnect.getSession();
+            if(destination == null){
+                throw new FileNotFoundException("缺少参数:destination");
+            }else if(!destination.startsWith("/")){//防止路径没/
+                destination = new StringBuffer().append("/").append(destination).toString();
+            }else if(destination.contains("..")){
+                throw new RuntimeException("路径非法");
+            }
+            destination = StringUtils.filePathDeal(destination);
+            User user = session.getMapper(UserMap.class).getUserByID(userID);
+            NetdiskFile netdiskFile = NetdiskFile.getInstance(destination,userID);
+            return new FileServiceImpl(netdiskFile,user);
         } finally {
             close(session);
         }
     }
+
+    public static FileServiceImpl getInstanceByHash(String hash) throws FileNotFoundException {
+            FileServiceImpl impl = new FileServiceImpl();
+            impl.setNetdiskFile(NetdiskFile.getInstance(hash));
+            return impl;
+    }
     /**
      * @param token 需要解析的token
      * 解析token里的FileService对象
+     *
+     * 没办法确定是hash还是path(不知道是不是文件)
+     * 文件夹没办法给hash，只能给路径，被删了就没办法了
     * */
     public static FileServiceImpl getInstanceByToken(String token) throws FileNotFoundException {
         Map map = parseJWT(token);
@@ -140,11 +122,16 @@ public class FileServiceImpl extends FileServiceUtil{
     }
     /**
      * 下载链接获取
+     * 是文件时给hash(防止文件位置变动)
+     * 文件夹时给path(没办法了，不然得做数据库维护映射，太难了)
     * */
     public String getDownloadURL(long time,@Nullable String key) throws Exception {
         Map<String,Object> map = new HashMap();
-        map.put("hash",getSH256(this.file));
-        map.put("path",netdiskFile.getFile_Path());
+        if (this.file.isFile()) {
+            map.put("hash",getSH256(this.file));
+        }else {
+            map.put("path",netdiskFile.getFile_Path());
+        }
         map.put("userID",this.user.getUSER_ID());
         return  downloadAPI + createToken(time,map,user.getUsername(),key);
     }
@@ -173,6 +160,9 @@ public class FileServiceImpl extends FileServiceUtil{
                 }
             }
         }
+        System.out.println(file);
+        System.out.println(dirList);
+        System.out.println("__________________________________________>");
         if(!file.isDirectory()&&dirList.isEmpty()){
             throw new NoSuchFileException("不是文件夹");
         }
@@ -269,9 +259,10 @@ public class FileServiceImpl extends FileServiceUtil{
                     new File(file_path).delete();
                     //源文件映射建立
                     FileServiceImpl original = getInstanceByPath(file_path,id);//操作对象
-                    session.getMapper(FileMap.class).buildFileMap(original.getDestination().substring(1),original.getFile_name(),hash,original.getUser().getUSER_ID());
+                    NetdiskFile file = original.getNetdiskFile();
+                    session.getMapper(FileMap.class).buildFileMap(file.getFile_Destination().substring(1),file.getFile_Name(),hash,original.getUser().getUSER_ID());
                 }
-                session.getMapper(FileMap.class).buildFileMap(this.destination.substring(1),this.file.getName(),hash,this.user.getUSER_ID());
+                session.getMapper(FileMap.class).buildFileMap(this.netdiskFile.getFile_Destination().substring(1),this.file.getName(),hash,this.user.getUSER_ID());
                 session.commit();
             }else {
                 session.getMapper(FileHashMap.class).addHashMap(hash,netdiskFile.getFile_Path(),user.getUSER_ID());
@@ -412,6 +403,13 @@ public class FileServiceImpl extends FileServiceUtil{
         compress(this.file,new ZipOutputStream(new FileOutputStream(path)),netdiskFile.getFile_Name());
     }
 
+    public NetdiskFile getNetdiskFile() {
+        return netdiskFile;
+    }
+
+    public void setNetdiskFile(NetdiskFile netdiskFile) {
+        this.netdiskFile = netdiskFile;
+    }
 
     public User getUser() {
         return user;
@@ -422,10 +420,6 @@ public class FileServiceImpl extends FileServiceUtil{
         return "FileServiceImpl{" +
                 "user=" + user +
                 ", file=" + file +
-                ", file_type1='" + file_type1 + '\'' +
-                ", file_name1='" + file_name1 + '\'' +
-                ", path1='" + path1 + '\'' +
-                ", destination1='" + destination1 + '\'' +
                 ", netdiskFile=" + netdiskFile +
                 ", file_length=" + file_length +
                 ", isMapper=" + isMapper +

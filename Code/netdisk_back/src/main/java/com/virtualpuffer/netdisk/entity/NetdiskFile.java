@@ -53,26 +53,40 @@ public class NetdiskFile extends BaseServiceImpl implements Serializable {
         }
     }
 
+    public NetdiskFile(String path,String destination){
+        String file_Path = StringUtils.filePathDeal(path);
+        this.File_Destination = destination;
+        this.file = new File(file_Path);
+        try {
+            this.File_Path = this.file.getCanonicalPath();
+        } catch (IOException e) {
+            this.File_Path = this.file.getAbsolutePath();
+        }
+    }
+
+
 
     public static NetdiskFile getInstance(String destination,int id) throws FileNotFoundException{
         SqlSession session = null;
         NetdiskFile netdiskFile = null;
         try {
-
             try {
                 netdiskFile = checkMap(destination,id);
             } catch (FileNotFoundException e) {
-                netdiskFile = new NetdiskFile();
-                User user = session.getMapper(UserMap.class).getUserByID(id).getFirst();
-                netdiskFile.setFile_Path(getAbsolutePath(destination,user));
-                netdiskFile.setFile_Destination(destination);
-                netdiskFile.setUserID(id);
+                session = MybatisConnect.getSession();
+                netdiskFile = session.getMapper(FileMap.class).getFileMap(id,destination);
             }
-
             if (netdiskFile != null) {
                 return netdiskFile;
-            }else {
-                throw new FileNotFoundException("路径构建失败");
+            }else{
+                User user = session.getMapper(UserMap.class).getUserByID(id);
+                String path = filePathDeal(getAbsolutePath(destination,user));
+                netdiskFile = new NetdiskFile(path,destination);
+                if (netdiskFile != null) {
+                    return netdiskFile;
+                }else {
+                    throw new FileNotFoundException("路径构建失败2");
+                }
             }
 
         } finally {
@@ -87,7 +101,7 @@ public class NetdiskFile extends BaseServiceImpl implements Serializable {
             if (netdiskFile != null) {
                 return netdiskFile;
             }else {
-                throw new FileNotFoundException("路径构建失败");
+                throw new FileNotFoundException("路径构建失败1");
             }
         } finally {
             close(session);
@@ -114,6 +128,7 @@ public class NetdiskFile extends BaseServiceImpl implements Serializable {
     public NetdiskFile handleInstance()throws RuntimeException{
         if(this.lock == false){
             this.File_Destination = filePathDeal(this.File_Destination);
+            this.File_Path = filePathDeal(this.File_Path);
             this.lock = true;
             return this;
         }else {

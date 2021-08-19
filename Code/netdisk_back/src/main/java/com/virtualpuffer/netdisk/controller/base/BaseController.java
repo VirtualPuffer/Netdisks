@@ -126,7 +126,7 @@ public class BaseController extends BaseLogger {
         }
     }
 
-    protected void sendFileStream(User user,String destination,OutputStream outputStream) throws Exception {
+/*    protected void sendFileStream(User user,String destination,OutputStream outputStream) throws Exception {
         FileServiceImpl fileService = null;
         try {
             fileService = new FileServiceImpl(destination,user);
@@ -138,7 +138,7 @@ public class BaseController extends BaseLogger {
         this.response.setContentLength(length);
         this.response.addHeader("Content-Disposition", "attachment; filename=" + URLEncoder.encode(fileService.getFile_name(), "UTF-8"));
 
-    }
+    }*/
 
     protected void sendFileStream(File file) throws IOException {
         InputStream inputStream = new FileInputStream(file);

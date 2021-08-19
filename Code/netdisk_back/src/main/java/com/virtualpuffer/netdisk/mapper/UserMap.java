@@ -21,7 +21,7 @@ public interface UserMap {
     LinkedList freeLogVerify(String verCode,String ip);
     LinkedList userLoginVerify(String username,String password);
     LinkedList getMessage(String verCode);
-    LinkedList<User> getUserByID(int userID);
+    User getUserByID(int userID);
 
     /*注册逻辑线*/
     User duplicationUsername(String username);

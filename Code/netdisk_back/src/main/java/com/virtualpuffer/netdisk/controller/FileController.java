@@ -37,7 +37,7 @@ public class FileController extends BaseController {
         try {
             FileServiceImpl service = FileServiceImpl.getInstance(destination, loginService.getUser().getUSER_ID());
             int length = (int)service.downloadFile(response.getOutputStream());
-            response.addHeader("Content-Disposition", "attachment; filename=" + URLEncoder.encode(service.getFile_name(), "UTF-8"));
+            response.addHeader("Content-Disposition", "attachment; filename=" + URLEncoder.encode(service.getNetdiskFile().getFile_Name(), "UTF-8"));
             response.setContentLength(length);
             return ResponseMessage.getSuccessInstance(200,"传输成功",null);
         } catch (FileNotFoundException e) {
@@ -125,10 +125,12 @@ public class FileController extends BaseController {
             Map map = service.getDirectory();
             return ResponseMessage.getSuccessInstance(200,"路径获取成功",map);
         } catch (FileNotFoundException e) {
-            return ResponseMessage.getExceptionInstance(404,"文件不存在",null);
+            e.printStackTrace();
+            return ResponseMessage.getExceptionInstance(404,"文件不存在" + e.getMessage(),null);
         }  catch (NoSuchFileException e){
-            return ResponseMessage.getExceptionInstance(300,"目标不是文件夹",null);
+            return ResponseMessage.getExceptionInstance(300,"目标不是文件夹" + e.getMessage(),null);
         } catch (RuntimeException e){
+            e.printStackTrace();
             return ResponseMessage.getExceptionInstance(300,e.getMessage(),null);
         }  catch (Exception e){
             return ResponseMessage.getErrorInstance(500,"系统错误",null);

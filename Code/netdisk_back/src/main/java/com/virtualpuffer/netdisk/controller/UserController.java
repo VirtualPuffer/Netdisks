@@ -15,7 +15,6 @@ import java.util.HashMap;
 @RequestMapping(value = "/user")
 public class UserController extends BaseController {
     private User user;
-    private SqlSession session;
 
     @ResponseBody
     @RequestMapping(value = "/login",method = RequestMethod.POST)

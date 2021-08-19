@@ -30,11 +30,11 @@
         select File_Destination from File_Map where File_Destination like #{destination}"%" and USER_ID = #{userID};
     </select>
 
-    <select id="getFileMap" resultType="com.virtualpuffer.netdisk.entity.File_Map">
+    <select id="getFileMap" resultType="com.virtualpuffer.netdisk.entity.NetdiskFile">
         select File_Map.File_Hash,File_Map.File_Destination,
-               File_Map.File_Name,File_Map.USER_ID,FileHash_Map.File_Path
+               File_Map.File_Name,FileHash_Map.USER_ID,FileHash_Map.File_Path
         from File_Map,FileHash_Map
-        where USER_ID = #{userID} and File_Destination = #{destination}
+        where FileHash_Map.USER_ID = #{userID} and File_Map.File_Destination = #{destination}
                                 and FileHash_Map.File_Hash = File_Map.File_Hash;
     </select>
 
@@ -45,7 +45,6 @@
         and File_Map.File_Hash = FileHash_Map.File_Hash
         and FileHash_Map.File_Path = #{path};
     </select>
-
 
 
 

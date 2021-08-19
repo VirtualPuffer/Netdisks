@@ -20,12 +20,12 @@ import java.net.URLEncoder;
 public class StraightDownloadController extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/download/{token}")
-    public ResponseMessage test(@PathVariable String token,String key, HttpServletResponse response)throws IOException{
+    public ResponseMessage test(@PathVariable String token,String key, HttpServletResponse response){
         InputStream inputStream = null;
         try {
             FileServiceImpl fileService = FileServiceImpl.getInstanceByToken(token);
             response.setContentType("application/force-download");
-            response.addHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileService.getFile_name(), "UTF-8"));
+            response.addHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileService.getNetdiskFile().getFile_Name(), "UTF-8"));
             int length = (int) fileService.downloadFile(response.getOutputStream());
             response.setContentLength(length);
             return ResponseMessage.getSuccessInstance(200,"下载成功",null);
