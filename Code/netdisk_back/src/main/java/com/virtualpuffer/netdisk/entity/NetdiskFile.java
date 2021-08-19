@@ -46,6 +46,7 @@ public class NetdiskFile extends BaseServiceImpl implements Serializable {
     public NetdiskFile(String path){
         String file_Path = StringUtils.filePathDeal(path);
         this.file = new File(file_Path);
+        this.File_Name = file.getName();
         try {
             this.File_Path = this.file.getCanonicalPath();
         } catch (IOException e) {
@@ -72,33 +73,32 @@ public class NetdiskFile extends BaseServiceImpl implements Serializable {
         try {
             try {
                 netdiskFile = checkMap(destination,id);
+                netdiskFile.setFile(new File(netdiskFile.getFile_Path()));
             } catch (FileNotFoundException e) {
                 session = MybatisConnect.getSession();
-                netdiskFile = session.getMapper(FileMap.class).getFileMap(id,destination);
-            }
-            if (netdiskFile != null) {
-                return netdiskFile;
-            }else{
                 User user = session.getMapper(UserMap.class).getUserByID(id);
                 String path = filePathDeal(getAbsolutePath(destination,user));
                 netdiskFile = new NetdiskFile(path,destination);
-                if (netdiskFile != null) {
-                    return netdiskFile;
-                }else {
+            }
+            if (netdiskFile != null) {
+                return netdiskFile;
+            } else {
                     throw new FileNotFoundException("路径构建失败2");
                 }
-            }
 
         } finally {
             close(session);
         }
     }
-    public static NetdiskFile getInstance(String hash) throws FileNotFoundException{
+    public static NetdiskFile getInstance(String hash,String name) throws FileNotFoundException{
         SqlSession session = null;
+        NetdiskFile netdiskFile = null;
         try {
             session = MybatisConnect.getSession();
-            NetdiskFile netdiskFile = session.getMapper(FileHashMap.class).getFileMapByHash(hash);
+            String path = session.getMapper(FileHashMap.class).getFilePath(hash).getPath();
+            netdiskFile = new NetdiskFile(path);
             if (netdiskFile != null) {
+                netdiskFile.setFile_Name(name);
                 return netdiskFile;
             }else {
                 throw new FileNotFoundException("路径构建失败1");
@@ -114,7 +114,7 @@ public class NetdiskFile extends BaseServiceImpl implements Serializable {
         String file_Destination = StringUtils.filePathDeal(destination);
         try {
             session = MybatisConnect.getSession();
-            netdiskFile = session.getMapper(FileMap.class).getFileMap(id,destination);
+            netdiskFile = session.getMapper(FileMap.class).getFileMap(id,file_Destination);
             if(netdiskFile == null){
                 throw new FileNotFoundException();
             }else {
@@ -263,5 +263,18 @@ public class NetdiskFile extends BaseServiceImpl implements Serializable {
 
     public void setUserID(int userID) {
         this.userID = userID;
+    }
+
+    @Override
+    public String toString() {
+        return "NetdiskFile{" +
+                "File_Name='" + File_Name + '\'' +
+                ", File_Path='" + File_Path + '\'' +
+                ", File_Destination='" + File_Destination + '\'' +
+                ", File_Hash='" + File_Hash + '\'' +
+                ", userID=" + userID +
+                ", file=" + file +
+                ", lock=" + lock +
+                '}';
     }
 }

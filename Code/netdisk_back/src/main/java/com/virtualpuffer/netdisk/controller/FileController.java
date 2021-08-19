@@ -199,6 +199,7 @@ public class FileController extends BaseController {
             hashMap.put("key",key);
             return ResponseMessage.getSuccessInstance(200,"链接获取成功",hashMap);
         } catch (RuntimeException e){
+            e.printStackTrace();
             return ResponseMessage.getExceptionInstance(300,e.getMessage(),null);
         } catch (Exception e) {
             System.out.println(getTime() + "   ->   未捕获异常: ");

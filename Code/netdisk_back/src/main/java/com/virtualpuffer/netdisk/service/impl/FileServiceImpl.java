@@ -90,9 +90,11 @@ public class FileServiceImpl extends FileServiceUtil{
         }
     }
 
-    public static FileServiceImpl getInstanceByHash(String hash) throws FileNotFoundException {
+    public static FileServiceImpl getInstanceByHash(String hash,String name) throws FileNotFoundException {
             FileServiceImpl impl = new FileServiceImpl();
-            impl.setNetdiskFile(NetdiskFile.getInstance(hash));
+            NetdiskFile netdiskFile = NetdiskFile.getInstance(hash,name);
+            impl.setNetdiskFile(netdiskFile);
+            impl.setFile(netdiskFile.getFile());
             return impl;
     }
     /**
@@ -104,13 +106,14 @@ public class FileServiceImpl extends FileServiceUtil{
     * */
     public static FileServiceImpl getInstanceByToken(String token) throws FileNotFoundException {
         Map map = parseJWT(token);
-        try {
-            String hash = (String) map.get("hash");
-            return getInstanceByHash(hash);
-        } catch (RuntimeException e) {
+        if(map.get("hash") == null){
             String path = (String) map.get("path");
             int id = (Integer) map.get("userID");
             return getInstanceByPath(path,id);
+        }else {
+            String hash = (String) map.get("hash");
+            String name = (String) map.get("name");
+            return getInstanceByHash(hash,name);
         }
     }
     /**
@@ -124,15 +127,18 @@ public class FileServiceImpl extends FileServiceUtil{
      * 下载链接获取
      * 是文件时给hash(防止文件位置变动)
      * 文件夹时给path(没办法了，不然得做数据库维护映射，太难了)
+     *
+     * 映射型文件是系统没办法判断类型的（因为不存在）
     * */
     public String getDownloadURL(long time,@Nullable String key) throws Exception {
         Map<String,Object> map = new HashMap();
-        if (this.file.isFile()) {
-            map.put("hash",getSH256(this.file));
-        }else {
+        if (this.file.isDirectory()) {
             map.put("path",netdiskFile.getFile_Path());
+        }else {
+            map.put("hash",getSH256(this.file));
         }
         map.put("userID",this.user.getUSER_ID());
+        map.put("name",this.netdiskFile.getFile_Name());
         return  downloadAPI + createToken(time,map,user.getUsername(),key);
     }
 
@@ -156,13 +162,10 @@ public class FileServiceImpl extends FileServiceUtil{
         if(!list.isEmpty()){
             for(File_Map fileMap : list){
                 if(!fileMap.getFile_Destination().substring(netdiskFile.getFile_Destination().length()).contains("/")){
-                    filelist.add(fileMap.getFile_Destination());
+                    filelist.add(fileMap.getFile_Destination().substring(fileMap.getFile_Destination().lastIndexOf("/")+1));
                 }
             }
         }
-        System.out.println(file);
-        System.out.println(dirList);
-        System.out.println("__________________________________________>");
         if(!file.isDirectory()&&dirList.isEmpty()){
             throw new NoSuchFileException("不是文件夹");
         }
@@ -220,7 +223,7 @@ public class FileServiceImpl extends FileServiceUtil{
             close(zipOutputStream);
         }
     }
-    /**
+    /**   __________________________记住把substring机制改回去
      * 操作流程：
      *  获取输入流
      *  计算sha256
@@ -260,9 +263,9 @@ public class FileServiceImpl extends FileServiceUtil{
                     //源文件映射建立
                     FileServiceImpl original = getInstanceByPath(file_path,id);//操作对象
                     NetdiskFile file = original.getNetdiskFile();
-                    session.getMapper(FileMap.class).buildFileMap(file.getFile_Destination().substring(1),file.getFile_Name(),hash,original.getUser().getUSER_ID());
+                    session.getMapper(FileMap.class).buildFileMap(file.getFile_Destination(),file.getFile_Name(),hash,original.getUser().getUSER_ID());
                 }
-                session.getMapper(FileMap.class).buildFileMap(this.netdiskFile.getFile_Destination().substring(1),this.file.getName(),hash,this.user.getUSER_ID());
+                session.getMapper(FileMap.class).buildFileMap(this.netdiskFile.getFile_Destination(),this.file.getName(),hash,this.user.getUSER_ID());
                 session.commit();
             }else {
                 session.getMapper(FileHashMap.class).addHashMap(hash,netdiskFile.getFile_Path(),user.getUSER_ID());
@@ -413,6 +416,14 @@ public class FileServiceImpl extends FileServiceUtil{
 
     public User getUser() {
         return user;
+    }
+
+    public File getFile() {
+        return file;
+    }
+
+    public void setFile(File file) {
+        this.file = file;
     }
 
     @Override

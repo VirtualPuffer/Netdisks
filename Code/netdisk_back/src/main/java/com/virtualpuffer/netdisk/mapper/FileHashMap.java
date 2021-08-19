@@ -22,4 +22,6 @@ public interface FileHashMap {
 
     FileHash_Map getFileMapByPath(String path);
 
+    NetdiskFile getPath(String hash);
+
 }
