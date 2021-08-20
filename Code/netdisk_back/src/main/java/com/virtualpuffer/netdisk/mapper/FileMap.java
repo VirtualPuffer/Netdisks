@@ -46,7 +46,7 @@ public interface FileMap {
     /*
     * 重命名文件
     * */
-    int renameFile(String destination,int userID,String name);
+    int renameFile(String destination,int userID,String name,String newDestination);
 
 
 }

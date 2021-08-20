@@ -229,6 +229,10 @@ public class FileServiceImpl extends FileServiceUtil{
      *  给源文件拥有者和上传者分别建立映射
      *  然后修改file hashmap路径使其指向当前文件位置
      *
+     *  如果存在重复的名字，会首先校验sha256
+     *  如果结果相同，则不在上传
+     *  结果不同则上传并在文件后面加上（1）
+     *
      *  hashmap 维护文件物理路径和hash值的对应关系
      *  map     维护hash值和文件拥有者以及相对路径的对应关系
      *
@@ -241,6 +245,8 @@ public class FileServiceImpl extends FileServiceUtil{
 
         String hash = getSH256(inputStreams[0]);
         SqlSession session = MybatisConnect.getSession();
+
+        dumplicateParse(hash);
         try {
             if (checkDuplicate(hash)) {
                 //看看有没有创建映射,
@@ -283,6 +289,23 @@ public class FileServiceImpl extends FileServiceUtil{
             close(session);
         }
     }
+    //上面的工具类，有重复文件时在后缀前加上（1），如果已经存在就递增
+    public void dumplicateParse(String hash) throws Exception {
+        File on = new File(this.netdiskFile.getFile_Path());
+        //重名文件处理
+        if(on.exists()){
+            if(hash == getSH256(on)){
+                return;
+            }else {
+                String path = this.netdiskFile.getFile_Path();
+                //重复的话加上数字
+                String destination = StringUtils.duplicateRename(this.netdiskFile.getFile_Destination());
+                this.netdiskFile = NetdiskFile.getInstance(destination,this.user.getUSER_ID());
+                dumplicateParse(hash);
+            }
+        }
+        return;
+    }
 
     /**
      * 文件删除
@@ -295,10 +318,8 @@ public class FileServiceImpl extends FileServiceUtil{
             if(file.exists()){
                 delete(file);
             }
-            ;
             session = MybatisConnect.getSession();
             FileMap fileMap = session.getMapper(FileMap.class);
-
             int count = fileMap.deleteFileMap(netdiskFile.getFile_Destination(),user.getUSER_ID());
             /*     count += fileMap.deleteDirectoryMap(destination + "/",user.getUSER_ID());*/
             if(count > 0){
@@ -316,6 +337,9 @@ public class FileServiceImpl extends FileServiceUtil{
      * 是文件则后序遍历删除，否则直接删除
      * */
     private static void delete(File on){
+        if(on.getParentFile().equals(new File(duplicateFileWare))){
+            return;//别删仓库的
+        }
         if(on.isDirectory()){
             File[] get = on.listFiles();
             if(get.length!=0){
@@ -401,8 +425,12 @@ public class FileServiceImpl extends FileServiceUtil{
         SqlSession session = null;
         try {
             session = MybatisConnect.getSession();
+
+            String destination = this.netdiskFile.getFile_Destination()
+                    .substring(0,this.netdiskFile.getFile_Destination().lastIndexOf("/")+1) + name;
+
             int ret = session.getMapper(FileMap.class).renameFile(
-                    this.netdiskFile.getFile_Destination(),this.user.getUSER_ID(),name);
+                    this.netdiskFile.getFile_Destination(),this.user.getUSER_ID(),name,destination);
             if(ret == 1){
                 session.commit();
                 return;

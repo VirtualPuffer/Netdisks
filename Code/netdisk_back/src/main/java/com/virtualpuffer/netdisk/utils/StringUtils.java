@@ -68,6 +68,45 @@ public class StringUtils {
         return sb.toString();
     }
 
+    //文件名重复时加上个1
+    public static String duplicateRename(String path){
+        int index = path.lastIndexOf(".");
+        String fir = null;
+        String sec = null;
+        try {
+            fir = path.substring(0, index);
+            sec = path.substring(index);
+        } catch (Exception e) {
+        }
+        if(index == -1){
+            try {
+                return autoUp(path,"");
+            } catch (Exception e) {
+                return path + "(1)";
+            }
+        }else {
+            try {
+                return autoUp(fir,sec);
+            } catch (Exception e) {
+                return fir + "(1)" + sec;
+            }
+        }
+    }
+
+    public static String autoUp(String fir,String sec){
+        if(fir.endsWith(")")){
+            try {
+                String num = fir.substring(fir.lastIndexOf("(") + 1,fir.length()-1);
+                int get = Integer.parseInt(num) + 1;
+                return fir.substring(0,fir.lastIndexOf("(")+1) + get + ")" + sec;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return fir + "(1)" + sec;
+            }
+        }
+        throw new RuntimeException("");
+    }
+
 
 
     public static int filter(boolean A,boolean a,boolean N){

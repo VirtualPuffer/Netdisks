@@ -213,21 +213,15 @@ public class FileController extends BaseController {
         try {
             UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
             service = FileServiceImpl.getInstance(destination, loginService.getUser().getUSER_ID());
+            service.rename(name);
+            return ResponseMessage.getSuccessInstance(200,"重命名成功",null);
         } catch (FileNotFoundException e) {
             return ResponseMessage.getExceptionInstance(300,e.getMessage(),null);
-        }
-        try {
-            HashMap hashMap = new HashMap();
-            service.rename(name);
-            return ResponseMessage.getSuccessInstance(200,"重命名成功",hashMap);
         } catch (RuntimeException e){
             e.printStackTrace();
             return ResponseMessage.getExceptionInstance(300,e.getMessage(),null);
         } catch (Exception e) {
-            System.out.println(getTime() + "   ->   未捕获异常: ");
-            System.out.println("_______________________________>");
             e.printStackTrace();
-            System.out.println("<_______________________________");
             return ResponseMessage.getErrorInstance(500,"系统错误",null);
         }
     }

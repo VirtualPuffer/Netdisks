@@ -18,7 +18,7 @@
     </insert>
 
     <update id="renameFile">
-        update File_Map set File_Name = #{name} where File_Destination = #{destination} and USER_ID = #{userID};
+        update File_Map set File_Name = #{name},File_Destination = #{newDestination} where File_Destination = #{destination} and USER_ID = #{userID};
     </update>
 
 
