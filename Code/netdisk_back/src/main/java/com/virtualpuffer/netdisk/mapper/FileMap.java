@@ -17,7 +17,7 @@ public interface FileMap {
     //正则匹配前缀
     int deleteDirectoryMap(String path,int userID);
     //检查是否存在映射
-    LinkedList invokeOnExit(String hash);
+    LinkedList<File_Map> invokeOnExit(String hash);
     int buildFileMap(String destination,String fileName,String hash,int userID);
     /*
     * 添加文件映射：
@@ -42,6 +42,11 @@ public interface FileMap {
     NetdiskFile getFileMap(int userID, String destination);
 
     File_Map getFileMapByPath(String path,int userID);
+
+    /*
+    * 重命名文件
+    * */
+    int renameFile(String destination,int userID,String name);
 
 
 }

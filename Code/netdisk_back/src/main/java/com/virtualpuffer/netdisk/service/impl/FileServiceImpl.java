@@ -147,21 +147,19 @@ public class FileServiceImpl extends FileServiceUtil{
      * 获取路径下文件
      * */
     public Map getDirectory() throws NoSuchFileException {
-        TestTime testTime = new TestTime();
-        testTime.start();
         Map ret = new HashMap();
         ArrayList filelist = new ArrayList();
         SqlSession session = MybatisConnect.getSession();
         ArrayList<String> dirList = new ArrayList();
 
-        LinkedList<File_Map> list = session.getMapper(FileMap.class).getDirectoryMap(netdiskFile.getFile_Destination().substring(1),user.getUSER_ID());
+        LinkedList<File_Map> list = session.getMapper(FileMap.class).getDirectoryMap(netdiskFile.getFile_Destination(),user.getUSER_ID());
 
         ret.put("file",filelist);
         ret.put("dir",dirList);
 
         if(!list.isEmpty()){
             for(File_Map fileMap : list){
-                if(!fileMap.getFile_Destination().substring(netdiskFile.getFile_Destination().length()).contains("/")){
+                if(!fileMap.getFile_Destination().substring(netdiskFile.getFile_Destination().length() + 1).contains("/")){
                     filelist.add(fileMap.getFile_Destination().substring(fileMap.getFile_Destination().lastIndexOf("/")+1));
                 }
             }
@@ -179,7 +177,6 @@ public class FileServiceImpl extends FileServiceUtil{
                 }
             }
         }
-        testTime.end();
         return ret;
     }
     /**
@@ -398,6 +395,29 @@ public class FileServiceImpl extends FileServiceUtil{
             this.file.mkdir();
         }
     }
+
+    public void rename(String name) throws NoSuchFileException {
+
+        SqlSession session = null;
+        try {
+            session = MybatisConnect.getSession();
+            int ret = session.getMapper(FileMap.class).renameFile(
+                    this.netdiskFile.getFile_Destination(),this.user.getUSER_ID(),name);
+            if(ret == 1){
+                session.commit();
+                return;
+            }
+        } finally {
+            close(session);
+        }
+        if(((LinkedList)getDirectory().get("file")).contains(name)){
+            throw new RuntimeException("重复文件名扔上来搞毛？");
+        }
+        String nowPath = name.substring(0,name.lastIndexOf("/") + 1) + name;
+        File now = new File(nowPath);
+        this.file.renameTo(now);
+    }
+
     public void deCompress()throws Exception{
         deCompress(this.file,netdiskFile.getFile_Path().substring(0,netdiskFile.getFile_Path().lastIndexOf("/")));
     }

@@ -58,6 +58,7 @@ public class NetdiskFile extends BaseServiceImpl implements Serializable {
         String file_Path = StringUtils.filePathDeal(path);
         this.File_Destination = destination;
         this.file = new File(file_Path);
+        this.File_Name = this.file.getName();
         try {
             this.File_Path = this.file.getCanonicalPath();
         } catch (IOException e) {

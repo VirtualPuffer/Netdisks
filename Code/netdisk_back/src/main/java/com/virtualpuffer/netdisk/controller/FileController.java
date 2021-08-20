@@ -52,21 +52,18 @@ public class FileController extends BaseController {
 
     @ResponseBody
     @RequestMapping(value = "/uploadFile",method = RequestMethod.POST)
-    public ResponseMessage upload(String destination,MultipartFile file, HttpServletRequest request, HttpServletResponse response){
+    public ResponseMessage upload(String destination,MultipartFile getFile, HttpServletRequest request, HttpServletResponse response){
         UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
         if(destination == null || destination.equals("")){
             destination = "";
         }
-        if(file == null){
+        if(getFile == null){
             return ResponseMessage.getExceptionInstance(404,"未找到上传的文件流",null);
         }
         try {
-            String path = destination + "/" + file.getOriginalFilename();
+            String path = destination + "/" + getFile.getOriginalFilename();
             FileServiceImpl service = FileServiceImpl.getInstance(path, loginService.getUser().getUSER_ID());
-
-            System.out.println(file.getInputStream().available());
-
-            service.uploadFile(file.getInputStream());
+            service.uploadFile(getFile.getInputStream());
             return ResponseMessage.getSuccessInstance(200,"文件上传成功",null);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -198,6 +195,31 @@ public class FileController extends BaseController {
             hashMap.put("efficient time",date);
             hashMap.put("key",key);
             return ResponseMessage.getSuccessInstance(200,"链接获取成功",hashMap);
+        } catch (RuntimeException e){
+            e.printStackTrace();
+            return ResponseMessage.getExceptionInstance(300,e.getMessage(),null);
+        } catch (Exception e) {
+            System.out.println(getTime() + "   ->   未捕获异常: ");
+            System.out.println("_______________________________>");
+            e.printStackTrace();
+            System.out.println("<_______________________________");
+            return ResponseMessage.getErrorInstance(500,"系统错误",null);
+        }
+    }
+    @ResponseBody
+    @RequestMapping(value = "renameFile",method = RequestMethod.GET)
+    public ResponseMessage renameFile(String destination,String name, HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException {
+        FileServiceImpl service = null;
+        try {
+            UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
+            service = FileServiceImpl.getInstance(destination, loginService.getUser().getUSER_ID());
+        } catch (FileNotFoundException e) {
+            return ResponseMessage.getExceptionInstance(300,e.getMessage(),null);
+        }
+        try {
+            HashMap hashMap = new HashMap();
+            service.rename(name);
+            return ResponseMessage.getSuccessInstance(200,"重命名成功",hashMap);
         } catch (RuntimeException e){
             e.printStackTrace();
             return ResponseMessage.getExceptionInstance(300,e.getMessage(),null);

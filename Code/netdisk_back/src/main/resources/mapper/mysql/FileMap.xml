@@ -9,13 +9,17 @@
         delete from File_Map where File_Destination like #{path}% and USER_ID = #{userID};
     </delete>
 
-    <select id="invokeOnExit" resultType="com.virtualpuffer.netdisk.mapper.FileMap">
+    <select id="invokeOnExit" resultType="com.virtualpuffer.netdisk.entity.File_Map">
         select * from File_Map where File_Hash = #{hash};
     </select>
 
     <insert id="buildFileMap">
         insert into File_Map (USER_ID,File_Name,File_Destination,File_Hash) values (#{userID},#{fileName},#{destination},#{hash});
     </insert>
+
+    <update id="renameFile">
+        update File_Map set File_Name = #{name} where File_Destination = #{destination} and USER_ID = #{userID};
+    </update>
 
 
     <insert id="insertMap">

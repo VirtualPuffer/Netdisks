@@ -45,6 +45,9 @@ public class StringUtils {
     }
 
     public static String filePathDeal(String s ){
+        if(!s.startsWith("/")){
+            s = new StringBuilder().append("/").append(s).toString();
+        }
         if(s.length() <= 1){return s;}
         return filePathDeal(new StringBuilder(),s,0);
     }
