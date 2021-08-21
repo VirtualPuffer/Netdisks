@@ -212,8 +212,9 @@ public class FileServiceImpl extends FileServiceUtil{
             return count();
         }else {
                 inputStream = new FileInputStream(this.file);
+                int length = inputStream.available();
                 copy(inputStream,outputStream);
-                return inputStream.available();
+                return length;
         }
         } finally {
             close(inputStream);

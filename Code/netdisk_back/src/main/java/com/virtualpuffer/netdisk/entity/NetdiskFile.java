@@ -46,7 +46,7 @@ public class NetdiskFile extends BaseServiceImpl implements Serializable {
     public NetdiskFile(String path){
         String file_Path = StringUtils.filePathDeal(path);
         try {
-            this.File_Destination = this.destinationHandle(defaultWare,path);
+            this.File_Destination = this.destinationHandle(path);
         } catch (Exception e) {
         }
         this.file = new File(file_Path);
@@ -194,18 +194,34 @@ public class NetdiskFile extends BaseServiceImpl implements Serializable {
         return builder.toString();
     }
     //将path转化为destination
-    public String destinationHandle(String defaultPath,String path){
+    public String destinationHandle(String path){
         StringBuilder builder = new StringBuilder();
-        LinkedList deflist = filePathHandle(defaultPath);
-        LinkedList pathlist = filePathHandle(path);
-        Iterator<String> defIterator = deflist.iterator();
-        Iterator<String> pathIterator = pathlist.iterator();
-        while (defIterator.hasNext() && pathIterator.hasNext()){
-            if(!defIterator.next().equals(pathIterator.next())){
-                throw new RuntimeException("unMatch path " + defaultPath + "   " + path);
+        Iterator<String> pathIterator = null;
+        Iterator<String> defIterator = null;
+
+        try {
+            LinkedList deflist = filePathHandle(defaultWare);
+            LinkedList pathlist = filePathHandle(path);
+            defIterator = deflist.iterator();
+            pathIterator = pathlist.iterator();
+            while (defIterator.hasNext() && pathIterator.hasNext()){
+                if(!defIterator.next().equals(pathIterator.next())){
+                    throw new RuntimeException("unMatch path " + defaultWare + "   " + path);
+                }
+            }
+            pathIterator.next();
+        } catch (RuntimeException e) {
+            LinkedList deflist = filePathHandle(duplicateFileWare);
+            LinkedList pathlist = filePathHandle(path);
+            defIterator = deflist.iterator();
+            pathIterator = pathlist.iterator();
+            while (defIterator.hasNext() && pathIterator.hasNext()){
+                if(!defIterator.next().equals(pathIterator.next())){
+                    throw new RuntimeException("unMatch path " +
+                            duplicateFileWare + "    " + duplicateFileWare + "   " + path);
+                }
             }
         }
-        pathIterator.next();
         while (pathIterator.hasNext()){
             builder.append("/");
             builder.append(pathIterator.next());
