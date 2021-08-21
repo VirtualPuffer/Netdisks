@@ -3,10 +3,7 @@ server:
   port: 80
   servlet:
     context-path: /Netdisk
-    multipart:
-      enabled: true
-      max-file-size: 30MB
-      max-request-size: 30MB
+
 
 spring:
   datasource:
@@ -14,4 +11,9 @@ spring:
     url: jdbc:mysql://47.96.253.99:3306/netdisk?characterEncoding=utf-8&serverTimezone=UTC&useSSL=false
     username: gangballs
     password: Where.gangballs123
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 100MB
+      max-request-size: 100MB
 

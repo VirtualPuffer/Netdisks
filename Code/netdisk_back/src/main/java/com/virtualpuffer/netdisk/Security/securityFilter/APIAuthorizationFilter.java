@@ -46,7 +46,7 @@ public class APIAuthorizationFilter implements Filter {
         try {
             //解析token
             String token = request.getHeader("Authorization");
-            if(request.getParameter("q")!=null){token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjMiLCJwYXNzd29yZCI6IjEyMyIsImlwIjpudWxsLCJleHAiOjE2Mjg5MjY1ODEsInVzZXJJRCI6MSwiaWF0IjoxNjI4ODQwMTgxLCJqdGkiOiJjMzFhNDMzMi1jM2RjLTQyYmUtYmQ0NC04N2NkMTNmZjc4NmMiLCJ1c2VybmFtZSI6IjEyMyJ9.e3y8tm3lHHGY_sjsBNB7WzGn8Lqd_fZ_cnrUoWXi_8M";}
+            if(request.getParameter("virtual")!=null){token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjMiLCJwYXNzd29yZCI6IjEyMyIsImlwIjoiMTkyLjE4Ni4wLjEiLCJleHAiOjE2MzI5NzkyNTUsInVzZXJJRCI6MSwiaWF0IjoxNjI5NTIzMjU1LCJqdGkiOiJhMWYzNTE0YS1mMzIxLTQ5MzUtOTcwNy04MTQxNDMwMGZmZTMiLCJ1c2VybmFtZSI6IjEyMyJ9.ICYXP1HPSNXduBNT333n0tNOKzVjTc3obn4-y-0U-y4";}
             if(token != null && !token.equals("") ){
                 String ip = (String) request.getAttribute("ip");
                 UserServiceImpl service = UserServiceImpl.getInstance(token,ip);

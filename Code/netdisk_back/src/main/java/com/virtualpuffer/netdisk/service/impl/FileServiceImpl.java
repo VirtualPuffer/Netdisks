@@ -295,7 +295,7 @@ public class FileServiceImpl extends FileServiceUtil{
         //重名文件处理
         if(on.exists()){
             if(hash == getSH256(on)){
-                return;
+                throw new RuntimeException("file has been exit");
             }else {
                 String path = this.netdiskFile.getFile_Path();
                 //重复的话加上数字

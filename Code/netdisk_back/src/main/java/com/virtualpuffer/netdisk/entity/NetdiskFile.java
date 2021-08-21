@@ -45,6 +45,10 @@ public class NetdiskFile extends BaseServiceImpl implements Serializable {
     * */
     public NetdiskFile(String path){
         String file_Path = StringUtils.filePathDeal(path);
+        try {
+            this.File_Destination = this.destinationHandle(defaultWare,path);
+        } catch (Exception e) {
+        }
         this.file = new File(file_Path);
         this.File_Name = file.getName();
         try {
@@ -197,10 +201,11 @@ public class NetdiskFile extends BaseServiceImpl implements Serializable {
         Iterator<String> defIterator = deflist.iterator();
         Iterator<String> pathIterator = pathlist.iterator();
         while (defIterator.hasNext() && pathIterator.hasNext()){
-            if(defIterator.next() != pathIterator.next()){
+            if(!defIterator.next().equals(pathIterator.next())){
                 throw new RuntimeException("unMatch path " + defaultPath + "   " + path);
             }
         }
+        pathIterator.next();
         while (pathIterator.hasNext()){
             builder.append("/");
             builder.append(pathIterator.next());

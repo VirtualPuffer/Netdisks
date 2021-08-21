@@ -28,7 +28,7 @@ public class ShowData {
         return "HelloWorld";
     }
 
-    @RequestMapping("/background")
+    @RequestMapping("/api/background")
     public synchronized StringBuffer handlf(String username, String password, HttpServletResponse response, HttpServletRequest request){
         String json = "123";
         StringBuffer strhead  = new StringBuffer();
