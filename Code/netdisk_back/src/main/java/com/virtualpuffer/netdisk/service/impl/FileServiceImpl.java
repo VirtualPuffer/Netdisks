@@ -420,30 +420,41 @@ public class FileServiceImpl extends FileServiceUtil{
         }
     }
 
-    public void rename(String name) throws NoSuchFileException {
-
+    public void rename(String name) throws Exception {
+        if(!this.file.exists()){
+            throw new FileNotFoundException("重命名目标不存在");
+        }
         SqlSession session = null;
         try {
             session = MybatisConnect.getSession();
-
             String destination = this.netdiskFile.getFile_Destination()
                     .substring(0,this.netdiskFile.getFile_Destination().lastIndexOf("/")+1) + name;
 
+            NetdiskFile netdiskFile = NetdiskFile.getInstance(destination,this.user.getUSER_ID());
+            //看看有没有重名的
+            if (netdiskFile.getFile().exists()) {
+                throw new RuntimeException("重复文件名扔上来搞毛？");
+            }
             int ret = session.getMapper(FileMap.class).renameFile(
                     this.netdiskFile.getFile_Destination(),this.user.getUSER_ID(),name,destination);
             if(ret == 1){
                 session.commit();
                 return;
+            }else {
+                session.rollback();
+            }
+
+            int count = session.getMapper(FileHashMap.class)
+                    .updatePath(this.netdiskFile.getFile_Hash(),getAbsolutePath(destination));
+            File now = netdiskFile.getFile();
+            System.out.println(netdiskFile);
+            this.file.renameTo(now);
+            if(count == 1){
+                session.commit();
             }
         } finally {
             close(session);
         }
-        if(((LinkedList)getDirectory().get("file")).contains(name)){
-            throw new RuntimeException("重复文件名扔上来搞毛？");
-        }
-        String nowPath = name.substring(0,name.lastIndexOf("/") + 1) + name;
-        File now = new File(nowPath);
-        this.file.renameTo(now);
     }
 
     public void deCompress()throws Exception{

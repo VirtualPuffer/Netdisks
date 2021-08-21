@@ -92,7 +92,6 @@ public class StringUtils {
             }
         }
     }
-
     public static String autoUp(String fir,String sec){
         if(fir.endsWith(")")){
             try {

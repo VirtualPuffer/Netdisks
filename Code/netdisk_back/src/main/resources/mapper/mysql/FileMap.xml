@@ -50,6 +50,10 @@
         and FileHash_Map.File_Path = #{path};
     </select>
 
+   <!-- <update id="updateDestination">
+        update FileHash_Map set File_Path = #{}
+    </update>-->
+
 
 
 </mapper>

@@ -24,4 +24,6 @@ public interface FileHashMap {
 
     NetdiskFile getPath(String hash);
 
+    int updateDestination(String destination, String newDestination);
+
 }
