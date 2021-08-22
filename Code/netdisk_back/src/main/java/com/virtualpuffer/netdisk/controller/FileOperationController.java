@@ -132,7 +132,7 @@ public class FileOperationController extends BaseController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "searchFile",method = RequestMethod.GET)
+    @RequestMapping(value = "searchDir",method = RequestMethod.GET)
     public ResponseMessage searchDir(String destination,
                                             String fileName,
                                             String type,
@@ -167,7 +167,7 @@ public class FileOperationController extends BaseController {
         }
     }
     @ResponseBody
-    @RequestMapping(value = "shareDir",method = RequestMethod.GET)
+    @RequestMapping(value = "shareFile",method = RequestMethod.GET)
     public ResponseMessage shareFile(String destination, @Nullable String second,@Nullable String key,boolean getRandom, HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException {
         FileServiceImpl service = null;
         try {
@@ -253,6 +253,25 @@ public class FileOperationController extends BaseController {
         } catch (FileNotFoundException e) {
             return ResponseMessage.getExceptionInstance(300,"指定解压文件未找到",null);
         } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseMessage.getErrorInstance(500,"系统错误",null);
+        }
+    }
+    @ResponseBody
+    @RequestMapping(value = "/storage",method = RequestMethod.POST)
+    public ResponseMessage storage(String destination,String url,HttpServletRequest request,HttpServletResponse response){
+        FileServiceImpl service = null;
+        try {
+            //用id dest定位文件，url获取源文件位置
+            UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
+            service = FileServiceImpl.getInstanceByURL(destination,url,loginService.getUser());
+            service.transfer();
+            return ResponseMessage.getSuccessInstance(200,"文件解压成功",null);
+        } catch (FileNotFoundException e) {
+            return ResponseMessage.getExceptionInstance(300,"指定文件未找到",null);
+        }catch (RuntimeException e){
+            return ResponseMessage.getExceptionInstance(404,e.getMessage(),null);
+        }catch (Exception e) {
             e.printStackTrace();
             return ResponseMessage.getErrorInstance(500,"系统错误",null);
         }

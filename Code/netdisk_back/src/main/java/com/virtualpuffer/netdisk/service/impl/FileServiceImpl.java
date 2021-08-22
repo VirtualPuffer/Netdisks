@@ -116,6 +116,16 @@ public class FileServiceImpl extends FileServiceUtil{
             return getInstanceByHash(hash,name);
         }
     }
+    public static FileServiceImpl getInstanceByURL(String destination,String url,User user) throws FileNotFoundException {
+        if(url.substring(0,downloadAPI.length()).equals(downloadAPI)){
+            FileServiceImpl impl = getInstanceByToken(url.substring(downloadAPI.length()));
+            impl.setUser(user);
+            impl.netdiskFile.setFile_Destination(destination);
+            return impl;
+        }else {
+            throw new RuntimeException("url解析失败");
+        }
+    }
     /**
     * 物理路径计算
      * @param destination 相对路径位置（网盘）
@@ -250,25 +260,6 @@ public class FileServiceImpl extends FileServiceUtil{
         dumplicateParse(hash);
         try {
             if (checkDuplicate(hash)) {
-                //看看有没有创建映射,
-          /*      if (session.getMapper(FileMap.class).invokeOnExit(hash).isEmpty()) {
-                    //查询文件当前位置
-                    FileHash_Map map = session.getMapper(FileHashMap.class).getFilePath(hash);
-                    String file_path = map.getPath();
-                    int id = map.getUSER_ID();
-                    String hashFile_path = duplicateFileWare + hash;
-                    //复制
-                    copy(new FileInputStream(file_path),new FileOutputStream(hashFile_path));
-
-                    //更新hash表路径
-                    session.getMapper(FileHashMap.class).updatePath(hash,hashFile_path);
-
-                    new File(file_path).delete();
-                    //源文件映射建立
-                    FileServiceImpl original = getInstanceByPath(file_path,id);//操作对象
-                    NetdiskFile file = original.getNetdiskFile();
-                    session.getMapper(FileMap.class).buildFileMap(file.getFile_Destination(),file.getFile_Name(),hash,original.getUser().getUSER_ID());
-                }*/
                 session.getMapper(FileMap.class).buildFileMap(this.netdiskFile.getFile_Destination(),this.file.getName(),hash,this.user.getUSER_ID());
                 session.commit();
             }else {
@@ -463,6 +454,20 @@ public class FileServiceImpl extends FileServiceUtil{
         }
     }
 
+
+    public void transfer()throws Exception{
+        SqlSession session = null;
+        String hash = this.netdiskFile.getFile_Hash();
+        dumplicateParse(hash);
+        try {
+            session = MybatisConnect.getSession();
+            session.getMapper(FileMap.class).buildFileMap(this.netdiskFile.getFile_Destination(),this.file.getName(),hash,this.user.getUSER_ID());
+            session.commit();
+        } finally {
+            close(session);
+        }
+    }
+
     public void deCompress()throws Exception{
         deCompress(this.file,netdiskFile.getFile_Path().substring(0,netdiskFile.getFile_Path().lastIndexOf("/")));
     }
@@ -489,6 +494,10 @@ public class FileServiceImpl extends FileServiceUtil{
 
     public void setFile(File file) {
         this.file = file;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     @Override

@@ -35,7 +35,7 @@ public class ShowData {
         StringBuffer strend = new StringBuffer();
         strhead.append("<head> "+ '\n' +"<body>"+ '\n' + '\n');
         td("user",strhead,"white");
-        td("login_verify",strhead);
+      /*  td("login_verify",strhead);*/
         td("login_history",strhead);
         td("FileHash_Map",strhead);
             td("File_Map",strhead);

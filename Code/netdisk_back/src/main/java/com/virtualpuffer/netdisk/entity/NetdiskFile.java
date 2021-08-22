@@ -104,6 +104,7 @@ public class NetdiskFile extends BaseServiceImpl implements Serializable {
             netdiskFile = new NetdiskFile(path);
             if (netdiskFile != null) {
                 netdiskFile.setFile_Name(name);
+                netdiskFile.setFile_Hash(hash);
                 return netdiskFile;
             }else {
                 throw new FileNotFoundException("路径构建失败1");
