@@ -419,7 +419,8 @@ public class FileServiceImpl extends FileServiceUtil{
     }
 
     public void rename(String name) throws Exception {
-        if(!this.file.exists()){
+        if(!this.netdiskFile.getFile().exists()){
+            System.out.println(this.netdiskFile.getFile().getAbsolutePath() + "_____________________________");
             throw new FileNotFoundException("重命名目标不存在");
         }
         SqlSession session = null;

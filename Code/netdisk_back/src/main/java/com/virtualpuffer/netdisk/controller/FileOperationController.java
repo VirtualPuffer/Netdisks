@@ -269,10 +269,10 @@ public class FileOperationController extends BaseController {
             return ResponseMessage.getSuccessInstance(200,"文件储存成功",null);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-            return ResponseMessage.getExceptionInstance(300,"指定文件未找到",null);
+            return ResponseMessage.getExceptionInstance(404,"指定文件未找到",null);
         }catch (RuntimeException e){
             e.printStackTrace();
-            return ResponseMessage.getExceptionInstance(404,e.getMessage(),null);
+            return ResponseMessage.getExceptionInstance(600,e.getMessage(),null);
         }catch (Exception e) {
             e.printStackTrace();
             return ResponseMessage.getErrorInstance(500,"系统错误",null);
