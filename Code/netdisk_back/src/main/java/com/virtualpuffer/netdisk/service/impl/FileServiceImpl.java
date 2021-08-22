@@ -120,7 +120,7 @@ public class FileServiceImpl extends FileServiceUtil{
         if(url.substring(0,downloadAPI.length()).equals(downloadAPI)){
             FileServiceImpl impl = getInstanceByToken(url.substring(downloadAPI.length()));
             impl.setUser(user);
-            impl.netdiskFile.setFile_Destination(destination);
+            impl.netdiskFile.setFile_Destination(destination + "/" + impl.netdiskFile.getFile_Name());
             return impl;
         }else {
             throw new RuntimeException("url解析失败");
@@ -288,7 +288,8 @@ public class FileServiceImpl extends FileServiceUtil{
     }
     //上面的工具类，有重复文件时在后缀前加上（1），如果已经存在就递增
     public void dumplicateParse(String hash) throws Exception {
-        File on = new File(this.netdiskFile.getFile_Path());
+        NetdiskFile test = NetdiskFile.getInstance(this.netdiskFile.getFile_Destination(),this.user.getUSER_ID());
+        File on = test.getFile();
         //重名文件处理
         if(on.exists()){
             if(hash.equals(getSH256(on))){
@@ -461,7 +462,7 @@ public class FileServiceImpl extends FileServiceUtil{
         dumplicateParse(hash);
         try {
             session = MybatisConnect.getSession();
-            session.getMapper(FileMap.class).buildFileMap(this.netdiskFile.getFile_Destination(),this.file.getName(),hash,this.user.getUSER_ID());
+            session.getMapper(FileMap.class).buildFileMap(this.netdiskFile.getFile_Destination(),this.netdiskFile.getFile_Name(),hash,this.user.getUSER_ID());
             session.commit();
         } finally {
             close(session);

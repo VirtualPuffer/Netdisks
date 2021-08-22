@@ -266,7 +266,7 @@ public class NetdiskFile extends BaseServiceImpl implements Serializable {
     }
 
     public void setFile_Destination(String file_Destination) {
-        File_Destination = file_Destination;
+        File_Destination = StringUtils.filePathDeal(file_Destination);
     }
 
     public String getFile_Hash() throws Exception {

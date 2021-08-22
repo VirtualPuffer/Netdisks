@@ -266,10 +266,12 @@ public class FileOperationController extends BaseController {
             UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
             service = FileServiceImpl.getInstanceByURL(destination,url,loginService.getUser());
             service.transfer();
-            return ResponseMessage.getSuccessInstance(200,"文件解压成功",null);
+            return ResponseMessage.getSuccessInstance(200,"文件储存成功",null);
         } catch (FileNotFoundException e) {
+            e.printStackTrace();
             return ResponseMessage.getExceptionInstance(300,"指定文件未找到",null);
         }catch (RuntimeException e){
+            e.printStackTrace();
             return ResponseMessage.getExceptionInstance(404,e.getMessage(),null);
         }catch (Exception e) {
             e.printStackTrace();
