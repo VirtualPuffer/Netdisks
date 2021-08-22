@@ -382,6 +382,9 @@ public class FileServiceImpl extends FileServiceUtil{
 
     public FileCollection searchFile(String name,String type) throws FileNotFoundException{
         SqlSession session = null;
+        if(name == null || name.equals("")){
+            throw  new RuntimeException("缺少参数：name");
+        }
         try {
             session = MybatisConnect.getSession();
             FileCollection collection = FileCollection.getInstance(this.file,name,getAbsolutePath("/"),type);
@@ -391,7 +394,7 @@ public class FileServiceImpl extends FileServiceUtil{
             if(!list.isEmpty()){
                 for(File_Map fileMap : list){
                     try {
-                        if(!fileMap.getFile_Destination().substring(fileMap.getFile_Destination().lastIndexOf("/" + 1)).equals(name)){
+                        if(fileMap.getFile_Destination().substring(fileMap.getFile_Destination().lastIndexOf("/" + 1)).contains(name)){
                             fileList.add(fileMap.getFile_Destination());
                         }
                     } catch (Exception e) {//防止爆掉
@@ -420,7 +423,6 @@ public class FileServiceImpl extends FileServiceUtil{
 
     public void rename(String name) throws Exception {
         if(!this.netdiskFile.getFile().exists()){
-            System.out.println(this.netdiskFile.getFile().getAbsolutePath() + "_____________________________");
             throw new FileNotFoundException("重命名目标不存在");
         }
         SqlSession session = null;

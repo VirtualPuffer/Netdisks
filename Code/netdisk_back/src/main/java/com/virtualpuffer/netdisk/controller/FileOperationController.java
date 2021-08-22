@@ -132,9 +132,9 @@ public class FileOperationController extends BaseController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "searchDir",method = RequestMethod.GET)
+    @RequestMapping(value = "searchDir")
     public ResponseMessage searchDir(String destination,
-                                            String fileName,
+                                            String name,
                                             String type,
                                             HttpServletRequest request,
                                             HttpServletResponse response){
@@ -145,7 +145,7 @@ public class FileOperationController extends BaseController {
         try {
             UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
             service = FileServiceImpl.getInstance(destination, loginService.getUser().getUSER_ID());
-            FileCollection collection = service.searchFile(fileName,type);
+            FileCollection collection = service.searchFile(name,type);
             HashMap map = new HashMap();
             map.put("directory",collection.getDir());
             map.put("file",collection.getFile());
