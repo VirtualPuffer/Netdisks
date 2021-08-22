@@ -14,7 +14,7 @@
     </select>
 
     <insert id="buildFileMap">
-        insert into File_Map (USER_ID,File_Name,File_Destination,File_Hash) values (#{userID},#{fileName},#{destination},#{hash});
+        insert into File_Map (USER_ID,File_Name,File_Destination,File_Hash,File_Destination_Place) values (#{userID},#{fileName},#{destination},#{hash},#{place});
     </insert>
 
     <update id="renameFile">
@@ -31,7 +31,7 @@
     </insert>
 
     <select id="getDirectoryMap" resultType="com.virtualpuffer.netdisk.entity.File_Map">
-        select File_Destination from File_Map where File_Destination like #{destination}"%" and USER_ID = #{userID};
+        select File_Destination from File_Map where File_Destination_Place = #{destination} and USER_ID = #{userID};
     </select>
 
     <select id="getFileMap" resultType="com.virtualpuffer.netdisk.entity.NetdiskFile">

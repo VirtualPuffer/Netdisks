@@ -162,16 +162,20 @@ public class FileServiceImpl extends FileServiceUtil{
         SqlSession session = MybatisConnect.getSession();
         ArrayList<String> dirList = new ArrayList();
 
-        LinkedList<File_Map> list = session.getMapper(FileMap.class).getDirectoryMap(netdiskFile.getFile_Destination(),user.getUSER_ID());
+        LinkedList<File_Map> list1 = session.getMapper(FileMap.class).getDirectoryMap(netdiskFile.getFile_Destination() + "/",user.getUSER_ID());
+        LinkedList<File_Map> list2 = session.getMapper(FileMap.class).getDirectoryMap(netdiskFile.getFile_Destination(),user.getUSER_ID());
 
         ret.put("file",filelist);
         ret.put("dir",dirList);
 
-        if(!list.isEmpty()){
-            for(File_Map fileMap : list){
-                if(!fileMap.getFile_Destination().substring(netdiskFile.getFile_Destination().length() + 1).contains("/")){
-                    filelist.add(fileMap.getFile_Destination().substring(fileMap.getFile_Destination().lastIndexOf("/")+1));
-                }
+        if(!list1.isEmpty()){
+            for(File_Map fileMap : list1){
+                filelist.add(fileMap.getFile_Destination().substring(fileMap.getFile_Destination().lastIndexOf("/")+1));
+            }
+        }
+        if(!list2.isEmpty()){
+            for(File_Map fileMap : list2){
+                filelist.add(fileMap.getFile_Destination().substring(fileMap.getFile_Destination().lastIndexOf("/")+1));
             }
         }
         if(!file.isDirectory()&&dirList.isEmpty()){
@@ -258,9 +262,11 @@ public class FileServiceImpl extends FileServiceUtil{
         SqlSession session = MybatisConnect.getSession();
 
         dumplicateParse(hash);
+        String dest = this.netdiskFile.getFile_Destination();
+        String place = dest.substring(0,dest.lastIndexOf("/")+1);
         try {
             if (checkDuplicate(hash)) {
-                session.getMapper(FileMap.class).buildFileMap(this.netdiskFile.getFile_Destination(),this.file.getName(),hash,this.user.getUSER_ID());
+                session.getMapper(FileMap.class).buildFileMap(dest,this.file.getName(),hash,this.user.getUSER_ID(),place);
                 session.commit();
             }else {
                 String hashFile_path = duplicateFileWare + hash;//map里面的位置
@@ -276,7 +282,7 @@ public class FileServiceImpl extends FileServiceUtil{
                 //复制成功？
                 if(new File(hashFile_path).exists()){
                     session.getMapper(FileMap.class)
-                            .buildFileMap(this.netdiskFile.getFile_Destination(),this.file.getName(),hash,this.user.getUSER_ID());
+                            .buildFileMap(dest,this.file.getName(),hash,this.user.getUSER_ID(),place);
                     session.getMapper(FileHashMap.class).addHashMap(hash,hashFile_path,user.getUSER_ID());
                     session.commit();
                 }
@@ -462,10 +468,12 @@ public class FileServiceImpl extends FileServiceUtil{
     public void transfer()throws Exception{
         SqlSession session = null;
         String hash = this.netdiskFile.getFile_Hash();
+        String dest = this.netdiskFile.getFile_Destination();
+        String place = dest.substring(0,dest.lastIndexOf("/")+1);
         dumplicateParse(hash);
         try {
             session = MybatisConnect.getSession();
-            session.getMapper(FileMap.class).buildFileMap(this.netdiskFile.getFile_Destination(),this.netdiskFile.getFile_Name(),hash,this.user.getUSER_ID());
+            session.getMapper(FileMap.class).buildFileMap(this.netdiskFile.getFile_Destination(),this.netdiskFile.getFile_Name(),hash,this.user.getUSER_ID(),place);
             session.commit();
         } finally {
             close(session);

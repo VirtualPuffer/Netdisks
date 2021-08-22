@@ -18,7 +18,7 @@ public interface FileMap {
     int deleteDirectoryMap(String path,int userID);
     //检查是否存在映射
     LinkedList<File_Map> invokeOnExit(String hash);
-    int buildFileMap(String destination,String fileName,String hash,int userID);
+    int buildFileMap(String destination,String fileName,String hash,int userID,String place);
     /*
     * 添加文件映射：
     * 1.检查父级路径是否存在

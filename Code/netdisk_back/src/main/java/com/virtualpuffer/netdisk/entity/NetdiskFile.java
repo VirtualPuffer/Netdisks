@@ -29,6 +29,7 @@ import static com.virtualpuffer.netdisk.utils.StringUtils.filePathDeal;
 public class NetdiskFile extends BaseServiceImpl implements Serializable {
     private String File_Name;
     private String File_Path;//真实路径
+    private String File_Destination_Place;//父级路径
     private String File_Destination;//映射路径（客户真实看到的）
     private String File_Hash;//计算SHA256
     private int userID;//拥有者ID
@@ -236,6 +237,10 @@ public class NetdiskFile extends BaseServiceImpl implements Serializable {
 
 
     public NetdiskFile(){}
+
+    public String getFile_Destination_Place() {
+        return File_Destination_Place;
+    }
 
     public File getFile() {
         return file;
