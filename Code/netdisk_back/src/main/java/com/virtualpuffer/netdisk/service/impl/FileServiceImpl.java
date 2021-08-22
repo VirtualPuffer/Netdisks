@@ -251,7 +251,7 @@ public class FileServiceImpl extends FileServiceUtil{
         try {
             if (checkDuplicate(hash)) {
                 //看看有没有创建映射,
-                if (session.getMapper(FileMap.class).invokeOnExit(hash).isEmpty()) {
+          /*      if (session.getMapper(FileMap.class).invokeOnExit(hash).isEmpty()) {
                     //查询文件当前位置
                     FileHash_Map map = session.getMapper(FileHashMap.class).getFilePath(hash);
                     String file_path = map.getPath();
@@ -268,24 +268,29 @@ public class FileServiceImpl extends FileServiceUtil{
                     FileServiceImpl original = getInstanceByPath(file_path,id);//操作对象
                     NetdiskFile file = original.getNetdiskFile();
                     session.getMapper(FileMap.class).buildFileMap(file.getFile_Destination(),file.getFile_Name(),hash,original.getUser().getUSER_ID());
-                }
+                }*/
                 session.getMapper(FileMap.class).buildFileMap(this.netdiskFile.getFile_Destination(),this.file.getName(),hash,this.user.getUSER_ID());
                 session.commit();
             }else {
-                session.getMapper(FileHashMap.class).addHashMap(hash,netdiskFile.getFile_Path(),user.getUSER_ID());
-                outputStream = new FileOutputStream(netdiskFile.getFile_Path());
+                String hashFile_path = duplicateFileWare + hash;//map里面的位置
+                outputStream = new FileOutputStream(hashFile_path);
                 try {
                     copy(inputStream,outputStream);
-                    session.commit();
                 } catch (IOException e) {
                     //日志工厂
                     e.printStackTrace();
                 } finally {
                     close(outputStream);
                 }
+                //复制成功？
+                if(new File(hashFile_path).exists()){
+                    session.getMapper(FileMap.class)
+                            .buildFileMap(this.netdiskFile.getFile_Destination(),this.file.getName(),hash,this.user.getUSER_ID());
+                    session.getMapper(FileHashMap.class).addHashMap(hash,hashFile_path,user.getUSER_ID());
+                    session.commit();
+                }
             }
         } finally {
-            /*提交*/
             close(inputStream);
             close(session);
         }
@@ -295,7 +300,7 @@ public class FileServiceImpl extends FileServiceUtil{
         File on = new File(this.netdiskFile.getFile_Path());
         //重名文件处理
         if(on.exists()){
-            if(hash == getSH256(on)){
+            if(hash.equals(getSH256(on))){
                 throw new RuntimeException("file has been exit");
             }else {
                 String path = this.netdiskFile.getFile_Path();

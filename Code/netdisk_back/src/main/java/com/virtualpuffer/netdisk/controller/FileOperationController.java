@@ -23,16 +23,13 @@ import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/api")
-public class FileController extends BaseController {
-    public FileController() {
+public class FileOperationController extends BaseController {
+    public FileOperationController() {
     }
 
     @ResponseBody
     @RequestMapping(value = "/downloadFile",method = RequestMethod.GET)
     public ResponseMessage get(String destination, HttpServletRequest request, HttpServletResponse response){
-
-        System.out.println(destination + "des ______________________________________>>>>>>>>>>>>>>>");
-
         UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
         try {
             FileServiceImpl service = FileServiceImpl.getInstance(destination, loginService.getUser().getUSER_ID());
@@ -170,7 +167,7 @@ public class FileController extends BaseController {
         }
     }
     @ResponseBody
-    @RequestMapping(value = "shareFile",method = RequestMethod.GET)
+    @RequestMapping(value = "shareDir",method = RequestMethod.GET)
     public ResponseMessage shareFile(String destination, @Nullable String second,@Nullable String key,boolean getRandom, HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException {
         FileServiceImpl service = null;
         try {
@@ -235,7 +232,7 @@ public class FileController extends BaseController {
         try {
             UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
             service = FileServiceImpl.getInstance(destination, loginService.getUser().getUSER_ID());
-            service.deCompress();
+            service.compression();
             return ResponseMessage.getSuccessInstance(200,"文件压缩成功",null);
         } catch (FileNotFoundException e) {
             return ResponseMessage.getExceptionInstance(300,"指定压缩文件未找到",null);
