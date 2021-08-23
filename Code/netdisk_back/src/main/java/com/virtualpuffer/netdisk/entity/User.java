@@ -8,6 +8,7 @@ import java.util.Collection;
 
 public class User/* implements UserDetails */{
 
+    private String mailBox;
     private String username;
     private String password;
     private String URL;
@@ -87,6 +88,14 @@ public class User/* implements UserDetails */{
 
     public String getPhoto() {
         return photo;
+    }
+
+    public String getMailBox() {
+        return mailBox;
+    }
+
+    public void setMailBox(String mailBox) {
+        this.mailBox = mailBox;
     }
 
     @Override

@@ -1,13 +1,18 @@
 package com.virtualpuffer.netdisk.service.CASService;
 
-import com.virtualpuffer.netdisk.entity.User;
+import com.virtualpuffer.netdisk.service.impl.BaseServiceImpl;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
-import org.springframework.context.annotation.Bean;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
+import java.util.Map;
+import java.util.UUID;
+
 @Component
-public class CasBaseService {
+public class CasBaseService extends BaseServiceImpl {
     private String type;
     private static final String secretKey = "c7fp2dh6msk0";
 
@@ -15,6 +20,7 @@ public class CasBaseService {
     public CasBaseService getInstance(){
         return new CasBaseService();
     }
+
 
     public Claims parseTicket(String token) {
         Claims claims = Jwts.parser()
@@ -24,4 +30,6 @@ public class CasBaseService {
                 .parseClaimsJws(token).getBody();
         return claims;
     }
+
+
 }

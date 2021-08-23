@@ -11,4 +11,7 @@ public class CasLoginService extends CasBaseService {
         return new CasLoginService();
     }
 */
+    public void logout(){}
+
+    public void login(String username,String password){}
 }

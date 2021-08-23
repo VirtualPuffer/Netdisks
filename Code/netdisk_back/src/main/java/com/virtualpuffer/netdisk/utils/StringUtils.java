@@ -160,4 +160,11 @@ public class StringUtils {
         ImageIO.write(image,"png",response.getOutputStream());
         return ret;
     }
+    public static boolean isEmpty(String in){
+        if(in.equals("") || in == null){
+            return true;
+        }else {
+            return false;
+        }
+    }
 }

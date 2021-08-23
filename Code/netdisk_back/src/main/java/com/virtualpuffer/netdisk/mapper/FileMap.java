@@ -33,11 +33,10 @@ public interface FileMap {
     /*
     * 搜索文件
     * */
-    LinkedList searchFile(String fileName,int userID);
+    LinkedList searchFile(String name,int userID);
     /**
      * 上传文件
      * */
-    int insertMap(int userID,String fileHash,String fileName);
 
     NetdiskFile getFileMap(int userID, String destination);
 
@@ -47,6 +46,8 @@ public interface FileMap {
     * 重命名文件
     * */
     int renameFile(String destination,int userID,String name,String newDestination);
+
+    LinkedList<String> gc();
 
 
 }
