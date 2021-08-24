@@ -1,7 +1,6 @@
 package com.virtualpuffer.netdisk.utils;
 
 
-import com.virtualpuffer.netdisk.DemoFactory;
 import com.virtualpuffer.netdisk.Singleton;
 
 import java.sql.*;

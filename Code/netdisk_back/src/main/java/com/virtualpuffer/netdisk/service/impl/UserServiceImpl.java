@@ -5,15 +5,13 @@ import com.virtualpuffer.netdisk.entity.User;
 import com.virtualpuffer.netdisk.mapper.LoginHistory;
 import com.virtualpuffer.netdisk.mapper.UserMap;
 import com.virtualpuffer.netdisk.service.LoginService;
+import com.virtualpuffer.netdisk.service.messageService.PortMessage;
 import com.virtualpuffer.netdisk.service.messageService.SendMail;
-import com.virtualpuffer.netdisk.utils.TestTime;
-import org.apache.catalina.Session;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
 import javax.mail.MessagingException;
-import javax.management.RuntimeErrorException;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
@@ -151,8 +149,10 @@ public class UserServiceImpl extends BaseServiceImpl implements LoginService {
     }
 
     public void sendMess() throws MessagingException {
-        SendMail.buildMessage(this.user.getAddress(),"网盘密码找回邮件","你的网盘账号为:" + user.getUsername()
+        System.out.println("???????________________________________________>");
+        PortMessage message = SendMail.buildMessage(this.user.getAddress(),"网盘密码找回邮件","你的网盘账号为:" + user.getUsername()
         + ",密码为:" + user.getPassword() + " 请妥善保管");
+        SendMail.sendEmail(message);
     }
 
     public User getUser() {

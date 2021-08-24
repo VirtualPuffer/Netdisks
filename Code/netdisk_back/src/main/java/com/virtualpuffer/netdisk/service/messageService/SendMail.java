@@ -1,23 +1,19 @@
 package com.virtualpuffer.netdisk.service.messageService;
 
 import com.sun.mail.util.MailSSLSocketFactory;
-import com.virtualpuffer.netdisk.DemoFactory;
-import com.virtualpuffer.netdisk.entity.User;
 import com.virtualpuffer.netdisk.service.impl.BaseServiceImpl;
 
 import javax.mail.*;
-import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.security.GeneralSecurityException;
-import java.security.PublicKey;
 import java.util.LinkedList;
 import java.util.Properties;
 
 public class SendMail extends BaseServiceImpl implements Runnable{
-    private static String From = "547798198@qq.com";
-    private static String recipient = "547798198@qq.com";
-    private String password = "qykmsmflodptbeea";
+    private static final String From = "547798198@qq.com";
+    private static final String Recipient = "547798198@qq.com";
+    private static final String Password = "qykmsmflodptbeea";
     private LinkedList<MimeMessage> list = new LinkedList<>();
     private String host = "smtp.qq.com";
     private boolean runnable = true;
@@ -71,41 +67,48 @@ public class SendMail extends BaseServiceImpl implements Runnable{
             session = Session.getDefaultInstance(properties, new Authenticator() {
                         @Override
                         protected PasswordAuthentication getPasswordAuthentication() {
-                            return new PasswordAuthentication(recipient,password);
+                            return new PasswordAuthentication(Recipient,Password);
                 }
             });
-            session.setDebug(false);
-
-
-            while (transport == null || !transport.isConnected()){
-                try {
-                    transport = session.getTransport();
-                    transport.connect(host,From,password);
-                   Thread.sleep(1000);
-                    System.out.println(transport);
-                } catch (NoSuchProviderException e) {
-                    System.out.println("fail getting connect");
-                    System.out.println(e.getMessage());
-                }
-            }
 
             while (runnable) {
-                if(!list.isEmpty()){
-                    try {
-                        MimeMessage mimeMessage = list.getFirst();
-                        transport.sendMessage(mimeMessage,mimeMessage.getAllRecipients());
-                        list.removeFirst();
-                        Thread.sleep(10000);
-                    } catch (MessagingException e) {
-                        e.printStackTrace();
-                    } catch (InterruptedException i){}
+                try {
+                    getConnect(transport);
+                    if(!list.isEmpty()){
+                    MimeMessage mimeMessage = list.getFirst();
+                    transport.sendMessage(mimeMessage,mimeMessage.getAllRecipients());
+                    list.removeFirst();
+                    }
+                    Thread.sleep(10000);
+                } catch (MessagingException e) {
+                    errorLog.systemLog(e.getMessage());
+                } catch (InterruptedException e) {
+                    errorLog.systemLog(e.getMessage());
                 }
             }
+            System.out.println("邮件线程关闭");
             transport.close();
         }catch (Exception e){
             e.printStackTrace();
-        }finally {
-
+        }
+    }
+    public void getConnect(Transport transport) throws InterruptedException {
+        if(transport == null || !transport.isConnected()){
+            try {
+                transport = session.getTransport();
+                transport.connect(host,From,Password);
+                Thread.sleep(1000);
+                System.out.println("获取链接:" + transport);
+            } catch (NoSuchProviderException e) {
+                Thread.sleep(10000);
+                System.out.println("fail getting connect");
+                errorLog.systemLog(e.getMessage());
+            } catch (MessagingException e) {
+                Thread.sleep(10000);
+                errorLog.systemLog(e.getMessage());
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

@@ -1,6 +1,6 @@
-package com.virtualpuffer.netdisk;
+package com.virtualpuffer.netdisk.utils;
 
-import com.virtualpuffer.netdisk.utils.Message;
+import com.virtualpuffer.netdisk.Singleton;
 
 import java.lang.reflect.Constructor;
 import java.util.LinkedList;

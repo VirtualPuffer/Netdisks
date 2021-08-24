@@ -1,6 +1,6 @@
 package com.virtualpuffer.netdisk.service.impl;
 
-import com.virtualpuffer.netdisk.utils.TestTime;
+import com.virtualpuffer.netdisk.utils.Log;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
@@ -16,6 +16,7 @@ public class BaseServiceImpl {
     protected static final int BUFFER_SIZE = 4 * 1024;
     protected static String properties = "getMess.properties";
     private static final String secretKey = "c7fp2dh6msk0";
+    public static final Log errorLog = Log.getLog();
 
     protected static void close(Closeable cos){
         try {

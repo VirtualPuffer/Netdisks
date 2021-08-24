@@ -1,5 +1,6 @@
 package com.virtualpuffer.netdisk;
 
+import com.virtualpuffer.netdisk.service.messageService.SendMail;
 import com.virtualpuffer.netdisk.service.proxy.LoginServiceProxy;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -12,7 +13,8 @@ public class NetdiskApplication {
 
     public static void main(String[] args)throws Exception {
         SpringApplication.run(NetdiskApplication.class, args);
-        new LoginServiceProxy().sout();
+        Thread a = new Thread(SendMail.getInstance());
+        a.start();
     }
 
 }
