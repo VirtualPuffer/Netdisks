@@ -74,4 +74,19 @@ public class UserController extends BaseController {
         }
     }
 
+    @ResponseBody
+    @RequestMapping(value="/find")
+    public ResponseMessage findback(String addr, HttpServletRequest request , HttpServletResponse response){
+        try {
+            UserServiceImpl userService = UserServiceImpl.getInstanceByAddr(addr);
+            userService.sendMess();
+            return ResponseMessage.getSuccessInstance(200,"获取成功",null);
+        } catch (RuntimeException e) {
+            return ResponseMessage.getSuccessInstance(300,e.getMessage(),null);
+        } catch (Throwable e){
+            e.printStackTrace();//打印异常情况
+            return ResponseMessage.getErrorInstance(500,"系统错误",null);
+        }
+    }
+
 }

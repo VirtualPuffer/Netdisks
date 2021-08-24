@@ -12,7 +12,7 @@ public interface UserMap {
      * */
     User getUserByPassword(String username);
 
-
+    User getInstanceByAddr(String addr);
 
     User userLogin(String username,String password);
     LinkedList<User> getName(String verCode);

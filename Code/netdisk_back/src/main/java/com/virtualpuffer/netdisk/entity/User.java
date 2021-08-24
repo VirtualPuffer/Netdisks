@@ -99,16 +99,29 @@ public class User/* implements UserDetails */{
         this.mailBox = mailBox;
     }
 
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+
+
     @Override
     public String toString() {
         return "User{" +
-                "username='" + username + '\'' +
+                "mailBox='" + mailBox + '\'' +
+                ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
+                ", address='" + address + '\'' +
                 ", URL='" + URL + '\'' +
                 ", name='" + name + '\'' +
                 ", USER_ID=" + USER_ID +
                 ", photo='" + photo + '\'' +
                 ", token='" + token + '\'' +
+                ", ip='" + ip + '\'' +
                 '}';
     }
 }

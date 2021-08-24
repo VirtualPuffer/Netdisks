@@ -7,6 +7,9 @@
     <select id="getUserByID" resultType="com.virtualpuffer.netdisk.entity.User">
         select  * from user where USER_ID = #{userID};
     </select>
+    <select id="getInstanceByAddr" resultType="com.virtualpuffer.netdisk.entity.User">
+        select * from user where address = #{addr};
+    </select>
 
     <!--注册逻辑线-->
     <select id="duplicationUsername" resultType="com.virtualpuffer.netdisk.entity.User">
