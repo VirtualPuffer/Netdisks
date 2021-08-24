@@ -15,13 +15,14 @@ import java.util.LinkedList;
 import java.util.Properties;
 
 public class SendMail extends BaseServiceImpl implements Runnable{
-    private String From = "547798198@qq.com";
-    private String recipient = "547798198@qq.com";
+    private static String From = "547798198@qq.com";
+    private static String recipient = "547798198@qq.com";
     private String password = "qykmsmflodptbeea";
     private LinkedList<MimeMessage> list = new LinkedList<>();
     private String host = "smtp.qq.com";
     private boolean runnable = true;
     private static volatile SendMail sendMail;
+    public Thread thread;
     public Session session;
 
     private SendMail(){}
@@ -39,6 +40,15 @@ public class SendMail extends BaseServiceImpl implements Runnable{
 
     public static void sendEmail(MimeMessage get){
         getInstance().list.add(get);
+    }
+
+    public static PortMessage buildMessage(String addr,String subject,String content) throws MessagingException {
+        MimeMessage mimeMessage = new PortMessage(SendMail.getInstance().session);
+        mimeMessage.setFrom(new InternetAddress(From));
+        mimeMessage.setRecipient(Message.RecipientType.TO,new InternetAddress(addr));
+        mimeMessage.setSubject(subject);
+        mimeMessage.setContent(content,"text/html;charset=UTF-8");
+        return (PortMessage)mimeMessage;
     }
 
     @Override
@@ -59,19 +69,25 @@ public class SendMail extends BaseServiceImpl implements Runnable{
             properties.put("mail.smtp.ssl.enable", "true");
             properties.put("mail.smtp.ssl.socketFactory", sf);
             session = Session.getDefaultInstance(properties, new Authenticator() {
-                @Override
-                protected PasswordAuthentication getPasswordAuthentication() {
-                    return new PasswordAuthentication(recipient,password);
+                        @Override
+                        protected PasswordAuthentication getPasswordAuthentication() {
+                            return new PasswordAuthentication(recipient,password);
                 }
             });
             session.setDebug(false);
 
-            try {
-                transport = session.getTransport();
-            } catch (NoSuchProviderException e) {
-                e.printStackTrace();
+
+            while (transport == null || !transport.isConnected()){
+                try {
+                    transport = session.getTransport();
+                    transport.connect(host,From,password);
+                   Thread.sleep(1000);
+                    System.out.println(transport);
+                } catch (NoSuchProviderException e) {
+                    System.out.println("fail getting connect");
+                    System.out.println(e.getMessage());
+                }
             }
-            transport.connect(host,From,password);
 
             while (runnable) {
                 if(!list.isEmpty()){
@@ -85,21 +101,11 @@ public class SendMail extends BaseServiceImpl implements Runnable{
                     } catch (InterruptedException i){}
                 }
             }
-/*
-            MimeMessage mimeMessage = new MimeMessage(session);
-            //邮件发送人
-            mimeMessage.setFrom(new InternetAddress(recipient));
-            //邮件接收人
-            mimeMessage.setRecipient(Message.RecipientType.TO,new InternetAddress("3230343500@qq.com"));
-            //邮件标题
-            mimeMessage.setSubject("网站注册成功");
-            //邮件内容
-            mimeMessage.setContent("网站注册成功，密码为"+user.getPassword()+"，请妥善保管密码","text/html;charset=UTF-8");
-            //发送邮件
-*/
             transport.close();
         }catch (Exception e){
             e.printStackTrace();
+        }finally {
+
         }
     }
 }

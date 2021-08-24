@@ -11,6 +11,7 @@ public class User/* implements UserDetails */{
     private String mailBox;
     private String username;
     private String password;
+    private String address;
     private String URL;
     private String name;
     private int USER_ID;

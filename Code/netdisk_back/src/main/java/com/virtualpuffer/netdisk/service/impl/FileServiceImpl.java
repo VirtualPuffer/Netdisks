@@ -116,6 +116,9 @@ public class FileServiceImpl extends FileServiceUtil{
             return getInstanceByHash(hash,name);
         }
     }
+    /**
+     * 解析下载直链并转存
+    * */
     public static FileServiceImpl getInstanceByURL(String destination,String url,User user) throws FileNotFoundException {
         if(url.substring(0,downloadAPI.length()).equals(downloadAPI)){
             FileServiceImpl impl = getInstanceByToken(url.substring(downloadAPI.length()));
