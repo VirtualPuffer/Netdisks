@@ -75,6 +75,34 @@ public class FileOperationController extends BaseController {
     }
 
     @ResponseBody
+    @RequestMapping(value = "/uploadHashFile",method = RequestMethod.POST)
+    public ResponseMessage uploadHash(String destination,String hash,String name, HttpServletRequest request, HttpServletResponse response){
+        UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
+        if(destination == null || destination.equals("")){
+            destination = "";
+        }
+        if(hash == null){
+            return ResponseMessage.getExceptionInstance(404,"hash为空",null);
+        }
+        try {
+            FileServiceImpl service = FileServiceImpl.getInstanceByHash(hash,name);
+            service.getNetdiskFile().setFile_Destination(destination);
+            service.setUser(loginService.getUser());
+            service.upLoadByHash();
+            return ResponseMessage.getSuccessInstance(200,"文件上传成功",null);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return ResponseMessage.getExceptionInstance(404,"传输地址无效",null);
+        }  catch (RuntimeException e){
+            e.printStackTrace();
+            return ResponseMessage.getExceptionInstance(300,e.getMessage(),null);
+        }catch (Exception e) {
+            e.printStackTrace();
+            return ResponseMessage.getErrorInstance(500,"系统错误",null);
+        }
+    }
+
+    @ResponseBody
     @RequestMapping(value = "/mkdir",method = RequestMethod.POST,produces = "application/json")
     public ResponseMessage mkdir(@RequestBody File_Map on, HttpServletRequest request, HttpServletResponse response){
         UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");

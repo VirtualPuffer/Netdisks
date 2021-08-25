@@ -48,7 +48,7 @@ public class UserServiceImpl extends BaseServiceImpl implements LoginService {
      * 匹配成功后会返回服务对象
     * */
     public static UserServiceImpl getInstance(String token, String ip) throws RuntimeException{
-        Map map = parseJWT(token);
+        Map map = parseJWT(token,null);
   /*      if(map.get("ip").equals(ip)){*/
             return getInstance((String)map.get("username"),(String)map.get("password"),false , null);
       /*  }

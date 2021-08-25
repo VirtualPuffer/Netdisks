@@ -101,8 +101,8 @@ public class FileServiceImpl extends FileServiceUtil{
      * 没办法确定是hash还是path(不知道是不是文件)
      * 文件夹没办法给hash，只能给路径，被删了就没办法了
     * */
-    public static FileServiceImpl getInstanceByToken(String token) throws FileNotFoundException {
-        Map map = parseJWT(token);
+    public static FileServiceImpl getInstanceByToken(String token,String key) throws FileNotFoundException {
+        Map map = parseJWT(token,key);
         if(map.get("hash") == null){
             String path = (String) map.get("path");
             int id = (Integer) map.get("userID");
@@ -118,7 +118,7 @@ public class FileServiceImpl extends FileServiceUtil{
     * */
     public static FileServiceImpl getInstanceByURL(String destination,String url,User user) throws FileNotFoundException {
         if(url.substring(0,downloadAPI.length()).equals(downloadAPI)){
-            FileServiceImpl impl = getInstanceByToken(url.substring(downloadAPI.length()));
+            FileServiceImpl impl = getInstanceByToken(url.substring(downloadAPI.length()),null);
             impl.setUser(user);
             impl.netdiskFile.setFile_Destination(destination + "/" + impl.netdiskFile.getFile_Name());
             return impl;
@@ -149,7 +149,11 @@ public class FileServiceImpl extends FileServiceUtil{
         }
         map.put("userID",this.user.getUSER_ID());
         map.put("name",this.netdiskFile.getFile_Name());
-        return  downloadAPI + createToken(time,map,user.getUsername(),key);
+        if (key == null) {
+            return  downloadAPI + createToken(time,map,user.getUsername(),key);
+        } else {
+            return  downloadAPI + "key/" + createToken(time,map,user.getUsername(),key);
+        }
     }
 
 
@@ -289,6 +293,23 @@ public class FileServiceImpl extends FileServiceUtil{
             }
         } finally {
             close(inputStream);
+            close(session);
+        }
+    }
+    public void upLoadByHash() throws Exception {
+        SqlSession session = null;
+        String dest = this.netdiskFile.getFile_Destination();
+        String place = dest.substring(0,dest.lastIndexOf("/")+1);
+        String hash = this.netdiskFile.getFile_Hash();
+        try {
+            if(checkDuplicate(hash)){
+                session = MybatisConnect.getSession();
+                session.getMapper(FileMap.class).buildFileMap(dest,this.file.getName(),hash,this.user.getUSER_ID(),place);
+                session.commit();
+            }else {
+                throw new RuntimeException("hash not exit,please upload the native file");
+            }
+        } finally {
             close(session);
         }
     }

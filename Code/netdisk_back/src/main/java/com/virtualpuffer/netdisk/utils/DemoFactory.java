@@ -22,6 +22,7 @@ private DemoFactory(){
 }
 
 public static DemoFactory getDemoFactory(){
+    System.out.println("?");
     if(demoFactory == null){//1
         synchronized (DemoFactory.class){//2
             if(demoFactory == null){//3

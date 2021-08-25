@@ -73,11 +73,11 @@ public class SendMail extends BaseServiceImpl implements Runnable{
 
             while (runnable) {
                 try {
-                    getConnect(transport);
                     if(!list.isEmpty()){
-                    MimeMessage mimeMessage = list.getFirst();
-                    transport.sendMessage(mimeMessage,mimeMessage.getAllRecipients());
-                    list.removeFirst();
+                        getConnect(transport);
+                        MimeMessage mimeMessage = list.getFirst();
+                        transport.sendMessage(mimeMessage,mimeMessage.getAllRecipients());
+                        list.removeFirst();
                     }
                     Thread.sleep(10000);
                 } catch (MessagingException e) {

@@ -76,12 +76,20 @@ public class BaseServiceImpl {
         return builder.compact();
     }
     //token解码
-    public static Claims parseJWT(String token) {
+    public static Claims parseJWT(String token,String key) {
+        Claims claims = null;
 
-        Claims claims = Jwts.parser()
-                .setSigningKey(secretKey)
-                .parseClaimsJws(token)
-                .getBody();
+        if (key == null) {
+            claims = Jwts.parser()
+                    .setSigningKey(secretKey)
+                    .parseClaimsJws(token)
+                    .getBody();
+        } else {
+            claims = Jwts.parser()
+                    .setSigningKey(key)
+                    .parseClaimsJws(token)
+                    .getBody();
+        }
         return claims;
     }
     public static InputStream[] copyStream(InputStream inputStream) throws FileNotFoundException {
