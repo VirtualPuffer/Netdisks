@@ -97,10 +97,10 @@ public class UserServiceImpl extends BaseServiceImpl implements LoginService {
     }
 
     public static void registerUser(User user){
-        registerUser(user.getUsername(),user.getPassword(),user.getName());
+        registerUser(user.getUsername(),user.getPassword(),user.getName(),user.getAddress());
     }
 
-    public static void registerUser(String username,String password,String name)throws RuntimeException,Error{
+    public static void registerUser(String username,String password,String name,String address)throws RuntimeException,Error{
         if(username == null || password == null || name == null || username.equals("") || password.equals("") || name.equals("")){
             StringBuffer buffer = new StringBuffer("缺少参数:");
             buffer.append(username == null || username.equals("") ? "username " : "");
@@ -112,11 +112,14 @@ public class UserServiceImpl extends BaseServiceImpl implements LoginService {
         try {
             session = MybatisConnect.getSession();
             UserMap map = session.getMapper(UserMap.class);
+            User addrUser = map.getInstanceByAddr(address);
             User user = map.duplicationUsername(username);
             if(user != null){
                 throw new RuntimeException("用户名已经存在");
+            }else if(addrUser != null){
+                throw new RuntimeException("邮箱地址已经被注册");
             }else {
-                int count = map.register(username,password,name);
+                int count = map.register(username,password,name,address);
                 map.updateURL();
                 if(count!=1){
                     throw new Error("注册失败");

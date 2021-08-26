@@ -18,7 +18,9 @@ private static volatile DemoFactory demoFactory;
 private static final LinkedList demoExit = new LinkedList<>();
 
 
+
 private DemoFactory(){
+    propertiesParse();
 }
 
 public static DemoFactory getDemoFactory(){

@@ -11,15 +11,16 @@ import java.util.LinkedList;
 import java.util.Properties;
 
 public class SendMail extends BaseServiceImpl implements Runnable{
+    public Thread thread;
+    public Session session;
+    private Transport transport;
+    private boolean runnable = true;
+    private static volatile SendMail sendMail;
+    private static LinkedList<MimeMessage> list = new LinkedList<>();
+    private String host = "smtp.qq.com";
     private static final String From = "547798198@qq.com";
     private static final String Recipient = "547798198@qq.com";
     private static final String Password = "qykmsmflodptbeea";
-    private LinkedList<MimeMessage> list = new LinkedList<>();
-    private String host = "smtp.qq.com";
-    private boolean runnable = true;
-    private static volatile SendMail sendMail;
-    public Thread thread;
-    public Session session;
 
     private SendMail(){}
 
@@ -49,7 +50,6 @@ public class SendMail extends BaseServiceImpl implements Runnable{
 
     @Override
     public void run() {
-        Transport transport = null;
         try {
             Properties properties = new Properties();
             properties.setProperty("mail.host","smtp.qq.com");
@@ -74,7 +74,7 @@ public class SendMail extends BaseServiceImpl implements Runnable{
             while (runnable) {
                 try {
                     if(!list.isEmpty()){
-                        getConnect(transport);
+                        getConnect();
                         MimeMessage mimeMessage = list.getFirst();
                         transport.sendMessage(mimeMessage,mimeMessage.getAllRecipients());
                         list.removeFirst();
@@ -92,7 +92,7 @@ public class SendMail extends BaseServiceImpl implements Runnable{
             e.printStackTrace();
         }
     }
-    public void getConnect(Transport transport) throws InterruptedException {
+    public void getConnect() throws InterruptedException {
         if(transport == null || !transport.isConnected()){
             try {
                 transport = session.getTransport();

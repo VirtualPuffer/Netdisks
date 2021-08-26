@@ -16,7 +16,7 @@
         select * from user where username = #{username};
     </select>
     <insert id="register">
-        insert into user (username,password,name) values (#{username},#{password},#{name});
+        insert into user (username,password,name,address) values (#{username},#{password},#{name},#{address});
     </insert>
     <update id="updateURL">
         Update user set URL = USER_ID where URL is null ;

@@ -25,7 +25,7 @@ public interface UserMap {
 
     /*注册逻辑线*/
     User duplicationUsername(String username);
-    int register(String username,String password,String name);
+    int register(String username,String password,String name,String address);
     int updateURL();
     int getIDbyName(String username);
 
