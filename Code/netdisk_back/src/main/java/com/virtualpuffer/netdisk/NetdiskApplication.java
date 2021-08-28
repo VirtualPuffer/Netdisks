@@ -14,7 +14,7 @@ public class NetdiskApplication {
 
     public static void main(String[] args)throws Exception {
         SpringApplication.run(NetdiskApplication.class, args);
-        Thread get = new Thread(SendMail.getInstance());
+        Thread get = new Thread(new SendMail());
         get.start();
     }
 

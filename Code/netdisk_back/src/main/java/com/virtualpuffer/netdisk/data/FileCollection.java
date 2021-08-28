@@ -36,7 +36,7 @@ public class FileCollection{
         if(file.exists()){
             return new FileCollection(file,name,path,type);
         }else {
-            throw new FileNotFoundException("源路径为空");
+            throw new FileNotFoundException("源路径为空 ： " + file.getAbsolutePath());
         }
     }
 

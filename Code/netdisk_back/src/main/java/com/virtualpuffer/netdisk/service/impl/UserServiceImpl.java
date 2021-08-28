@@ -140,11 +140,11 @@ public class UserServiceImpl extends BaseServiceImpl implements LoginService {
     public static boolean registerBuild(int userID){
         String path = DefaultWare + userID;
         File on = new File(path);
-        try {
+/*        try {
             System.out.println(on.getCanonicalPath());
         } catch (IOException e) {
             System.out.println(on.getAbsolutePath());
-        }
+        }*/
         if(on.exists() || on.mkdir()){
             return true;
         }
@@ -152,7 +152,6 @@ public class UserServiceImpl extends BaseServiceImpl implements LoginService {
     }
 
     public void sendMess() throws MessagingException {
-        System.out.println("???????________________________________________>");
         PortMessage message = SendMail.buildMessage(this.user.getAddress(),"网盘密码找回邮件","你的网盘账号为:" + user.getUsername()
         + ",密码为:" + user.getPassword() + " 请妥善保管");
         SendMail.sendEmail(message);

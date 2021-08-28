@@ -22,7 +22,7 @@ public class SendMail extends BaseServiceImpl implements Runnable{
     private static final String Recipient = "547798198@qq.com";
     private static final String Password = "qykmsmflodptbeea";
 
-    private SendMail(){}
+    public SendMail(){}
 
     public static SendMail getInstance(){
         if(sendMail == null){//1
@@ -36,7 +36,7 @@ public class SendMail extends BaseServiceImpl implements Runnable{
     }
 
     public static void sendEmail(MimeMessage get){
-        getInstance().list.add(get);
+        list.add(get);
     }
 
     public static PortMessage buildMessage(String addr,String subject,String content) throws MessagingException {
@@ -75,11 +75,14 @@ public class SendMail extends BaseServiceImpl implements Runnable{
                 try {
                     if(!list.isEmpty()){
                         getConnect();
-                        MimeMessage mimeMessage = list.getFirst();
-                        transport.sendMessage(mimeMessage,mimeMessage.getAllRecipients());
-                        list.removeFirst();
+                        synchronized (SendMail.class) {
+                            MimeMessage mimeMessage = list.getFirst();
+                            transport.sendMessage(mimeMessage,mimeMessage.getAllRecipients());
+                            list.removeFirst();
+                        }
+                        Thread.sleep(9000);
                     }
-                    Thread.sleep(10000);
+                    Thread.sleep(1000);
                 } catch (MessagingException e) {
                     errorLog.systemLog(e.getMessage());
                 } catch (InterruptedException e) {

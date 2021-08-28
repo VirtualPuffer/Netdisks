@@ -66,4 +66,11 @@ public class Log {
         getLog().writeLog(getTime()+ " : " + message);
     }
 
+    public void msgLog(String msg){
+        systemLog("Message : " + msg);
+    }
+    public void errorLog(String msg){
+        systemLog("Error : " + msg);
+    }
+
 }

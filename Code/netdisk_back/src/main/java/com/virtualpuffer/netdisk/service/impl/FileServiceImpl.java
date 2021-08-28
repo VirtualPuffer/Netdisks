@@ -417,16 +417,10 @@ public class FileServiceImpl extends FileServiceUtil{
             FileCollection collection = FileCollection.getInstance(this.file,name,getAbsolutePath("/"),type);
             LinkedList fileList = collection.getFile();
             LinkedList dirList = collection.getDir();
-            //LinkedList<File_Map> list = session.getMapper(FileMap.class).getDirectoryMap(netdiskFile.getFile_Destination(),user.getUSER_ID());
-            LinkedList<NetdiskFile> list = session.getMapper(FileMap.class).searchFile(name, user.getUSER_ID());
+           LinkedList<NetdiskFile> list = session.getMapper(FileMap.class).searchFile(name, user.getUSER_ID());
             if(!list.isEmpty()){
                 for(NetdiskFile fileMap : list){
-                   // try {
-                       // if(fileMap.getFile_Destination().substring(fileMap.getFile_Destination().lastIndexOf("/" + 1)).contains(name)){
-                            fileList.add(fileMap.getFile_Destination());
-                       // }
-                  //  } catch (Exception e) {//防止爆掉
-                  //  }
+                    fileList.add(fileMap.getFile_Destination());
                 }
             }
             if(fileList.isEmpty()&&dirList.isEmpty()){
