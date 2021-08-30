@@ -1,6 +1,7 @@
 package com.virtualpuffer.netdisk.service.impl.user;
 
 import com.virtualpuffer.netdisk.MybatisConnect;
+import com.virtualpuffer.netdisk.data.Mail;
 import com.virtualpuffer.netdisk.entity.User;
 import com.virtualpuffer.netdisk.mapper.LoginHistory;
 import com.virtualpuffer.netdisk.mapper.UserMap;
@@ -152,9 +153,10 @@ public class UserServiceImpl extends BaseServiceImpl implements LoginService {
     }
 
     public void sendMess() throws MessagingException {
-        PortMessage message = SendMail.buildMessage(this.user.getAddress(),"网盘密码找回邮件","你的网盘账号为:" + user.getUsername()
-        + ",密码为:" + user.getPassword() + " 请妥善保管");
-        SendMail.sendEmail(message);
+/*        PortMessage message = SendMail.buildMessage(this.user.getAddress(),"网盘密码找回邮件","你的网盘账号为:" + user.getUsername()
+        + ",密码为:" + user.getPassword() + " 请妥善保管");*/
+        SendMail.sendEmail(Mail.buildMail(this.user.getAddress(),"网盘密码找回邮件","你的网盘账号为:" + user.getUsername()
+                + ",密码为:" + user.getPassword() + " 请妥善保管"));
     }
 
     public User getUser() {

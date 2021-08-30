@@ -32,8 +32,4 @@ public class PortMessage extends MimeMessage {
     protected PortMessage(Folder folder, InternetHeaders headers, byte[] content, int msgnum) throws MessagingException {
         super(folder, headers, content, msgnum);
     }
-
-    public void send(){
-        SendMail.sendEmail(this);
-    }
 }

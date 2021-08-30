@@ -1,6 +1,7 @@
 package com.virtualpuffer.netdisk.service.messageService;
 
 import com.sun.mail.util.MailSSLSocketFactory;
+import com.virtualpuffer.netdisk.data.Mail;
 import com.virtualpuffer.netdisk.service.impl.BaseServiceImpl;
 
 import javax.mail.*;
@@ -16,7 +17,7 @@ public class SendMail extends BaseServiceImpl implements Runnable{
     private Transport transport;
     private boolean runnable = true;
     private static volatile SendMail sendMail;
-    private static LinkedList<MimeMessage> list = new LinkedList<>();
+    private static LinkedList<Mail> list = new LinkedList<>();
     private String host = "smtp.qq.com";
     private static final String From = "547798198@qq.com";
     private static final String Recipient = "547798198@qq.com";
@@ -35,16 +36,16 @@ public class SendMail extends BaseServiceImpl implements Runnable{
         return sendMail;
     }
 
-    public static void sendEmail(MimeMessage get){
+    public static void sendEmail(Mail get){
         list.add(get);
     }
 
-    public static PortMessage buildMessage(String addr,String subject,String content) throws MessagingException {
-        MimeMessage mimeMessage = new PortMessage(SendMail.getInstance().session);
+    public PortMessage buildMessage(Mail mail) throws MessagingException {
+        MimeMessage mimeMessage = new PortMessage(session);
         mimeMessage.setFrom(new InternetAddress(From));
-        mimeMessage.setRecipient(Message.RecipientType.TO,new InternetAddress(addr));
-        mimeMessage.setSubject(subject);
-        mimeMessage.setContent(content,"text/html;charset=UTF-8");
+        mimeMessage.setRecipient(Message.RecipientType.TO,new InternetAddress(mail.getAddr()));
+        mimeMessage.setSubject(mail.getSubject());
+        mimeMessage.setContent(mail.getContent(),"text/html;charset=UTF-8");
         return (PortMessage)mimeMessage;
     }
 
@@ -76,7 +77,7 @@ public class SendMail extends BaseServiceImpl implements Runnable{
                     synchronized (SendMail.class) {
                         if(!list.isEmpty()){
                             getConnect();
-                            MimeMessage mimeMessage = list.getFirst();
+                            MimeMessage mimeMessage = buildMessage(list.getFirst());
                             transport.sendMessage(mimeMessage,mimeMessage.getAllRecipients());
                             list.removeFirst();
                             Thread.sleep(9000);

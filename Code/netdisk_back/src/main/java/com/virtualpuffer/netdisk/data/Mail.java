@@ -8,6 +8,10 @@ public class Mail{
     public Mail() {
     }
 
+    public static Mail buildMail(String addr, String subject, String content){
+        return new Mail(addr,subject,content);
+    }
+
     public Mail(String addr, String subject, String content) {
         this.addr = addr;
         this.subject = subject;
