@@ -26,10 +26,11 @@ public class UserServiceImpl extends BaseServiceImpl implements LoginService {
      * 解析token
      * 登录成功后完善内容
     *
+     * tokenTag用于标识token用处
     * */
-    private User  user;
-    private String tokenTag;
-    private static final long time = 7*24*60*60;
+    protected User  user;
+    protected String tokenTag;
+    protected static final long time = 7*24*60*60;
     public static final String DefaultWare = getMess("defaultWare");
 
     public UserServiceImpl(User loginUser){
@@ -158,6 +159,14 @@ public class UserServiceImpl extends BaseServiceImpl implements LoginService {
         + ",密码为:" + user.getPassword() + " 请妥善保管");*/
         SendMail.sendEmail(Mail.buildMail(this.user.getAddress(),"网盘密码找回邮件","你的网盘账号为:" + user.getUsername()
                 + ",密码为:" + user.getPassword() + " 请妥善保管"));
+    }
+
+    public String getTokenTag() {
+        return tokenTag;
+    }
+
+    public void setTokenTag(String tokenTag) {
+        this.tokenTag = tokenTag;
     }
 
     public User getUser() {

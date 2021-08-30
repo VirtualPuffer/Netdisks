@@ -29,8 +29,9 @@ public interface UserMap {
     int updateURL();
     int getIDbyName(String username);
 
-    String getPath(String verCode);
-    int userLoginDao(String verCode, long clock, String ip, Timestamp date, String username);
-    int locateByVer(String verCode);
+
+    //找回密码
+    int resetPassword(String password,int userID);
+
 
 }

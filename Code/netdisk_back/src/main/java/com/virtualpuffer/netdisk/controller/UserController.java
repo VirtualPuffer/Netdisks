@@ -101,13 +101,12 @@ public class UserController extends BaseController {
     public Object i(@PathVariable String token,String key,String password, HttpServletResponse response) throws IOException {
         String ip = (String) request.getAttribute("ip");
         if(key == null || key.equals("")){
-            return new ModelAndView("/getURL.html");
+            return new ModelAndView("/reset.html");
         }else {
             InputStream inputStream = null;
             try {
                 UserTokenService service = UserTokenService.getInstanceByToken(token,ip);
                 service.resetPassword(password);
-
                 return ResponseMessage.getSuccessInstance(200,"密码重置成功",null);
             }catch (ExpiredJwtException e){
                 return ResponseMessage.getExceptionInstance(300,"链接已失效",null);
@@ -117,7 +116,7 @@ public class UserController extends BaseController {
                 return ResponseMessage.getExceptionInstance(300,"链接错误 : " + e.getMessage(),null);
             }catch (Exception e){
                 e.printStackTrace();
-                return ResponseMessage.getErrorInstance(500,"下载失败",null);
+                return ResponseMessage.getErrorInstance(500,"链接错误 : " + e.getMessage(),null);
             }finally {
                 close(inputStream);
             }

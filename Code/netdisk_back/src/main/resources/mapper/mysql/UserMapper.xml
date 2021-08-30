@@ -24,6 +24,11 @@
     <select id="getIDbyName" resultType="int">
         select USER_ID from user where username = #{username};
     </select>
+
+    <!--重置密码-->
+    <update id="resetPassword">
+        update user set password = #{password} where USER_ID = #{userID};
+    </update>
     <!--<select id="getName" resultType="com.virtualpuffer.netdisk.mapper.User">
         select user.username from user left join login_verify on user.USER_ID=Ver.USER_ID where login_verify.verCode = #{verCode};
     </select>
