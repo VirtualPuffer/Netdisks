@@ -4,9 +4,10 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.awt.*;
+import java.io.Serializable;
 import java.util.Collection;
 
-public class User extends BaseEntity{
+public class User extends BaseEntity implements Serializable {
 
     private String mailBox;
     private String username;

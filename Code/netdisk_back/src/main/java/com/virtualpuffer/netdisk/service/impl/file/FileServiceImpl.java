@@ -86,46 +86,6 @@ public class FileServiceImpl extends FileServiceUtil {
             close(session);
         }
     }
-
-/*    public static FileServiceImpl getInstanceByHash1(String hash,String name) throws FileNotFoundException {
-            FileServiceImpl impl = new FileServiceImpl();
-            NetdiskFile netdiskFile = NetdiskFile.getInstance(hash,name);
-            impl.setNetdiskFile(netdiskFile);
-            impl.setFile(netdiskFile.getFile());
-            return impl;
-    }*/
-    /**
-     * @param token 需要解析的token
-     * 解析token里的FileService对象
-     *
-     * 没办法确定是hash还是path(不知道是不是文件)
-     * 文件夹没办法给hash，只能给路径，被删了就没办法了
-    * */
-/*    public static FileServiceImpl getInstanceByToken1(String token,String key) throws FileNotFoundException {
-        Map map = parseJWT(token,key);
-        if(map.get("hash") == null){
-            String path = (String) map.get("path");
-            int id = (Integer) map.get("userID");
-            return getInstanceByPath(path,id);
-        }else {
-            String hash = (String) map.get("hash");
-            String name = (String) map.get("name");
-            return getInstanceByHash(hash,name);
-        }
-    }*/
-    /**
-     * 解析下载直链并转存
-    * */
-/*    public static FileServiceImpl getInstanceByURL1(String destination,String url,User user) throws FileNotFoundException {
-        if(url.substring(0,downloadAPI.length()).equals(downloadAPI)){
-            FileServiceImpl impl = getInstanceByToken(url.substring(downloadAPI.length()),null);
-            impl.setUser(user);
-            impl.netdiskFile.setFile_Destination(destination + "/" + impl.netdiskFile.getFile_Name());
-            return impl;
-        }else {
-            throw new RuntimeException("url解析失败");
-        }
-    }*/
     /**
     * 物理路径计算
      * @param destination 相对路径位置（网盘）

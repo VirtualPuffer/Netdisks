@@ -34,10 +34,8 @@ public class BaseServiceImpl {
         InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream(properties);
         Properties get = new Properties();
         try {
-
             get.load(in);
             in.close();
-
         } catch (IOException e) {
             e.printStackTrace();
         }
