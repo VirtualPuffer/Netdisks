@@ -8,16 +8,14 @@
     </settings>
     <environments default="mysql">
         <environment id="mysql">
-            <!--指定事务管理的类型，这里简单使用Java的JDBC的提交和回滚设置-->
             <transactionManager type="JDBC"></transactionManager>
-            <!--dataSource 指连接源配置，POOLED是JDBC连接对象的数据源连接池的实现-->
             <dataSource type="POOLED">
                 <property name="driver" value="com.mysql.cj.jdbc.Driver"></property>
                 <property name="url" value="jdbc:mysql://47.96.253.99:3306/netdisk?useUnicode=true&amp;characterEncoding=utf8"></property>
                 <property name="username" value="root"></property>
                 <property name="password" value="123456"></property>
-                <property name="poolMaximumActiveConnections" value="100"></property> <!--最大活跃连接数 -->
-                <property name="poolMaximumIdleConnections" value="15"></property>  <!--最大空闲连接数-->
+                <property name="poolMaximumActiveConnections" value="100"></property>
+                <property name="poolMaximumIdleConnections" value="15"></property>
                 <property name="poolTimeToWait" value="20000"></property>
             <!--    <property name="poolTimeToWait" value="20000"></property>　　&lt;!&ndash;创建连接时最大等待时间20s&ndash;&gt;-->
             </dataSource>
@@ -30,6 +28,5 @@
         <mapper resource="mapper/mysql/FileHashMap.xml"></mapper>
         <mapper resource="mapper/mysql/UserMapper.xml"></mapper>
         <mapper resource="mapper/mysql/LoginVerifyMap.xml"></mapper>
-       <!-- <mapper class="mapper.UserMap"></mapper>-->
     </mappers>
 </configuration>

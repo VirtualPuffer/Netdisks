@@ -73,14 +73,14 @@ public class SendMail extends BaseServiceImpl implements Runnable{
 
             while (runnable) {
                 try {
-                    if(!list.isEmpty()){
-                        getConnect();
-                        synchronized (SendMail.class) {
+                    synchronized (SendMail.class) {
+                        if(!list.isEmpty()){
+                            getConnect();
                             MimeMessage mimeMessage = list.getFirst();
                             transport.sendMessage(mimeMessage,mimeMessage.getAllRecipients());
                             list.removeFirst();
+                            Thread.sleep(9000);
                         }
-                        Thread.sleep(9000);
                     }
                     Thread.sleep(1000);
                 } catch (MessagingException e) {
@@ -115,4 +115,5 @@ public class SendMail extends BaseServiceImpl implements Runnable{
         }
     }
 }
+
 

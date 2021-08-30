@@ -47,6 +47,7 @@ public class FileServiceImpl extends FileServiceUtil {
     public static final String downloadAPI = Message.getMess("downloadAPI");//下载链接前缀
     public static final String defaultWare = Message.getMess("defaultWare");
     public static final String duplicateFileWare = Message.getMess("duplicateFileWare");
+    public static final String tempWare = getMess("compressTemp");
     public FileServiceImpl(){}
 
     /**
@@ -256,23 +257,6 @@ public class FileServiceImpl extends FileServiceUtil {
             close(session);
         }
     }
-/*    public void upLoadByHash() throws Exception {
-        SqlSession session = null;
-        String dprotected est = this.netdiskFile.getFile_Destination();
-        String place = dest.substring(0,dest.lastIndexOf("/")+1);
-        String hash = this.netdiskFile.getFile_Hash();
-        try {
-            if(checkDuplicate(hash)){
-                session = MybatisConnect.getSession();
-                session.getMapper(FileMap.class).buildFileMap(dest,this.file.getName(),hash,this.user.getUSER_ID(),place);
-                session.commit();
-            }else {
-                throw new RuntimeException("hash not exit,please upload the native file");
-            }
-        } finally {
-            close(session);
-        }
-    }*/
     //上面的工具类，有重复文件时在后缀前加上（1），如果已经存在就递增
     public void dumplicateParse(String hash) throws Exception {
         NetdiskFile test = NetdiskFile.getInstance(this.netdiskFile.getFile_Destination(),this.user.getUSER_ID());
@@ -341,7 +325,7 @@ public class FileServiceImpl extends FileServiceUtil {
     public long count() throws RuntimeException {
         ZipOutputStream zos = null;
         String fileName = this.netdiskFile.getFile_Name();
-        String path = getMess("compressTemp") + fileName.hashCode();
+        String path = tempWare + fileName.hashCode();
         File temp = null;
         try {
             temp = new File(path);
@@ -354,7 +338,10 @@ public class FileServiceImpl extends FileServiceUtil {
                 OutputStream out = new FileOutputStream(path);
                 zos = new ZipOutputStream(out);
                 compress(this.file, zos, fileName);
+                zos.finish();
+                zos.flush();
             } catch (Exception e) {
+                errorLog.errorLog(e.getMessage());
                 throw new RuntimeException("zip error from ZipUtils", e);
             } finally {
                 close(zos);
