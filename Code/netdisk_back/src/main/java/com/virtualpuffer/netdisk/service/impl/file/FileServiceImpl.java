@@ -38,12 +38,12 @@ import java.util.zip.ZipOutputStream;
 * */
 @Service
 public class FileServiceImpl extends FileServiceUtil {
-    private User user;
-    private File file;
-    private NetdiskFile netdiskFile;
-    private int file_length;
-    private boolean isMapper = false;
-    private static final int BUFFER_SIZE = 4 * 1024;
+    protected User user;
+    protected File file;
+    protected NetdiskFile netdiskFile;
+    protected int file_length;
+    protected boolean isMapper = false;
+    protected static final int BUFFER_SIZE = 4 * 1024;
     public static final String downloadAPI = Message.getMess("downloadAPI");//下载链接前缀
     public static final String defaultWare = Message.getMess("defaultWare");
     public static final String duplicateFileWare = Message.getMess("duplicateFileWare");
@@ -87,13 +87,13 @@ public class FileServiceImpl extends FileServiceUtil {
         }
     }
 
-    public static FileServiceImpl getInstanceByHash(String hash,String name) throws FileNotFoundException {
+/*    public static FileServiceImpl getInstanceByHash1(String hash,String name) throws FileNotFoundException {
             FileServiceImpl impl = new FileServiceImpl();
             NetdiskFile netdiskFile = NetdiskFile.getInstance(hash,name);
             impl.setNetdiskFile(netdiskFile);
             impl.setFile(netdiskFile.getFile());
             return impl;
-    }
+    }*/
     /**
      * @param token 需要解析的token
      * 解析token里的FileService对象
@@ -101,7 +101,7 @@ public class FileServiceImpl extends FileServiceUtil {
      * 没办法确定是hash还是path(不知道是不是文件)
      * 文件夹没办法给hash，只能给路径，被删了就没办法了
     * */
-    public static FileServiceImpl getInstanceByToken(String token,String key) throws FileNotFoundException {
+/*    public static FileServiceImpl getInstanceByToken1(String token,String key) throws FileNotFoundException {
         Map map = parseJWT(token,key);
         if(map.get("hash") == null){
             String path = (String) map.get("path");
@@ -112,11 +112,11 @@ public class FileServiceImpl extends FileServiceUtil {
             String name = (String) map.get("name");
             return getInstanceByHash(hash,name);
         }
-    }
+    }*/
     /**
      * 解析下载直链并转存
     * */
-    public static FileServiceImpl getInstanceByURL(String destination,String url,User user) throws FileNotFoundException {
+/*    public static FileServiceImpl getInstanceByURL1(String destination,String url,User user) throws FileNotFoundException {
         if(url.substring(0,downloadAPI.length()).equals(downloadAPI)){
             FileServiceImpl impl = getInstanceByToken(url.substring(downloadAPI.length()),null);
             impl.setUser(user);
@@ -125,7 +125,7 @@ public class FileServiceImpl extends FileServiceUtil {
         }else {
             throw new RuntimeException("url解析失败");
         }
-    }
+    }*/
     /**
     * 物理路径计算
      * @param destination 相对路径位置（网盘）
@@ -296,9 +296,9 @@ public class FileServiceImpl extends FileServiceUtil {
             close(session);
         }
     }
-    public void upLoadByHash() throws Exception {
+/*    public void upLoadByHash() throws Exception {
         SqlSession session = null;
-        String dest = this.netdiskFile.getFile_Destination();
+        String dprotected est = this.netdiskFile.getFile_Destination();
         String place = dest.substring(0,dest.lastIndexOf("/")+1);
         String hash = this.netdiskFile.getFile_Hash();
         try {
@@ -312,7 +312,7 @@ public class FileServiceImpl extends FileServiceUtil {
         } finally {
             close(session);
         }
-    }
+    }*/
     //上面的工具类，有重复文件时在后缀前加上（1），如果已经存在就递增
     public void dumplicateParse(String hash) throws Exception {
         NetdiskFile test = NetdiskFile.getInstance(this.netdiskFile.getFile_Destination(),this.user.getUSER_ID());

@@ -2,7 +2,7 @@ package com.virtualpuffer.netdisk.service.impl;
 
 import com.virtualpuffer.netdisk.MybatisConnect;
 import com.virtualpuffer.netdisk.mapper.FileMap;
-import com.virtualpuffer.netdisk.service.impl.file.FileServiceImpl;
+import com.virtualpuffer.netdisk.service.impl.file.FileHashService;
 import org.apache.ibatis.session.SqlSession;
 
 import java.io.FileNotFoundException;
@@ -20,8 +20,9 @@ public class GCService extends BaseServiceImpl{
                 while (iterator.hasNext()){
                     String hash = iterator.next();
                     try {
-                        FileServiceImpl impl = FileServiceImpl.getInstanceByHash(hash,"");
-                        impl.getNetdiskFile().getFile().delete();
+               /*         FileServiceImpl impl = FileServiceImpl.getInstanceByHash(hash,"");*/
+                        FileHashService service = FileHashService.getInstanceByHash(hash,"");
+                        service.getNetdiskFile().getFile().delete();
 
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();

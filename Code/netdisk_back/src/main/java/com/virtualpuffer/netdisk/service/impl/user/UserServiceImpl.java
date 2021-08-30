@@ -42,12 +42,12 @@ public class UserServiceImpl extends BaseServiceImpl implements LoginService {
     }
 
 
-/*    *//**
-     * @param token token参数
+    /**
+     * @param1 token token参数
      * 解析token，获取用户名和密码并进行匹配
      * 匹配成功后会返回服务对象
-    * *//*
-    public static UserServiceImpl getInstance1(String token, String ip) throws RuntimeException{
+    * */
+/*    public static UserServiceImpl getInstance(String token, String ip) throws RuntimeException{
         Map map = parseJWT(token,null);
   *//*      if(map.get("ip").equals(ip)){*//*
             return getInstance((String)map.get("username"),(String)map.get("password"),false , null);

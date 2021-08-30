@@ -6,6 +6,8 @@ import com.virtualpuffer.netdisk.data.FileCollection;
 import com.virtualpuffer.netdisk.data.ResponseMessage;
 import com.virtualpuffer.netdisk.entity.File_Map;
 import com.virtualpuffer.netdisk.service.impl.file.FileServiceImpl;
+import com.virtualpuffer.netdisk.service.impl.file.FileHashService;
+import com.virtualpuffer.netdisk.service.impl.file.FileTokenService;
 import com.virtualpuffer.netdisk.service.impl.user.UserServiceImpl;
 import com.virtualpuffer.netdisk.utils.StringUtils;
 import org.springframework.lang.Nullable;
@@ -85,7 +87,8 @@ public class FileOperationController extends BaseController {
             return ResponseMessage.getExceptionInstance(404,"hash为空",null);
         }
         try {
-            FileServiceImpl service = FileServiceImpl.getInstanceByHash(hash,name);
+          /*  FileServiceImpl service = FileServiceImpl.getInstanceByHash(hash,name);*/
+            FileHashService service = FileHashService.getInstanceByHash(hash,name);
             service.getNetdiskFile().setFile_Destination(destination);
             service.setUser(loginService.getUser());
             service.upLoadByHash();
@@ -292,7 +295,7 @@ public class FileOperationController extends BaseController {
         try {
             //用id dest定位文件，url获取源文件位置
             UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
-            service = FileServiceImpl.getInstanceByURL(destination,url,loginService.getUser());
+            service = FileTokenService.getInstanceByURL(destination,url,loginService.getUser());
             service.transfer();
             return ResponseMessage.getSuccessInstance(200,"文件储存成功",null);
         } catch (FileNotFoundException e) {
