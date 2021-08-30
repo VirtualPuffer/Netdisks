@@ -3,7 +3,8 @@ package com.virtualpuffer.netdisk.Security.securityFilter;
 
 import com.alibaba.fastjson.JSON;
 import com.virtualpuffer.netdisk.data.ResponseMessage;
-import com.virtualpuffer.netdisk.service.impl.UserServiceImpl;
+import com.virtualpuffer.netdisk.service.impl.user.UserServiceImpl;
+import com.virtualpuffer.netdisk.service.impl.user.UserTokenService;
 
 
 import javax.servlet.*;
@@ -47,7 +48,8 @@ public class APIAuthorizationFilter implements Filter {
             if(request.getParameter("virtual")!=null){token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjMiLCJwYXNzd29yZCI6IjEyMyIsImlwIjoiMTkyLjE4Ni4wLjEiLCJleHAiOjE2MzI5NzkyNTUsInVzZXJJRCI6MSwiaWF0IjoxNjI5NTIzMjU1LCJqdGkiOiJhMWYzNTE0YS1mMzIxLTQ5MzUtOTcwNy04MTQxNDMwMGZmZTMiLCJ1c2VybmFtZSI6IjEyMyJ9.ICYXP1HPSNXduBNT333n0tNOKzVjTc3obn4-y-0U-y4";}
             if(token != null && !token.equals("") ){
                 String ip = (String) request.getAttribute("ip");
-                UserServiceImpl service = UserServiceImpl.getInstance(token,ip);
+                /*UserServiceImpl service = UserServiceImpl.getInstance(token,ip);*/
+                UserServiceImpl service = UserTokenService.getInstanceByToken(token,ip);
                 request.setAttribute("AuthService",service);
                 request.getAttribute("AuthService");
             }else {

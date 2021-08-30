@@ -5,12 +5,11 @@ import com.virtualpuffer.netdisk.mapper.FileHashMap;
 import com.virtualpuffer.netdisk.mapper.FileMap;
 import com.virtualpuffer.netdisk.mapper.UserMap;
 import com.virtualpuffer.netdisk.service.impl.BaseServiceImpl;
-import com.virtualpuffer.netdisk.service.impl.FileServiceUtil;
+import com.virtualpuffer.netdisk.service.impl.file.FileServiceUtil;
 import com.virtualpuffer.netdisk.utils.Message;
 import com.virtualpuffer.netdisk.utils.StringUtils;
 import org.apache.ibatis.session.SqlSession;
 
-import javax.ws.rs.core.Link;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -26,7 +25,7 @@ import static com.virtualpuffer.netdisk.utils.StringUtils.filePathDeal;
  * 通过path映射或者destination反向映射
  *
  * */
-public class NetdiskFile extends BaseServiceImpl implements Serializable {
+public class NetdiskFile extends BaseEntity implements Serializable {
     private String File_Name;
     private String File_Path;//真实路径
     private String File_Destination_Place;//父级路径

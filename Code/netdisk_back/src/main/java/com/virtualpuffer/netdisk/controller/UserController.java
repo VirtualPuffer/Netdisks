@@ -3,8 +3,8 @@ package com.virtualpuffer.netdisk.controller;
 import com.virtualpuffer.netdisk.controller.base.BaseController;
 import com.virtualpuffer.netdisk.data.ResponseMessage;
 import com.virtualpuffer.netdisk.entity.User;
-import com.virtualpuffer.netdisk.service.impl.UserServiceImpl;
-import org.apache.ibatis.session.SqlSession;
+import com.virtualpuffer.netdisk.service.impl.user.UserServiceImpl;
+import com.virtualpuffer.netdisk.service.impl.user.UserTokenService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -56,7 +56,7 @@ public class UserController extends BaseController {
             String token = request.getHeader("Authorization");
             if(token!=null){
                 String ip = (String) request.getAttribute("ip");
-                UserServiceImpl service = UserServiceImpl.getInstance(token,ip);
+                UserServiceImpl service = (UserServiceImpl) UserTokenService.getInstanceByToken(token,ip);
                 request.setAttribute("AuthService",service);
                 request.getAttribute("AuthService");
             }

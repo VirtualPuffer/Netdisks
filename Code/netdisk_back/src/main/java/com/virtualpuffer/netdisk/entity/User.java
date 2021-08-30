@@ -6,7 +6,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.awt.*;
 import java.util.Collection;
 
-public class User/* implements UserDetails */{
+public class User extends BaseEntity{
 
     private String mailBox;
     private String username;

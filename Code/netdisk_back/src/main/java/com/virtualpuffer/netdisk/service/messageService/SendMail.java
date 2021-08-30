@@ -84,9 +84,9 @@ public class SendMail extends BaseServiceImpl implements Runnable{
                     }
                     Thread.sleep(1000);
                 } catch (MessagingException e) {
-                    errorLog.systemLog(e.getMessage());
+                    errorLog.errorLog(e.getMessage());
                 } catch (InterruptedException e) {
-                    errorLog.systemLog(e.getMessage());
+                    errorLog.errorLog(e.getMessage());
                 }
             }
             System.out.println("邮件线程关闭");

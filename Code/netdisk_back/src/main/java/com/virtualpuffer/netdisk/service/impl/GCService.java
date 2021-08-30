@@ -2,6 +2,7 @@ package com.virtualpuffer.netdisk.service.impl;
 
 import com.virtualpuffer.netdisk.MybatisConnect;
 import com.virtualpuffer.netdisk.mapper.FileMap;
+import com.virtualpuffer.netdisk.service.impl.file.FileServiceImpl;
 import org.apache.ibatis.session.SqlSession;
 
 import java.io.FileNotFoundException;

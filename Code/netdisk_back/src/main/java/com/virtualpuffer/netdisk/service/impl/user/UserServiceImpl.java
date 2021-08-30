@@ -1,10 +1,11 @@
-package com.virtualpuffer.netdisk.service.impl;
+package com.virtualpuffer.netdisk.service.impl.user;
 
 import com.virtualpuffer.netdisk.MybatisConnect;
 import com.virtualpuffer.netdisk.entity.User;
 import com.virtualpuffer.netdisk.mapper.LoginHistory;
 import com.virtualpuffer.netdisk.mapper.UserMap;
 import com.virtualpuffer.netdisk.service.LoginService;
+import com.virtualpuffer.netdisk.service.impl.BaseServiceImpl;
 import com.virtualpuffer.netdisk.service.messageService.PortMessage;
 import com.virtualpuffer.netdisk.service.messageService.SendMail;
 import org.apache.ibatis.session.SqlSession;
@@ -14,7 +15,6 @@ import org.springframework.lang.Nullable;
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
-import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
@@ -42,18 +42,18 @@ public class UserServiceImpl extends BaseServiceImpl implements LoginService {
     }
 
 
-    /**
+/*    *//**
      * @param token token参数
      * 解析token，获取用户名和密码并进行匹配
      * 匹配成功后会返回服务对象
-    * */
-    public static UserServiceImpl getInstance(String token, String ip) throws RuntimeException{
+    * *//*
+    public static UserServiceImpl getInstance1(String token, String ip) throws RuntimeException{
         Map map = parseJWT(token,null);
-  /*      if(map.get("ip").equals(ip)){*/
+  *//*      if(map.get("ip").equals(ip)){*//*
             return getInstance((String)map.get("username"),(String)map.get("password"),false , null);
-      /*  }
-        throw new RuntimeException("ip验证失败");*/
-    }
+      *//*  }
+        throw new RuntimeException("ip验证失败");*//*
+    }*/
     //登录这里过来
     public static UserServiceImpl getInstance(User user, @Nullable HttpServletRequest request)throws RuntimeException{
         return getInstance(user.getUsername(),user.getPassword(),!(user.getIp() == null || user.getIp().equals("")) ? true : false , user.getIp());

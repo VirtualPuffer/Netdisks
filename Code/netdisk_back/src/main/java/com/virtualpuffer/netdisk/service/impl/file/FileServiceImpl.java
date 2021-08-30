@@ -1,4 +1,4 @@
-package com.virtualpuffer.netdisk.service.impl;
+package com.virtualpuffer.netdisk.service.impl.file;
 
 
 import com.virtualpuffer.netdisk.MybatisConnect;
@@ -37,7 +37,7 @@ import java.util.zip.ZipOutputStream;
  * @para destination    文件的相对路径
 * */
 @Service
-public class FileServiceImpl extends FileServiceUtil{
+public class FileServiceImpl extends FileServiceUtil {
     private User user;
     private File file;
     private NetdiskFile netdiskFile;

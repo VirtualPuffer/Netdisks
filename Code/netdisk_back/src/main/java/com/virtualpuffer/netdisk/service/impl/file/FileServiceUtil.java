@@ -1,7 +1,8 @@
-package com.virtualpuffer.netdisk.service.impl;
+package com.virtualpuffer.netdisk.service.impl.file;
 
 import com.virtualpuffer.netdisk.entity.File_Map;
 import com.virtualpuffer.netdisk.entity.NetdiskFile;
+import com.virtualpuffer.netdisk.service.impl.BaseServiceImpl;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -15,7 +16,7 @@ import java.util.zip.ZipOutputStream;
 
 
 @Service
-public class FileServiceUtil extends BaseServiceImpl{
+public class FileServiceUtil extends BaseServiceImpl {
 
     private static final int BUFFER_SIZE = 4 * 1024;
     /**
