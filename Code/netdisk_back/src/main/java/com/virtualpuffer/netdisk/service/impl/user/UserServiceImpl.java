@@ -28,6 +28,7 @@ public class UserServiceImpl extends BaseServiceImpl implements LoginService {
     *
     * */
     private User  user;
+    private String tokenTag;
     private static final long time = 7*24*60*60;
     public static final String DefaultWare = getMess("defaultWare");
 

@@ -25,17 +25,6 @@ public class SendMail extends BaseServiceImpl implements Runnable{
 
     public SendMail(){}
 
-    public static SendMail getInstance(){
-        if(sendMail == null){//1
-            synchronized (SendMail.class){//2
-                if(sendMail == null){//3
-                    sendMail = new SendMail();//4
-                }
-            }
-        }
-        return sendMail;
-    }
-
     public static void sendEmail(Mail get){
         list.add(get);
     }
@@ -84,15 +73,13 @@ public class SendMail extends BaseServiceImpl implements Runnable{
                         }
                     }
                     Thread.sleep(1000);
-                } catch (MessagingException e) {
-                    errorLog.errorLog(e.getMessage());
-                } catch (InterruptedException e) {
+                } catch (Exception e) {
                     errorLog.errorLog(e.getMessage());
                 }
             }
-            System.out.println("邮件线程关闭");
             transport.close();
         }catch (Exception e){
+            errorLog.errorLog(e.getMessage());
             e.printStackTrace();
         }
     }

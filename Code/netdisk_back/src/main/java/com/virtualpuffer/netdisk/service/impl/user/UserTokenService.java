@@ -16,12 +16,15 @@ public class UserTokenService extends UserServiceImpl implements ParseToken {
         super(loginUser);
     }
 
-    public static UserServiceImpl getInstanceByToken(String token, String ip) {
+    public static UserTokenService getInstanceByToken(String token, String ip) {
         Map map = parseJWT(token,null);
-        return getInstance((String)map.get("username"),(String)map.get("password"),false , null);
+        return (UserTokenService)getInstance((String)map.get("username"),(String)map.get("password"),false , null);
     }
 
     public static UserServiceImpl getInstanceByToken(String token, BaseEntity entity) {
         return getInstanceByToken(token,((User)entity).getIp());
+    }
+    public void resetPassword(String password){
+
     }
 }
