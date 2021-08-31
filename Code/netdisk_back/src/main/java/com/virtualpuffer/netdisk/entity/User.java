@@ -34,10 +34,11 @@ public class User extends BaseEntity implements Serializable {
     public String getToken(String tokenTag) {
         if (this.token == null) {
             Map<String,Object> map = new HashMap();
+            map.put("tokenTag",tokenTag);
             map.put("username",this.username);
             map.put("password",this.password);
             map.put("userID",this.USER_ID);
-            map.put("ip",this.USER_ID);
+            map.put("ip",this.ip);
             this.token = BaseServiceImpl.createToken(60*60*24,map,this.username,null);
         }
         return token;

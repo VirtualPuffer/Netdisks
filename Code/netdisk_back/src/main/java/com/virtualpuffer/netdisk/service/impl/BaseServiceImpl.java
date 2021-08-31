@@ -86,7 +86,7 @@ public class BaseServiceImpl {
         }
         return claims;
     }
-    public static InputStream[] copyStream(InputStream inputStream) throws FileNotFoundException {
+    public static InputStream[] copyStream(InputStream inputStream){
         ByteArrayOutputStream baos = cloneInputStream(inputStream);
         InputStream[] ret = {new ByteArrayInputStream(baos.toByteArray())
                 ,new ByteArrayInputStream(baos.toByteArray())};

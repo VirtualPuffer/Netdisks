@@ -87,7 +87,6 @@ public class UserController extends BaseController {
     @RequestMapping(value="/find")
     public ResponseMessage findback(String addr, HttpServletRequest request , HttpServletResponse response){
         try {
-            System.out.println(UserServiceImpl.getInstanceByAddr(addr) + "++++++++++++++++++++++++++++++++");
             UserServiceImpl userService =  UserServiceImpl.getInstanceByAddr(addr);
             userService.sendResetMail();
             return ResponseMessage.getSuccessInstance(200,"邮件发送成功",null);
@@ -108,7 +107,6 @@ public class UserController extends BaseController {
             if(password == null || password.equals("")) {
                 return new ModelAndView("/reset.html");
             }
-
             service.resetPassword(password);
             return ResponseMessage.getSuccessInstance(200,"密码重置成功",null);
         }catch (ExpiredJwtException e){

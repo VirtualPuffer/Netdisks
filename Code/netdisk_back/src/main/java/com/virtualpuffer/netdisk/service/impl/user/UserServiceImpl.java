@@ -142,7 +142,7 @@ public class UserServiceImpl extends BaseServiceImpl implements LoginService {
 
     private String resetURL(){
         Map<String,Object> map = new HashMap();
-        map.put("tokenTag","resetPassword");
+        map.put("tokenTag",RESET_TAG);
         map.put("username",user.getUsername());
         map.put("password",user.getPassword());
         map.put("userID",user.getUSER_ID());

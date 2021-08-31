@@ -31,7 +31,7 @@ public class UserTokenService extends UserServiceImpl implements ParseToken {
             User user = session.getMapper(UserMap.class).userLogin((String)map.get("username"),(String)map.get("password"));
             if (user != null) {
                 UserTokenService service = new UserTokenService(user);
-                service.setTokenTag((String) map.get("tokenTag"));
+                service.setTokenTag((String) map.get(RESET_TAG));
                 return service;
             }else {
                 throw new RuntimeException("");

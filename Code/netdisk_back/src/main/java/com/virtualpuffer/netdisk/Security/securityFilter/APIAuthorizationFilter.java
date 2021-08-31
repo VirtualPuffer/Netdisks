@@ -36,21 +36,12 @@ public class APIAuthorizationFilter implements Filter {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
-/*        String type = request.getContentType();
-        if(type.equals(MediaType.APPLICATION_JSON_VALUE)||type.equals(MediaType.APPLICATION_JSON_UTF8_VALUE)){
-
-
-        }*/
-
         try {
-            //解析token
             String token = request.getHeader("Authorization");
             if(request.getParameter("virtual")!=null){token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjMiLCJwYXNzd29yZCI6IjEyMyIsImlwIjoiMTkyLjE4Ni4wLjEiLCJleHAiOjE2MzI5NzkyNTUsInVzZXJJRCI6MSwiaWF0IjoxNjI5NTIzMjU1LCJqdGkiOiJhMWYzNTE0YS1mMzIxLTQ5MzUtOTcwNy04MTQxNDMwMGZmZTMiLCJ1c2VybmFtZSI6IjEyMyJ9.ICYXP1HPSNXduBNT333n0tNOKzVjTc3obn4-y-0U-y4";}
             String ip = (String) request.getAttribute("ip");
             UserServiceImpl service = UserTokenService.getInstanceByToken(token,ip);
             request.setAttribute("AuthService",service);
-            request.getAttribute("AuthService");
-            //放行
             if(service.getTokenTag().equals(UserServiceImpl.LOGIN_TAG)){
                 filterChain.doFilter(request,response);
                 return;
