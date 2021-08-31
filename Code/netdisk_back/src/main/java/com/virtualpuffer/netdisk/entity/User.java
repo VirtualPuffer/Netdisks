@@ -1,11 +1,14 @@
 package com.virtualpuffer.netdisk.entity;
 
+import com.virtualpuffer.netdisk.service.impl.BaseServiceImpl;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.awt.*;
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 public class User extends BaseEntity implements Serializable {
 
@@ -28,7 +31,15 @@ public class User extends BaseEntity implements Serializable {
         this.USER_ID = id;
     }
 
-    public String getToken() {
+    public String getToken(String tokenTag) {
+        if (this.token == null) {
+            Map<String,Object> map = new HashMap();
+            map.put("username",this.username);
+            map.put("password",this.password);
+            map.put("userID",this.USER_ID);
+            map.put("ip",this.USER_ID);
+            this.token = BaseServiceImpl.createToken(60*60*24,map,this.username,null);
+        }
         return token;
     }
 

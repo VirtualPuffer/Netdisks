@@ -2,7 +2,9 @@ package com.virtualpuffer.netdisk.service.impl.file;
 
 import com.virtualpuffer.netdisk.entity.NetdiskFile;
 import com.virtualpuffer.netdisk.entity.User;
+import com.virtualpuffer.netdisk.mapper.UserMap;
 import com.virtualpuffer.netdisk.service.ParseToken;
+import org.apache.ibatis.session.SqlSession;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -18,9 +20,9 @@ public class FileTokenService extends FileHashService implements ParseToken {
     /**
      * 解析下载直链并转存
      * */
-    public static FileTokenService getInstanceByURL(String destination,String url,User user) throws FileNotFoundException {
+    public static FileServiceImpl getInstanceByURL(String destination,String url,User user) throws FileNotFoundException {
         if(url.substring(0,downloadAPI.length()).equals(downloadAPI)){
-            FileTokenService service = getInstanceByToken(url.substring(downloadAPI.length()),null);
+            FileServiceImpl service = getInstanceByToken(url.substring(downloadAPI.length()),null);
             service.setUser(user);
             service.netdiskFile.setFile_Destination(destination + "/" + service.netdiskFile.getFile_Name());
             return service;
@@ -35,16 +37,23 @@ public class FileTokenService extends FileHashService implements ParseToken {
      * 没办法确定是hash还是path(不知道是不是文件)
      * 文件夹没办法给hash，只能给路径，被删了就没办法了
      * */
-    public static FileTokenService getInstanceByToken(String token,String key) throws FileNotFoundException {
-        Map map = parseJWT(token,key);
-        if(map.get("hash") == null){
-            String path = (String) map.get("path");
-            int id = (Integer) map.get("userID");
-            return (FileTokenService) getInstanceByPath(path,id);
-        }else {
-            String hash = (String) map.get("hash");
-            String name = (String) map.get("name");
-            return (FileTokenService) getInstanceByHash(hash,name);
+    public static FileServiceImpl getInstanceByToken(String token,String key) throws FileNotFoundException {
+        SqlSession session = null;
+        try {
+            Map map = parseJWT(token,key);
+            if(map.get("hash") == null){
+                String path = (String) map.get("path");
+                int userID = (Integer) map.get("userID");
+                User user = session.getMapper(UserMap.class).getUserByID(userID);
+                NetdiskFile netdiskFile = new NetdiskFile(path);
+                return new FileTokenService(netdiskFile,user);
+            }else {
+                String hash = (String) map.get("hash");
+                String name = (String) map.get("name");
+                return  getInstanceByHash(hash,name);
+            }
+        } finally {
+            close(session);
         }
     }
 }

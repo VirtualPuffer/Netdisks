@@ -34,15 +34,11 @@ public class UserServiceImpl extends BaseServiceImpl implements LoginService {
     public static final String resetURL = getMess("resetURL");
     public static final String DefaultWare = getMess("defaultWare");
 
+    public static final String LOGIN_TAG = "login";
+    public static final String RESET_TAG = "reset";
+
     public UserServiceImpl(User loginUser){
         this.user = loginUser;
-        Map<String,Object> map = new HashMap();
-        map.put("username",user.getUsername());
-        map.put("password",user.getPassword());
-        map.put("userID",user.getUSER_ID());
-        map.put("ip",user.getIp());
-        String token = createToken(60*60*24,map,user.getUsername(),null);
-        user.setToken(token);
     }
     //登录这里过来
     public static UserServiceImpl getInstance(User user, @Nullable HttpServletRequest request)throws RuntimeException{

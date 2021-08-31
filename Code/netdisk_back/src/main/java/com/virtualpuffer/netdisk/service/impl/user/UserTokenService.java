@@ -45,6 +45,12 @@ public class UserTokenService extends UserServiceImpl implements ParseToken {
     public static UserServiceImpl getInstanceByToken(String token, BaseEntity entity) {
         return getInstanceByToken(token,((User)entity).getIp());
     }
+    /**
+     * 通过token保存账号密码
+     * 通过账号密码注册对象
+     * 如果密码已经被修改，将无法注册对象并抛出异常
+     * 从而让链接只能修改一次密码
+     * */
     public void resetPassword(String password){
         SqlSession session = null;
         try {

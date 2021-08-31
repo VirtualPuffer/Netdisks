@@ -32,7 +32,7 @@ public class UserController extends BaseController {
             user.setIp((String) request.getAttribute("ip"));
             UserServiceImpl service = UserServiceImpl.getInstance(user,request);
             HashMap hashMap = new HashMap();
-            hashMap.put("token",service.getUser().getToken());//token
+            hashMap.put("token",service.getUser().getToken(UserServiceImpl.LOGIN_TAG));//token
             hashMap.put("name",service.getUser().getName());//名字
             return ResponseMessage.getSuccessInstance(200,"登录成功",hashMap);
         } catch (RuntimeException e) {
@@ -72,7 +72,7 @@ public class UserController extends BaseController {
             user.setIp((String) request.getAttribute("ip"));
             UserServiceImpl service = UserServiceImpl.getInstance(user,request);
             HashMap hashMap = new HashMap();
-            hashMap.put("token",service.getUser().getToken());//token
+            hashMap.put("token",service.getUser().getToken(UserServiceImpl.LOGIN_TAG));//token
             hashMap.put("name",service.getUser().getName());//名字
             return ResponseMessage.getSuccessInstance(200,"登录成功",hashMap);
         } catch (RuntimeException e) {
@@ -108,6 +108,7 @@ public class UserController extends BaseController {
             if(password == null || password.equals("")) {
                 return new ModelAndView("/reset.html");
             }
+
             service.resetPassword(password);
             return ResponseMessage.getSuccessInstance(200,"密码重置成功",null);
         }catch (ExpiredJwtException e){

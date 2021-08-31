@@ -46,16 +46,18 @@ public class APIAuthorizationFilter implements Filter {
             //解析token
             String token = request.getHeader("Authorization");
             if(request.getParameter("virtual")!=null){token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjMiLCJwYXNzd29yZCI6IjEyMyIsImlwIjoiMTkyLjE4Ni4wLjEiLCJleHAiOjE2MzI5NzkyNTUsInVzZXJJRCI6MSwiaWF0IjoxNjI5NTIzMjU1LCJqdGkiOiJhMWYzNTE0YS1mMzIxLTQ5MzUtOTcwNy04MTQxNDMwMGZmZTMiLCJ1c2VybmFtZSI6IjEyMyJ9.ICYXP1HPSNXduBNT333n0tNOKzVjTc3obn4-y-0U-y4";}
-            if(token != null && !token.equals("") ){
-                String ip = (String) request.getAttribute("ip");
-                /*UserServiceImpl service = UserServiceImpl.getInstance(token,ip);*/
-                UserServiceImpl service = UserTokenService.getInstanceByToken(token,ip);
-                request.setAttribute("AuthService",service);
-                request.getAttribute("AuthService");
-            }else {
-                throw new RuntimeException();
+            String ip = (String) request.getAttribute("ip");
+            UserServiceImpl service = UserTokenService.getInstanceByToken(token,ip);
+            request.setAttribute("AuthService",service);
+            request.getAttribute("AuthService");
+            //放行
+            if(service.getTokenTag().equals(UserServiceImpl.LOGIN_TAG)){
+                filterChain.doFilter(request,response);
+                return;
             }
-        } catch (RuntimeException e) {
+            throw new RuntimeException();
+        } catch (Exception e) {
+            e.printStackTrace();
             response.setStatus(200);
             response.addHeader("Content-Encoding","UTF-8");
             response.setContentType("text/html;charset=utf-8");
@@ -65,8 +67,7 @@ public class APIAuthorizationFilter implements Filter {
             response.getWriter().write(JSON.toJSONString(responseMessage));
             return;
         }
-        //放行
-        filterChain.doFilter(request,response);
+
     }
 
     public static String getStringFromInputStream(InputStream inputStream) {
