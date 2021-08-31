@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLEncoder;
 import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/user")
@@ -86,11 +87,13 @@ public class UserController extends BaseController {
     @RequestMapping(value="/find")
     public ResponseMessage findback(String addr, HttpServletRequest request , HttpServletResponse response){
         try {
-            UserServiceImpl userService = UserServiceImpl.getInstanceByAddr(addr);
-            userService.sendMess();
-            return ResponseMessage.getSuccessInstance(200,"获取成功",null);
+            System.out.println(UserServiceImpl.getInstanceByAddr(addr) + "++++++++++++++++++++++++++++++++");
+            UserServiceImpl userService =  UserServiceImpl.getInstanceByAddr(addr);
+            userService.sendResetMail();
+            return ResponseMessage.getSuccessInstance(200,"邮件发送成功",null);
         } catch (RuntimeException e) {
-            return ResponseMessage.getSuccessInstance(300,e.getMessage(),null);
+            e.printStackTrace();
+            return ResponseMessage.getExceptionInstance(300,e.getMessage(),null);
         } catch (Throwable e){
             e.printStackTrace();//打印异常情况
             return ResponseMessage.getErrorInstance(500,"系统错误",null);
@@ -100,26 +103,20 @@ public class UserController extends BaseController {
     @RequestMapping(value = "/resetPassword/{token}")
     public Object i(@PathVariable String token,String key,String password, HttpServletResponse response) throws IOException {
         String ip = (String) request.getAttribute("ip");
-        if(key == null || key.equals("")){
-            return new ModelAndView("/reset.html");
-        }else {
-            InputStream inputStream = null;
-            try {
-                UserTokenService service = UserTokenService.getInstanceByToken(token,ip);
-                service.resetPassword(password);
-                return ResponseMessage.getSuccessInstance(200,"密码重置成功",null);
-            }catch (ExpiredJwtException e){
-                return ResponseMessage.getExceptionInstance(300,"链接已失效",null);
-            }catch (IllegalArgumentException e){
-                return ResponseMessage.getExceptionInstance(300,"密码错误",null);
-            }catch (JwtException e){
-                return ResponseMessage.getExceptionInstance(300,"链接错误 : " + e.getMessage(),null);
-            }catch (Exception e){
-                e.printStackTrace();
-                return ResponseMessage.getErrorInstance(500,"链接错误 : " + e.getMessage(),null);
-            }finally {
-                close(inputStream);
+        try {
+            UserTokenService service = UserTokenService.getInstanceByToken(token,ip);
+            if(password == null || password.equals("")) {
+                return new ModelAndView("/reset.html");
             }
+            service.resetPassword(password);
+            return ResponseMessage.getSuccessInstance(200,"密码重置成功",null);
+        }catch (ExpiredJwtException e){
+            return ResponseMessage.getExceptionInstance(300,"链接已失效",null);
+        }catch (JwtException e){
+            return ResponseMessage.getExceptionInstance(300,"链接错误 : " + e.getMessage(),null);
+        }catch (Exception e) {
+            e.printStackTrace();
+            return ResponseMessage.getErrorInstance(500, "链接错误 : " + e.getMessage(), null);
         }
     }
 

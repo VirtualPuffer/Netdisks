@@ -215,7 +215,7 @@ public class FileOperationController extends BaseController {
             if (key == null && getRandom) {
                 key = StringUtils.ranStr(6);//随机生成提取码
             }
-            String url = service.getDownloadURL(time,key);
+            String url = service.getDownloadURL(time,key,null);
             String date = getTime(System.currentTimeMillis() + time * 1000);
             HashMap hashMap = new HashMap();
             hashMap.put("downloadURL",url);//token

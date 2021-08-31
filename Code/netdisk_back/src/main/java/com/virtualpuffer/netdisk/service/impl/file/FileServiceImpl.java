@@ -41,6 +41,7 @@ public class FileServiceImpl extends FileServiceUtil {
     protected User user;
     protected File file;
     protected NetdiskFile netdiskFile;
+    protected String tokenTag;
     protected int file_length;
     protected boolean isMapper = false;
     protected static final int BUFFER_SIZE = 4 * 1024;
@@ -101,13 +102,14 @@ public class FileServiceImpl extends FileServiceUtil {
      *
      * 映射型文件是系统没办法判断类型的（因为不存在）
     * */
-    public String getDownloadURL(long time,@Nullable String key) throws Exception {
+    public String getDownloadURL(long time,@Nullable String key,@Nullable String tokenTag) throws Exception {
         Map<String,Object> map = new HashMap();
         if (this.file.isDirectory()) {
             map.put("path",netdiskFile.getFile_Path());
         }else {
             map.put("hash",getSH256(this.file));
         }
+        map.put("tokenTag",tokenTag);
         map.put("userID",this.user.getUSER_ID());
         map.put("name",this.netdiskFile.getFile_Name());
         if (key == null) {

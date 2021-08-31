@@ -31,6 +31,7 @@ public class UserServiceImpl extends BaseServiceImpl implements LoginService {
     protected User  user;
     protected String tokenTag;
     protected static final long time = 7*24*60*60;
+    public static final String resetURL = getMess("resetURL");
     public static final String DefaultWare = getMess("defaultWare");
 
     public UserServiceImpl(User loginUser){
@@ -43,20 +44,6 @@ public class UserServiceImpl extends BaseServiceImpl implements LoginService {
         String token = createToken(60*60*24,map,user.getUsername(),null);
         user.setToken(token);
     }
-
-
-    /**
-     * @param1 token token参数
-     * 解析token，获取用户名和密码并进行匹配
-     * 匹配成功后会返回服务对象
-    * */
-/*    public static UserServiceImpl getInstance(String token, String ip) throws RuntimeException{
-        Map map = parseJWT(token,null);
-  *//*      if(map.get("ip").equals(ip)){*//*
-            return getInstance((String)map.get("username"),(String)map.get("password"),false , null);
-      *//*  }
-        throw new RuntimeException("ip验证失败");*//*
-    }*/
     //登录这里过来
     public static UserServiceImpl getInstance(User user, @Nullable HttpServletRequest request)throws RuntimeException{
         return getInstance(user.getUsername(),user.getPassword(),!(user.getIp() == null || user.getIp().equals("")) ? true : false , user.getIp());
@@ -153,10 +140,28 @@ public class UserServiceImpl extends BaseServiceImpl implements LoginService {
         }
         return false;
     }
+    public void sendResetMail(){
+        sendMess(resetURL());
+    }
 
-    public void sendMess() throws MessagingException {
-/*        PortMessage message = SendMail.buildMessage(this.user.getAddress(),"网盘密码找回邮件","你的网盘账号为:" + user.getUsername()
-        + ",密码为:" + user.getPassword() + " 请妥善保管");*/
+    private String resetURL(){
+        Map<String,Object> map = new HashMap();
+        map.put("tokenTag","resetPassword");
+        map.put("username",user.getUsername());
+        map.put("password",user.getPassword());
+        map.put("userID",user.getUSER_ID());
+        map.put("ip",user.getIp());
+        String token = createToken(60*10,map,user.getUsername(),null);
+        return resetURL + token;
+    }
+
+    public void sendMess(String msg){
+
+        SendMail.sendEmail(Mail.buildMail(this.user.getAddress(),"网盘密码找回邮件",msg));
+    }
+
+    public void sendMess(){
+
         SendMail.sendEmail(Mail.buildMail(this.user.getAddress(),"网盘密码找回邮件","你的网盘账号为:" + user.getUsername()
                 + ",密码为:" + user.getPassword() + " 请妥善保管"));
     }

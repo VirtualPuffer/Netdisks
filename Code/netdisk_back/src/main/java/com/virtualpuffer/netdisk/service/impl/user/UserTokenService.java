@@ -1,11 +1,17 @@
 package com.virtualpuffer.netdisk.service.impl.user;
 
+import com.virtualpuffer.netdisk.MybatisConnect;
 import com.virtualpuffer.netdisk.entity.BaseEntity;
 import com.virtualpuffer.netdisk.entity.User;
+import com.virtualpuffer.netdisk.mapper.LoginHistory;
 import com.virtualpuffer.netdisk.mapper.UserMap;
 import com.virtualpuffer.netdisk.service.ParseToken;
 import org.apache.ibatis.session.SqlSession;
+import org.springframework.lang.NonNull;
+import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -18,11 +24,23 @@ public class UserTokenService extends UserServiceImpl implements ParseToken {
     }
 
     public static UserTokenService getInstanceByToken(String token, String ip) {
-        Map map = parseJWT(token,null);
-        UserTokenService service = (UserTokenService)getInstance((String)map.get("username"),(String)map.get("password"),false , null);
-        service.setTokenTag((String) map.get("tokenTag"));
-        return service;
+        SqlSession session = null;
+        try {
+            session = MybatisConnect.getSession();
+            Map map = parseJWT(token,null);
+            User user = session.getMapper(UserMap.class).userLogin((String)map.get("username"),(String)map.get("password"));
+            if (user != null) {
+                UserTokenService service = new UserTokenService(user);
+                service.setTokenTag((String) map.get("tokenTag"));
+                return service;
+            }else {
+                throw new RuntimeException("");
+            }
+        } finally {
+            close(session);
+        }
     }
+
 
     public static UserServiceImpl getInstanceByToken(String token, BaseEntity entity) {
         return getInstanceByToken(token,((User)entity).getIp());
@@ -30,7 +48,8 @@ public class UserTokenService extends UserServiceImpl implements ParseToken {
     public void resetPassword(String password){
         SqlSession session = null;
         try {
-            if(tokenTag.equals("")){
+            if(tokenTag.equals("resetPassword")){
+                session = MybatisConnect.getSession();
                 int tag = session.getMapper(UserMap.class).resetPassword(password,user.getUSER_ID());
                 if(tag == 1){
                     session.commit();
