@@ -5,7 +5,7 @@ import com.virtualpuffer.netdisk.controller.base.BaseController;
 import com.virtualpuffer.netdisk.data.FileCollection;
 import com.virtualpuffer.netdisk.data.ResponseMessage;
 import com.virtualpuffer.netdisk.entity.File_Map;
-import com.virtualpuffer.netdisk.service.impl.file.FileServiceImpl;
+import com.virtualpuffer.netdisk.service.impl.file.FileBaseService;
 import com.virtualpuffer.netdisk.service.impl.file.FileHashService;
 import com.virtualpuffer.netdisk.service.impl.file.FileTokenService;
 import com.virtualpuffer.netdisk.service.impl.user.UserServiceImpl;
@@ -34,7 +34,7 @@ public class FileOperationController extends BaseController {
     public ResponseMessage get(String destination, HttpServletRequest request, HttpServletResponse response){
         UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
         try {
-            FileServiceImpl service = FileServiceImpl.getInstance(destination, loginService.getUser().getUSER_ID());
+            FileBaseService service = FileBaseService.getInstance(destination, loginService.getUser().getUSER_ID());
             int length = (int)service.downloadFile(response.getOutputStream());
             response.addHeader("Content-Disposition", "attachment; filename=" + URLEncoder.encode(service.getNetdiskFile().getFile_Name(), "UTF-8"));
             response.setContentLength(length);
@@ -61,7 +61,7 @@ public class FileOperationController extends BaseController {
         }
         try {
             String path = destination + "/" + getFile.getOriginalFilename();
-            FileServiceImpl service = FileServiceImpl.getInstance(path, loginService.getUser().getUSER_ID());
+            FileBaseService service = FileBaseService.getInstance(path, loginService.getUser().getUSER_ID());
             service.uploadFile(getFile.getInputStream());
             return ResponseMessage.getSuccessInstance(200,"文件上传成功",null);
         } catch (FileNotFoundException e) {
@@ -110,7 +110,7 @@ public class FileOperationController extends BaseController {
     public ResponseMessage mkdir(@RequestBody File_Map on, HttpServletRequest request, HttpServletResponse response){
         UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
         try {
-            FileServiceImpl service = FileServiceImpl.getInstance(on.getDestination(),loginService.getUser().getUSER_ID());
+            FileBaseService service = FileBaseService.getInstance(on.getDestination(),loginService.getUser().getUSER_ID());
             service.mkdir();
             return ResponseMessage.getSuccessInstance(200,"文件夹创建成功",null);
         } catch (FileNotFoundException e) {
@@ -129,7 +129,7 @@ public class FileOperationController extends BaseController {
     public ResponseMessage delete(String destination, HttpServletRequest request, HttpServletResponse response) throws IOException {
         UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
         try {
-            FileServiceImpl service = FileServiceImpl.getInstance(destination, loginService.getUser().getUSER_ID());
+            FileBaseService service = FileBaseService.getInstance(destination, loginService.getUser().getUSER_ID());
             service.deleteFileMap();
             return ResponseMessage.getSuccessInstance(200,"文件删除成功",null);
         } catch (FileNotFoundException e) {
@@ -146,7 +146,7 @@ public class FileOperationController extends BaseController {
     public ResponseMessage getDir(String destination, HttpServletRequest request, HttpServletResponse response) throws IOException {
         UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
         try {
-            FileServiceImpl service = FileServiceImpl.getInstance(destination, loginService.getUser().getUSER_ID());
+            FileBaseService service = FileBaseService.getInstance(destination, loginService.getUser().getUSER_ID());
             Map map = service.getDirectory();
             return ResponseMessage.getSuccessInstance(200,"路径获取成功",map);
         } catch (FileNotFoundException e) {
@@ -169,13 +169,13 @@ public class FileOperationController extends BaseController {
                                             String type,
                                             HttpServletRequest request,
                                             HttpServletResponse response){
-        FileServiceImpl service = null;
+        FileBaseService service = null;
         if(destination == null){
             destination = "/";
         }
         try {
             UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
-            service = FileServiceImpl.getInstance(destination, loginService.getUser().getUSER_ID());
+            service = FileBaseService.getInstance(destination, loginService.getUser().getUSER_ID());
             FileCollection collection = service.searchFile(name,type);
             HashMap map = new HashMap();
             map.put("directory",collection.getDir());
@@ -200,10 +200,10 @@ public class FileOperationController extends BaseController {
     @ResponseBody
     @RequestMapping(value = "shareFile",method = RequestMethod.GET)
     public ResponseMessage shareFile(String destination, @Nullable String second,@Nullable String key,boolean getRandom, HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException {
-        FileServiceImpl service = null;
+        FileBaseService service = null;
         try {
             UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
-            service = FileServiceImpl.getInstance(destination, loginService.getUser().getUSER_ID());
+            service = FileBaseService.getInstance(destination, loginService.getUser().getUSER_ID());
         } catch (FileNotFoundException e) {
             return ResponseMessage.getExceptionInstance(300,e.getMessage(),null);
         }
@@ -215,7 +215,7 @@ public class FileOperationController extends BaseController {
             if (key == null && getRandom) {
                 key = StringUtils.ranStr(6);//随机生成提取码
             }
-            String url = service.getDownloadURL(time,key,null);
+            String url = service.getDownloadURL(time,key, FileBaseService.DOWNLOAD_TAG);
             String date = getTime(System.currentTimeMillis() + time * 1000);
             HashMap hashMap = new HashMap();
             hashMap.put("downloadURL",url);//token
@@ -237,10 +237,10 @@ public class FileOperationController extends BaseController {
     @ResponseBody
     @RequestMapping(value = "renameFile",method = RequestMethod.GET)
     public ResponseMessage renameFile(String destination,String name, HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException {
-        FileServiceImpl service = null;
+        FileBaseService service = null;
         try {
             UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
-            service = FileServiceImpl.getInstance(destination, loginService.getUser().getUSER_ID());
+            service = FileBaseService.getInstance(destination, loginService.getUser().getUSER_ID());
             service.rename(name);
             return ResponseMessage.getSuccessInstance(200,"重命名成功",null);
         } catch (FileNotFoundException e) {
@@ -259,10 +259,10 @@ public class FileOperationController extends BaseController {
         if(destination == null){
             return ResponseMessage.getExceptionInstance(300,"目标未找到",null);
         }
-        FileServiceImpl service = null;
+        FileBaseService service = null;
         try {
             UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
-            service = FileServiceImpl.getInstance(destination, loginService.getUser().getUSER_ID());
+            service = FileBaseService.getInstance(destination, loginService.getUser().getUSER_ID());
             service.compression();
             return ResponseMessage.getSuccessInstance(200,"文件压缩成功",null);
         } catch (FileNotFoundException e) {
@@ -275,10 +275,10 @@ public class FileOperationController extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/deCompression",method = RequestMethod.GET)
     public ResponseMessage deCompress(String destination,HttpServletResponse response,HttpServletRequest request){
-        FileServiceImpl service = null;
+        FileBaseService service = null;
         try {
             UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
-            service = FileServiceImpl.getInstance(destination, loginService.getUser().getUSER_ID());
+            service = FileBaseService.getInstance(destination, loginService.getUser().getUSER_ID());
             service.deCompress();
             return ResponseMessage.getSuccessInstance(200,"文件解压成功",null);
         } catch (FileNotFoundException e) {
@@ -291,7 +291,7 @@ public class FileOperationController extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/storage",method = RequestMethod.POST)
     public ResponseMessage storage(String destination,String url,HttpServletRequest request,HttpServletResponse response){
-        FileServiceImpl service = null;
+        FileBaseService service = null;
         try {
             //用id dest定位文件，url获取源文件位置
             UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");

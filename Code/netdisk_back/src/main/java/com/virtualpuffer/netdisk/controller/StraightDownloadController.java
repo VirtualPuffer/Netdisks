@@ -2,7 +2,7 @@ package com.virtualpuffer.netdisk.controller;
 
 import com.virtualpuffer.netdisk.controller.base.BaseController;
 import com.virtualpuffer.netdisk.data.ResponseMessage;
-import com.virtualpuffer.netdisk.service.impl.file.FileServiceImpl;
+import com.virtualpuffer.netdisk.service.impl.file.FileBaseService;
 import com.virtualpuffer.netdisk.service.impl.file.FileTokenService;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -26,7 +26,7 @@ public class StraightDownloadController extends BaseController {
     public ResponseMessage test(@PathVariable String token,String key, HttpServletResponse response){
         InputStream inputStream = null;
         try {
-            FileServiceImpl fileService = FileTokenService.getInstanceByToken(token,key);
+            FileBaseService fileService = FileTokenService.getInstanceByToken(token,key);
             response.setContentType("application/force-download");
             response.addHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileService.getNetdiskFile().getFile_Name(), "UTF-8"));
             int length = (int) fileService.downloadFile(response.getOutputStream());
@@ -50,7 +50,7 @@ public class StraightDownloadController extends BaseController {
             }else {
                 InputStream inputStream = null;
                 try {
-                    FileServiceImpl fileService = FileTokenService.getInstanceByToken(token,key);
+                    FileBaseService fileService = FileTokenService.getInstanceByToken(token,key);
                     response.setContentType("application/force-download");
                     response.addHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileService.getNetdiskFile().getFile_Name(), "UTF-8"));
                     int length = (int) fileService.downloadFile(response.getOutputStream());

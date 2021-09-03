@@ -4,8 +4,7 @@ import com.virtualpuffer.netdisk.MybatisConnect;
 import com.virtualpuffer.netdisk.mapper.FileHashMap;
 import com.virtualpuffer.netdisk.mapper.FileMap;
 import com.virtualpuffer.netdisk.mapper.UserMap;
-import com.virtualpuffer.netdisk.service.impl.BaseServiceImpl;
-import com.virtualpuffer.netdisk.service.impl.file.FileServiceUtil;
+import com.virtualpuffer.netdisk.service.impl.file.FileUtilService;
 import com.virtualpuffer.netdisk.utils.Message;
 import com.virtualpuffer.netdisk.utils.StringUtils;
 import org.apache.ibatis.session.SqlSession;
@@ -275,7 +274,7 @@ public class NetdiskFile extends BaseEntity implements Serializable {
 
     public String getFile_Hash() throws Exception {
         if(this.File_Hash == null || this.File_Hash.equals("")){
-            this.File_Hash = FileServiceUtil.getSH256(this.file);
+            this.File_Hash = FileUtilService.getSH256(this.file);
         }
         return File_Hash;
     }

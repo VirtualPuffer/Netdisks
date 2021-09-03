@@ -6,7 +6,6 @@ import com.virtualpuffer.netdisk.mapper.UserMap;
 import com.virtualpuffer.netdisk.service.ParseToken;
 import org.apache.ibatis.session.SqlSession;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Map;
 
@@ -20,9 +19,9 @@ public class FileTokenService extends FileHashService implements ParseToken {
     /**
      * 解析下载直链并转存
      * */
-    public static FileServiceImpl getInstanceByURL(String destination,String url,User user) throws FileNotFoundException {
+    public static FileBaseService getInstanceByURL(String destination, String url, User user) throws FileNotFoundException {
         if(url.substring(0,downloadAPI.length()).equals(downloadAPI)){
-            FileServiceImpl service = getInstanceByToken(url.substring(downloadAPI.length()),null);
+            FileBaseService service = getInstanceByToken(url.substring(downloadAPI.length()),null);
             service.setUser(user);
             service.netdiskFile.setFile_Destination(destination + "/" + service.netdiskFile.getFile_Name());
             return service;
@@ -37,7 +36,7 @@ public class FileTokenService extends FileHashService implements ParseToken {
      * 没办法确定是hash还是path(不知道是不是文件)
      * 文件夹没办法给hash，只能给路径，被删了就没办法了
      * */
-    public static FileServiceImpl getInstanceByToken(String token,String key) throws FileNotFoundException {
+    public static FileBaseService getInstanceByToken(String token, String key) throws FileNotFoundException {
         SqlSession session = null;
         try {
             Map map = parseJWT(token,key);

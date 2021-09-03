@@ -4,12 +4,11 @@ import com.virtualpuffer.netdisk.MybatisConnect;
 import com.virtualpuffer.netdisk.entity.NetdiskFile;
 import com.virtualpuffer.netdisk.entity.User;
 import com.virtualpuffer.netdisk.mapper.FileMap;
-import com.virtualpuffer.netdisk.service.ParseToken;
 import org.apache.ibatis.session.SqlSession;
 
 import java.io.FileNotFoundException;
 
-public class FileHashService extends FileServiceImpl {
+public class FileHashService extends FileBaseService {
     public FileHashService(NetdiskFile netdiskFile, User user) throws FileNotFoundException {
         super(netdiskFile, user);
     }

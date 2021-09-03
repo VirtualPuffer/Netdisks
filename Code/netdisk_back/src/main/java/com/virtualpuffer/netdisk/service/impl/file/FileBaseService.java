@@ -37,7 +37,7 @@ import java.util.zip.ZipOutputStream;
  * @para destination    文件的相对路径
 * */
 @Service
-public class FileServiceImpl extends FileServiceUtil {
+public class FileBaseService extends FileUtilService {
     protected User user;
     protected File file;
     protected NetdiskFile netdiskFile;
@@ -49,7 +49,10 @@ public class FileServiceImpl extends FileServiceUtil {
     public static final String defaultWare = Message.getMess("defaultWare");
     public static final String duplicateFileWare = Message.getMess("duplicateFileWare");
     public static final String tempWare = getMess("compressTemp");
-    public FileServiceImpl(){}
+
+    public static final String DOWNLOAD_TAG = "1";
+    public static final String A_TAG = "";
+    public FileBaseService(){}
 
     /**
     * 构造服务对象
@@ -57,19 +60,20 @@ public class FileServiceImpl extends FileServiceUtil {
      * @param user 用户对象
      * 没有处理404情况，controller级别再获取
     * */
-    public FileServiceImpl(NetdiskFile netdiskFile,User user) throws FileNotFoundException {
+    public FileBaseService(NetdiskFile netdiskFile, User user) throws FileNotFoundException {
         this.user = user;
         this.netdiskFile = netdiskFile;
         this.file = netdiskFile.getFile();
     }
 
-    public static FileServiceImpl getInstanceByPath(String path,int userID) throws FileNotFoundException{
+    @Deprecated
+    public static FileBaseService getInstanceByPath(String path, int userID) throws FileNotFoundException{
         SqlSession session = MybatisConnect.getSession();
         User user = session.getMapper(UserMap.class).getUserByID(userID);
         NetdiskFile netdiskFile = new NetdiskFile(path);
-        return new FileServiceImpl(netdiskFile,user);
+        return new FileBaseService(netdiskFile,user);
     }
-    public static FileServiceImpl getInstance(String destination,int userID) throws FileNotFoundException{
+    public static FileBaseService getInstance(String destination, int userID) throws FileNotFoundException{
         SqlSession session = null;
         try {
             session = MybatisConnect.getSession();
@@ -83,7 +87,7 @@ public class FileServiceImpl extends FileServiceUtil {
             destination = StringUtils.filePathDeal(destination);
             User user = session.getMapper(UserMap.class).getUserByID(userID);
             NetdiskFile netdiskFile = NetdiskFile.getInstance(destination,userID);
-            return new FileServiceImpl(netdiskFile,user);
+            return new FileBaseService(netdiskFile,user);
         } finally {
             close(session);
         }
@@ -292,8 +296,7 @@ public class FileServiceImpl extends FileServiceUtil {
             session = MybatisConnect.getSession();
             FileMap fileMap = session.getMapper(FileMap.class);
             int count = fileMap.deleteFileMap(netdiskFile.getFile_Destination(),user.getUSER_ID());
-            /*     count += fileMap.deleteDirectoryMap(destination + "/",user.getUSER_ID());*/
-            if(count > 0){
+                if(count > 0){
                 session.commit();
                 return ;
             }

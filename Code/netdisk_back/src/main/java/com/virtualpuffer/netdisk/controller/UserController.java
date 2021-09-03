@@ -3,8 +3,6 @@ package com.virtualpuffer.netdisk.controller;
 import com.virtualpuffer.netdisk.controller.base.BaseController;
 import com.virtualpuffer.netdisk.data.ResponseMessage;
 import com.virtualpuffer.netdisk.entity.User;
-import com.virtualpuffer.netdisk.service.impl.file.FileServiceImpl;
-import com.virtualpuffer.netdisk.service.impl.file.FileTokenService;
 import com.virtualpuffer.netdisk.service.impl.user.UserServiceImpl;
 import com.virtualpuffer.netdisk.service.impl.user.UserTokenService;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -15,10 +13,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URLEncoder;
 import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/user")
@@ -99,8 +94,29 @@ public class UserController extends BaseController {
         }
     }
 
-    @RequestMapping(value = "/resetPassword/{token}")
+    @RequestMapping(value = "/resetPassword/{token}",method = RequestMethod.POST)
     public Object i(@PathVariable String token,String key,String password, HttpServletResponse response) throws IOException {
+        System.out.println(2 + "_______________________________________");
+        String ip = (String) request.getAttribute("ip");
+        try {
+            UserTokenService service = UserTokenService.getInstanceByToken(token,ip);
+            if(password == null || password.equals("")) {
+                return new ModelAndView("/reset.html");
+            }
+            service.resetPassword(password);
+            return ResponseMessage.getSuccessInstance(200,"密码重置成功",null);
+        }catch (ExpiredJwtException e){
+            return ResponseMessage.getExceptionInstance(300,"链接已失效",null);
+        }catch (JwtException e){
+            return ResponseMessage.getExceptionInstance(300,"链接错误 : " + e.getMessage(),null);
+        }catch (Exception e) {
+            e.printStackTrace();
+            return ResponseMessage.getErrorInstance(500, "链接错误 : " + e.getMessage(), null);
+        }
+    }
+    @RequestMapping(value = "/resetPassword/{token}",method = RequestMethod.GET)
+    public Object ki(@PathVariable String token,String key,String password, HttpServletResponse response) throws IOException {
+        System.out.println(1 + "_______________________________________");
         String ip = (String) request.getAttribute("ip");
         try {
             UserTokenService service = UserTokenService.getInstanceByToken(token,ip);

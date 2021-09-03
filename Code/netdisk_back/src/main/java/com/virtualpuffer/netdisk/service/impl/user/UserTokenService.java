@@ -31,7 +31,7 @@ public class UserTokenService extends UserServiceImpl implements ParseToken {
             User user = session.getMapper(UserMap.class).userLogin((String)map.get("username"),(String)map.get("password"));
             if (user != null) {
                 UserTokenService service = new UserTokenService(user);
-                service.setTokenTag((String) map.get(RESET_TAG));
+                service.setTokenTag((String) map.get("tokenTag"));
                 return service;
             }else {
                 throw new RuntimeException("");
@@ -54,7 +54,7 @@ public class UserTokenService extends UserServiceImpl implements ParseToken {
     public void resetPassword(String password){
         SqlSession session = null;
         try {
-            if(tokenTag.equals("resetPassword")){
+            if(tokenTag.equals(RESET_TAG)){
                 session = MybatisConnect.getSession();
                 int tag = session.getMapper(UserMap.class).resetPassword(password,user.getUSER_ID());
                 if(tag == 1){

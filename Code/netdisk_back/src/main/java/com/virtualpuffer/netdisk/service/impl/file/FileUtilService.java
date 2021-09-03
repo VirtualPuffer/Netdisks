@@ -16,7 +16,7 @@ import java.util.zip.ZipOutputStream;
 
 
 @Service
-public class FileServiceUtil extends BaseServiceImpl {
+public class FileUtilService extends BaseServiceImpl {
 
     private static final int BUFFER_SIZE = 4 * 1024;
     /**
