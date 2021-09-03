@@ -290,18 +290,23 @@ public class FileBaseService extends FileUtilService {
      * */
     public void deleteFileMap(){
         SqlSession session = null;
+        int count = 0;
         try {
+            session = MybatisConnect.getSession();
+            FileMap fileMap = session.getMapper(FileMap.class);
+            if(file.isDirectory()){
+                count += fileMap.deleteDirectoryMap(StringUtils.filePathDeal(netdiskFile.getFile_Destination() + "/"),this.user.getUSER_ID());
+            }else {
+                count += fileMap.deleteFileMap(netdiskFile.getFile_Destination(),user.getUSER_ID());
+            }
             if(file.exists()){
                 delete(file);
             }
-            session = MybatisConnect.getSession();
-            FileMap fileMap = session.getMapper(FileMap.class);
-            int count = fileMap.deleteFileMap(netdiskFile.getFile_Destination(),user.getUSER_ID());
                 if(count > 0){
                 session.commit();
                 return ;
             }
-            delete(this.file);
+
             return ;
         } finally {
             close(session);
