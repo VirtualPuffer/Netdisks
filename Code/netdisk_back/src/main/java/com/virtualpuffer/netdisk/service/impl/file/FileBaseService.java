@@ -481,6 +481,7 @@ public class FileBaseService extends FileUtilService {
                 ZipEntry entry = (ZipEntry) entries.nextElement();
                 String dirPath = StringUtils.filePathDeal(destDirPath + "/" + entry.getName());
                 if (entry.isDirectory()) {
+                    new File(getAbsolutePath(dirPath)).mkdir();
                     srcFile.mkdirs();
                 } else {
                     String fileName = entry.getName().substring(entry.getName().lastIndexOf("/")+1);
