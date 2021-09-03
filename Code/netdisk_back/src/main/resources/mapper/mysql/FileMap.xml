@@ -35,7 +35,7 @@
     </select>
 
     <select id="getFileMap" resultType="com.virtualpuffer.netdisk.entity.NetdiskFile">
-        select File_Map.File_Hash,File_Map.File_Destination,
+        select File_Map.File_Hash,File_Map.File_Destination,File_Map.File_Destination_Place,
                File_Map.File_Name,FileHash_Map.USER_ID,FileHash_Map.File_Path
         from File_Map,FileHash_Map
         where FileHash_Map.USER_ID = #{userID} and File_Map.File_Destination = #{destination}

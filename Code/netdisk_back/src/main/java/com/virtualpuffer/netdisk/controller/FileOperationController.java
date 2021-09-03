@@ -279,7 +279,7 @@ public class FileOperationController extends BaseController {
         try {
             UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
             service = FileBaseService.getInstance(destination, loginService.getUser().getUSER_ID());
-          /*  service.deCompress();*/
+            service.deCompress();
             return ResponseMessage.getSuccessInstance(200,"文件解压成功",null);
         } catch (FileNotFoundException e) {
             return ResponseMessage.getExceptionInstance(300,"指定解压文件未找到",null);

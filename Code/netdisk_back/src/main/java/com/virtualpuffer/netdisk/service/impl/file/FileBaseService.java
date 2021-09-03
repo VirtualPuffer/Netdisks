@@ -455,61 +455,51 @@ public class FileBaseService extends FileUtilService {
      * 用Getname获取路径
      * 没有则创建路径
      * zip文件解压
-     * @param inputFile  待解压文件夹/文件
-     * @param destDirPath  解压路径
      */
-    protected void deCompress(String inputFile,String destDirPath) throws FileNotFoundException, IOException {
-        File file = new File(inputFile);
-        deCompress(file,destDirPath);
+    public void deCompress() throws FileNotFoundException, IOException ,Exception {
+        File file = netdiskFile.getFile();
+        System.out.println(netdiskFile);
+        System.out.println(netdiskFile.getFile_Destination_Place() + "___________________________________________");
+        deCompress(file,netdiskFile.getFile_Destination_Place());
     }
     protected void deCompress(File srcFile,String destDirPath) throws FileNotFoundException,IOException,Exception{
         SqlSession session = null;
+        int count = 0;
+        if (!srcFile.exists()) {
+            throw new FileNotFoundException(srcFile.getPath() + "");
+        }
         try {
             session = MybatisConnect.getSession();
-            if (!srcFile.exists()) {
-                throw new FileNotFoundException(srcFile.getPath() + "");
-            }
             ZipFile zipFile = new ZipFile(srcFile);
             Enumeration<?> entries = zipFile.entries();
             while (entries.hasMoreElements()) {
                 ZipEntry entry = (ZipEntry) entries.nextElement();
-                String dirPath = destDirPath + "/" + entry.getName();
+                String dirPath = StringUtils.filePathDeal(destDirPath + "/" + entry.getName());
                 if (entry.isDirectory()) {
                     srcFile.mkdirs();
                 } else {
-                        String hash = getSH256(zipFile.getInputStream(entry));
-                        boolean dumplicate = session.getMapper(FileHashMap.class).checkDuplicate(hash).isEmpty();
-                        if (!dumplicate) {
-                            //不重复
-                            String dest = duplicateFileWare + hash;
-                            OutputStream outputStream = new FileOutputStream(dest);
-                            copy(zipFile.getInputStream(entry),outputStream);
-                            int count = session.getMapper(FileMap.class)
-                                    .buildFileMap(dirPath,entry.getName(),hash,user.getUSER_ID(),
+                    String fileName = entry.getName().substring(entry.getName().lastIndexOf("/")+1);
+                    String hash = getSH256(zipFile.getInputStream(entry));
+                    boolean dumplicate = session.getMapper(FileHashMap.class).checkDuplicate(hash).isEmpty();
+                    if (!dumplicate){
+                        //不重复
+                        String dest = duplicateFileWare + hash;
+                        OutputStream outputStream = new FileOutputStream(dest);
+                        copy(zipFile.getInputStream(entry),outputStream);
+                        if(new File(dest).exists()){
+                            session.getMapper(FileMap.class)
+                                    .buildFileMap(dirPath,fileName,hash,user.getUSER_ID(),
                                             dirPath.substring(dirPath.lastIndexOf("/")+1));
-                        } else {
-                            int count = session.getMapper(FileMap.class)
-                                    .buildFileMap(dirPath,entry.getName(),hash,user.getUSER_ID(),
-                                            dirPath.substring(dirPath.lastIndexOf("/")+1));
+                            session.getMapper(FileHashMap.class).addHashMap(hash,dest, user.getUSER_ID());
                         }
-             /*       // 如果是文件，就先创建一个文件，然后用io流把内容copy过去
-                    File targetFile = new File(destDirPath + "/" + entry.getName());
-                    // 保证这个文件的父文件夹必须要存在
-                    if (!targetFile.getParentFile().exists()) {
-                        targetFile.getParentFile().mkdirs();
+                    }else{
+                        session.getMapper(FileMap.class)
+                                .buildFileMap(dirPath,fileName, hash,user.getUSER_ID(),
+                                        dirPath.substring(0,dirPath.lastIndexOf("/")+1));
                     }
-                    targetFile.createNewFile();
-                    InputStream is = zipFile.getInputStream(entry);
-                    FileOutputStream target = new FileOutputStream(targetFile);
-                    int arrayLength;
-                    byte[] buf = new byte[BUFFER_SIZE];
-                    while ((arrayLength = is.read(buf)) != -1) {
-                        target.write(buf,0,arrayLength);
-                    }
-                    target.close();
-                    is.close();*/
                 }
             }
+            session.commit();
         } finally {
             close(session);
         }

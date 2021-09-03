@@ -38,7 +38,7 @@ public class APIAuthorizationFilter implements Filter {
         HttpServletResponse response = (HttpServletResponse) servletResponse;
         try {
             String token = request.getHeader("Authorization");
-            if(request.getParameter("virtual")!=null){token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjMiLCJwYXNzd29yZCI6IjEyMyIsImlwIjoiMTkyLjE4Ni4wLjEiLCJleHAiOjE2MzI5NzkyNTUsInVzZXJJRCI6MSwiaWF0IjoxNjI5NTIzMjU1LCJqdGkiOiJhMWYzNTE0YS1mMzIxLTQ5MzUtOTcwNy04MTQxNDMwMGZmZTMiLCJ1c2VybmFtZSI6IjEyMyJ9.ICYXP1HPSNXduBNT333n0tNOKzVjTc3obn4-y-0U-y4";}
+            if(request.getParameter("virtual")!=null){token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjMiLCJwYXNzd29yZCI6IjEyMyIsInRva2VuVGFnIjoibG9naW4iLCJpcCI6bnVsbCwiZXhwIjoxNjMwNzcwOTQ5LCJ1c2VySUQiOjEsImlhdCI6MTYzMDY4NDU0OSwianRpIjoiMWUwMmI0OWItOWZiMi00MzMzLTk2OGQtZTE5Mzg0OTFlZmEwIiwidXNlcm5hbWUiOiIxMjMifQ.L_HMZrxTNjUyurB9l3XHWCUwnD7EdDxVOzxSbKY5jkM";}
             String ip = (String) request.getAttribute("ip");
             UserServiceImpl service = UserTokenService.getInstanceByToken(token,ip);
             request.setAttribute("AuthService",service);

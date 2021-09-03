@@ -296,6 +296,7 @@ public class NetdiskFile extends BaseEntity implements Serializable {
         return "NetdiskFile{" +
                 "File_Name='" + File_Name + '\'' +
                 ", File_Path='" + File_Path + '\'' +
+                ", File_Destination_Place='" + File_Destination_Place + '\'' +
                 ", File_Destination='" + File_Destination + '\'' +
                 ", File_Hash='" + File_Hash + '\'' +
                 ", userID=" + userID +
