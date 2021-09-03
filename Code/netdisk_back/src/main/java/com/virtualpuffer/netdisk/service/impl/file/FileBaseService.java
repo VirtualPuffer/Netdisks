@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 import java.io.*;
 import java.nio.file.NoSuchFileException;
 import java.util.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
 
@@ -276,7 +278,6 @@ public class FileBaseService extends FileUtilService {
                 //重复的话加上数字
                 String destination = StringUtils.duplicateRename(this.netdiskFile.getFile_Destination());
                 this.netdiskFile = NetdiskFile.getInstance(destination,this.user.getUSER_ID());
-                dumplicateParse(hash);
             }
         }
         return;
@@ -433,6 +434,7 @@ public class FileBaseService extends FileUtilService {
     }
 
 
+    //转存
     public void transfer()throws Exception{
         SqlSession session = null;
         String hash = this.netdiskFile.getFile_Hash();
@@ -448,9 +450,74 @@ public class FileBaseService extends FileUtilService {
         }
     }
 
-    public void deCompress()throws Exception{
-        deCompress(this.file,netdiskFile.getFile_Path().substring(0,netdiskFile.getFile_Path().lastIndexOf("/")));
+    /**
+     * 源文件获取zip键值对文件集合
+     * 用Getname获取路径
+     * 没有则创建路径
+     * zip文件解压
+     * @param inputFile  待解压文件夹/文件
+     * @param destDirPath  解压路径
+     */
+    protected void deCompress(String inputFile,String destDirPath) throws FileNotFoundException, IOException {
+        File file = new File(inputFile);
+        deCompress(file,destDirPath);
     }
+    protected void deCompress(File srcFile,String destDirPath) throws FileNotFoundException,IOException,Exception{
+        SqlSession session = null;
+        try {
+            session = MybatisConnect.getSession();
+            if (!srcFile.exists()) {
+                throw new FileNotFoundException(srcFile.getPath() + "");
+            }
+            ZipFile zipFile = new ZipFile(srcFile);
+            Enumeration<?> entries = zipFile.entries();
+            while (entries.hasMoreElements()) {
+                ZipEntry entry = (ZipEntry) entries.nextElement();
+                String dirPath = destDirPath + "/" + entry.getName();
+                if (entry.isDirectory()) {
+                    srcFile.mkdirs();
+                } else {
+                        String hash = getSH256(zipFile.getInputStream(entry));
+                        boolean dumplicate = session.getMapper(FileHashMap.class).checkDuplicate(hash).isEmpty();
+                        if (!dumplicate) {
+                            //不重复
+                            String dest = duplicateFileWare + hash;
+                            OutputStream outputStream = new FileOutputStream(dest);
+                            copy(zipFile.getInputStream(entry),outputStream);
+                            int count = session.getMapper(FileMap.class)
+                                    .buildFileMap(dirPath,entry.getName(),hash,user.getUSER_ID(),
+                                            dirPath.substring(dirPath.lastIndexOf("/")+1));
+                        } else {
+                            int count = session.getMapper(FileMap.class)
+                                    .buildFileMap(dirPath,entry.getName(),hash,user.getUSER_ID(),
+                                            dirPath.substring(dirPath.lastIndexOf("/")+1));
+                        }
+             /*       // 如果是文件，就先创建一个文件，然后用io流把内容copy过去
+                    File targetFile = new File(destDirPath + "/" + entry.getName());
+                    // 保证这个文件的父文件夹必须要存在
+                    if (!targetFile.getParentFile().exists()) {
+                        targetFile.getParentFile().mkdirs();
+                    }
+                    targetFile.createNewFile();
+                    InputStream is = zipFile.getInputStream(entry);
+                    FileOutputStream target = new FileOutputStream(targetFile);
+                    int arrayLength;
+                    byte[] buf = new byte[BUFFER_SIZE];
+                    while ((arrayLength = is.read(buf)) != -1) {
+                        target.write(buf,0,arrayLength);
+                    }
+                    target.close();
+                    is.close();*/
+                }
+            }
+        } finally {
+            close(session);
+        }
+    }
+
+/*    public void deCompress()throws Exception{
+        deCompress(this.file,netdiskFile.getFile_Path().substring(0,netdiskFile.getFile_Path().lastIndexOf("/")));
+    }*/
     public void compression() throws Exception {
         String path = netdiskFile.getFile_Path().substring(0,netdiskFile.getFile_Path().lastIndexOf("/"));
         compress(this.file,new ZipOutputStream(new FileOutputStream(path)),netdiskFile.getFile_Name());

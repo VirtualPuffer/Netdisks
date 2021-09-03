@@ -117,49 +117,6 @@ public class FileUtilService extends BaseServiceImpl {
             }
         }
     }
-    /**
-     * 源文件获取zip键值对文件集合
-     * 用Getname获取路径
-     * 没有则创建路径
-     * zip文件解压
-     * @param inputFile  待解压文件夹/文件
-     * @param destDirPath  解压路径
-     */
-    protected static void deCompress(String inputFile,String destDirPath) throws FileNotFoundException, IOException {
-        File file = new File(inputFile);
-        deCompress(file,destDirPath);
-    }
-    protected static void deCompress(File srcFile,String destDirPath) throws FileNotFoundException,IOException {
-        if (!srcFile.exists()) {
-            throw new FileNotFoundException(srcFile.getPath() + "");
-        }
-        ZipFile zipFile = new ZipFile(srcFile);
-        Enumeration<?> entries = zipFile.entries();
-        while (entries.hasMoreElements()) {
-            ZipEntry entry = (ZipEntry) entries.nextElement();
-            // 如果是文件夹，就创建个文件夹
-            if (entry.isDirectory()) {
-                String dirPath = destDirPath + "/" + entry.getName();
-                srcFile.mkdirs();
-            } else {
-                // 如果是文件，就先创建一个文件，然后用io流把内容copy过去
-                File targetFile = new File(destDirPath + "/" + entry.getName());
-                // 保证这个文件的父文件夹必须要存在
-                if (!targetFile.getParentFile().exists()) {
-                    targetFile.getParentFile().mkdirs();
-                }
-                targetFile.createNewFile();
-                InputStream is = zipFile.getInputStream(entry);
-                FileOutputStream target = new FileOutputStream(targetFile);
-                int arrayLength;
-                byte[] buf = new byte[BUFFER_SIZE];
-                while ((arrayLength = is.read(buf)) != -1) {
-                    target.write(buf,0,arrayLength);
-                }
-                target.close();
-                is.close();
-            }
-        }
-    }
+
 }
 

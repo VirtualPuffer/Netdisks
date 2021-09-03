@@ -26,6 +26,8 @@ public class GCService extends BaseServiceImpl{
 
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
+                    }catch (RuntimeException e){
+                        //有
                     }
                 }
             }
