@@ -6,6 +6,8 @@ server:
 
 
 spring:
+  resources:
+    static-locations: classpath:dist/
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://47.96.253.99:3306/netdisk?characterEncoding=utf-8&serverTimezone=UTC&useSSL=false
@@ -16,4 +18,7 @@ spring:
       enabled: true
       max-file-size: 100MB
       max-request-size: 100MB
+  web:
+    resources:
+      static-locations: classpath:dist/
 
