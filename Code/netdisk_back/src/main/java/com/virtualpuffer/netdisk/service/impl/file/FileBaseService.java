@@ -88,7 +88,24 @@ public class FileBaseService extends FileUtilService {
             }
             destination = StringUtils.filePathDeal(destination);
             User user = session.getMapper(UserMap.class).getUserByID(userID);
-            AbsoluteNetdiskFile netdiskFile = AbsoluteNetdiskFile.getInstance(destination,userID);
+            return getInstance(destination,user);
+        } finally {
+            close(session);
+        }
+    }
+    public static FileBaseService getInstance(String destination, User user) throws FileNotFoundException{
+        SqlSession session = null;
+        try {
+            session = MybatisConnect.getSession();
+            if(destination == null){
+                throw new FileNotFoundException("缺少参数:destination");
+            }else if(!destination.startsWith("/")){//防止路径没/
+                destination = new StringBuffer().append("/").append(destination).toString();
+            }else if(destination.contains("..")){
+                throw new RuntimeException("路径非法");
+            }
+            destination = StringUtils.filePathDeal(destination);
+            AbsoluteNetdiskFile netdiskFile = AbsoluteNetdiskFile.getInstance(destination,user.getUSER_ID());
             return new FileBaseService(netdiskFile,user);
         } finally {
             close(session);
@@ -463,17 +480,16 @@ public class FileBaseService extends FileUtilService {
      */
     public void deCompress() throws FileNotFoundException, IOException ,Exception {
         File file = netdiskFile.getFile();
-        System.out.println(netdiskFile);
-        System.out.println(netdiskFile.getFile_Destination_Place() + "___________________________________________");
         deCompress(file,netdiskFile.getFile_Destination_Place());
     }
     protected void deCompress(File srcFile,String destDirPath) throws FileNotFoundException,IOException,Exception{
         SqlSession session = null;
-        int count = 0;
+        FileBaseService service = null;
         if (!srcFile.exists()) {
             throw new FileNotFoundException(srcFile.getPath() + "");
         }
         try {
+            Map<String,FileBaseService> serviceMap = new HashMap<>();
             session = MybatisConnect.getSession();
             ZipFile zipFile = new ZipFile(srcFile);
             Enumeration<?> entries = zipFile.entries();
@@ -484,8 +500,12 @@ public class FileBaseService extends FileUtilService {
                     new File(getAbsolutePath(dirPath)).mkdir();
                     srcFile.mkdirs();
                 } else {
+                    service = serviceMap.get(dirPath);
+                    if(service == null){
+                        service = FileBaseService.getInstance(dirPath,this.user);
+                        serviceMap.put(destDirPath,service);
+                    }
                     String fileName = entry.getName().substring(entry.getName().lastIndexOf("/")+1);
-                    FileBaseService service = FileBaseService.getInstance(dirPath,this.user.getUSER_ID());
                     service.getNetdiskFile().setFile_Name(fileName);
                     try {
                         service.uploadFile(zipFile.getInputStream(entry));
