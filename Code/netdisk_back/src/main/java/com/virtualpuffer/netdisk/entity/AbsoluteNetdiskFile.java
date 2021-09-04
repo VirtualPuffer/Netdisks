@@ -24,7 +24,7 @@ import static com.virtualpuffer.netdisk.utils.StringUtils.filePathDeal;
  * 通过path映射或者destination反向映射
  *
  * */
-public class NetdiskFile extends BaseEntity implements Serializable {
+public class AbsoluteNetdiskFile extends BaseEntity implements Serializable {
     private String File_Name;
     private String File_Path;//真实路径
     private String File_Destination_Place;//父级路径
@@ -42,7 +42,7 @@ public class NetdiskFile extends BaseEntity implements Serializable {
      * 1.在sql中查询
      * 2.物理路径构造
     * */
-    public NetdiskFile(String path){
+    public AbsoluteNetdiskFile(String path){
         String file_Path = StringUtils.filePathDeal(path);
         try {
             this.File_Destination = this.destinationHandle(path);
@@ -57,7 +57,7 @@ public class NetdiskFile extends BaseEntity implements Serializable {
         }
     }
 
-    public NetdiskFile(String path,String destination){
+    public AbsoluteNetdiskFile(String path, String destination){
         String file_Path = StringUtils.filePathDeal(path);
         this.File_Destination = destination;
         this.file = new File(file_Path);
@@ -71,9 +71,9 @@ public class NetdiskFile extends BaseEntity implements Serializable {
 
 
 
-    public static NetdiskFile getInstance(String destination,int id) throws FileNotFoundException{
+    public static AbsoluteNetdiskFile getInstance(String destination, int id) throws FileNotFoundException{
         SqlSession session = null;
-        NetdiskFile netdiskFile = null;
+        AbsoluteNetdiskFile netdiskFile = null;
         try {
             try {
                 netdiskFile = checkMap(destination,id);
@@ -82,7 +82,7 @@ public class NetdiskFile extends BaseEntity implements Serializable {
                 session = MybatisConnect.getSession();
                 User user = session.getMapper(UserMap.class).getUserByID(id);
                 String path = filePathDeal(getAbsolutePath(destination,user));
-                netdiskFile = new NetdiskFile(path,destination);
+                netdiskFile = new AbsoluteNetdiskFile(path,destination);
             }
             if (netdiskFile != null) {
                 return netdiskFile;
@@ -94,13 +94,13 @@ public class NetdiskFile extends BaseEntity implements Serializable {
             close(session);
         }
     }
-    public static NetdiskFile getInstance(String hash,String name) throws FileNotFoundException{
+    public static AbsoluteNetdiskFile getInstance(String hash, String name) throws FileNotFoundException{
         SqlSession session = null;
-        NetdiskFile netdiskFile = null;
+        AbsoluteNetdiskFile netdiskFile = null;
         try {
             session = MybatisConnect.getSession();
             String path = session.getMapper(FileHashMap.class).getFilePath(hash).getPath();
-            netdiskFile = new NetdiskFile(path);
+            netdiskFile = new AbsoluteNetdiskFile(path);
             if (netdiskFile != null) {
                 netdiskFile.setFile_Name(name);
                 netdiskFile.setFile_Hash(hash);
@@ -113,9 +113,9 @@ public class NetdiskFile extends BaseEntity implements Serializable {
         }
     }
 
-    public static NetdiskFile checkMap(String destination,int id) throws FileNotFoundException{
+    public static AbsoluteNetdiskFile checkMap(String destination, int id) throws FileNotFoundException{
         SqlSession session = null;
-        NetdiskFile netdiskFile = null;
+        AbsoluteNetdiskFile netdiskFile = null;
         String file_Destination = StringUtils.filePathDeal(destination);
         try {
             session = MybatisConnect.getSession();
@@ -130,7 +130,7 @@ public class NetdiskFile extends BaseEntity implements Serializable {
         }
     }
 
-    public NetdiskFile handleInstance()throws RuntimeException{
+    public AbsoluteNetdiskFile handleInstance()throws RuntimeException{
         if(this.lock == false){
             this.File_Destination = filePathDeal(this.File_Destination);
             this.File_Path = filePathDeal(this.File_Path);
@@ -141,7 +141,7 @@ public class NetdiskFile extends BaseEntity implements Serializable {
         }
     }
 
-    public NetdiskFile handleInstance(String source)throws RuntimeException{
+    public AbsoluteNetdiskFile handleInstance(String source)throws RuntimeException{
         if(source == null || source.equals("")){return handleInstance();}
         if(!lock){
             int length = filePathDeal(source).length();
@@ -234,7 +234,7 @@ public class NetdiskFile extends BaseEntity implements Serializable {
     }
 
 
-    public NetdiskFile(){}
+    public AbsoluteNetdiskFile(){}
 
     public String getFile_Destination_Place() {
         return File_Destination_Place;

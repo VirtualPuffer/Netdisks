@@ -4,7 +4,7 @@ package com.virtualpuffer.netdisk.service.impl.file;
 import com.virtualpuffer.netdisk.MybatisConnect;
 import com.virtualpuffer.netdisk.data.FileCollection;
 import com.virtualpuffer.netdisk.entity.File_Map;
-import com.virtualpuffer.netdisk.entity.NetdiskFile;
+import com.virtualpuffer.netdisk.entity.AbsoluteNetdiskFile;
 import com.virtualpuffer.netdisk.entity.User;
 import com.virtualpuffer.netdisk.utils.Message;
 import com.virtualpuffer.netdisk.utils.StringUtils;
@@ -42,7 +42,7 @@ import java.util.zip.ZipOutputStream;
 public class FileBaseService extends FileUtilService {
     protected User user;
     protected File file;
-    protected NetdiskFile netdiskFile;
+    protected AbsoluteNetdiskFile netdiskFile;
     protected String tokenTag;
     protected int file_length;
     protected boolean isMapper = false;
@@ -62,7 +62,7 @@ public class FileBaseService extends FileUtilService {
      * @param user 用户对象
      * 没有处理404情况，controller级别再获取
     * */
-    public FileBaseService(NetdiskFile netdiskFile, User user) throws FileNotFoundException {
+    public FileBaseService(AbsoluteNetdiskFile netdiskFile, User user) throws FileNotFoundException {
         this.user = user;
         this.netdiskFile = netdiskFile;
         this.file = netdiskFile.getFile();
@@ -72,7 +72,7 @@ public class FileBaseService extends FileUtilService {
     public static FileBaseService getInstanceByPath(String path, int userID) throws FileNotFoundException{
         SqlSession session = MybatisConnect.getSession();
         User user = session.getMapper(UserMap.class).getUserByID(userID);
-        NetdiskFile netdiskFile = new NetdiskFile(path);
+        AbsoluteNetdiskFile netdiskFile = new AbsoluteNetdiskFile(path);
         return new FileBaseService(netdiskFile,user);
     }
     public static FileBaseService getInstance(String destination, int userID) throws FileNotFoundException{
@@ -88,7 +88,7 @@ public class FileBaseService extends FileUtilService {
             }
             destination = StringUtils.filePathDeal(destination);
             User user = session.getMapper(UserMap.class).getUserByID(userID);
-            NetdiskFile netdiskFile = NetdiskFile.getInstance(destination,userID);
+            AbsoluteNetdiskFile netdiskFile = AbsoluteNetdiskFile.getInstance(destination,userID);
             return new FileBaseService(netdiskFile,user);
         } finally {
             close(session);
@@ -226,7 +226,7 @@ public class FileBaseService extends FileUtilService {
      *
     * @param input 上传文件的输入流
     * */
-    public void uploadFile(InputStream input)throws Exception{
+    public void uploadFile(InputStream input)throws RuntimeException,Exception{
         OutputStream outputStream;
         InputStream[] inputStreams = copyStream(input);
         InputStream inputStream = inputStreams[1];
@@ -267,7 +267,7 @@ public class FileBaseService extends FileUtilService {
     }
     //上面的工具类，有重复文件时在后缀前加上（1），如果已经存在就递增
     public void dumplicateParse(String hash) throws Exception {
-        NetdiskFile test = NetdiskFile.getInstance(this.netdiskFile.getFile_Destination(),this.user.getUSER_ID());
+        AbsoluteNetdiskFile test = AbsoluteNetdiskFile.getInstance(this.netdiskFile.getFile_Destination(),this.user.getUSER_ID());
         File on = test.getFile();
         //重名文件处理
         if(on.exists()){
@@ -277,7 +277,7 @@ public class FileBaseService extends FileUtilService {
                 String path = this.netdiskFile.getFile_Path();
                 //重复的话加上数字
                 String destination = StringUtils.duplicateRename(this.netdiskFile.getFile_Destination());
-                this.netdiskFile = NetdiskFile.getInstance(destination,this.user.getUSER_ID());
+                this.netdiskFile = AbsoluteNetdiskFile.getInstance(destination,this.user.getUSER_ID());
             }
         }
         return;
@@ -375,9 +375,9 @@ public class FileBaseService extends FileUtilService {
             FileCollection collection = FileCollection.getInstance(this.file,name,getAbsolutePath("/"),type);
             LinkedList fileList = collection.getFile();
             LinkedList dirList = collection.getDir();
-           LinkedList<NetdiskFile> list = session.getMapper(FileMap.class).searchFile(name, user.getUSER_ID());
+           LinkedList<AbsoluteNetdiskFile> list = session.getMapper(FileMap.class).searchFile(name, user.getUSER_ID());
             if(!list.isEmpty()){
-                for(NetdiskFile fileMap : list){
+                for(AbsoluteNetdiskFile fileMap : list){
                     fileList.add(fileMap.getFile_Destination());
                 }
             }
@@ -411,7 +411,7 @@ public class FileBaseService extends FileUtilService {
             String destination = this.netdiskFile.getFile_Destination()
                     .substring(0,this.netdiskFile.getFile_Destination().lastIndexOf("/")+1) + name;
 
-            NetdiskFile netdiskFile = NetdiskFile.getInstance(destination,this.user.getUSER_ID());
+            AbsoluteNetdiskFile netdiskFile = AbsoluteNetdiskFile.getInstance(destination,this.user.getUSER_ID());
             //看看有没有重名的
             if (netdiskFile.getFile().exists()) {
                 throw new RuntimeException("重复文件名扔上来搞毛？");
@@ -485,23 +485,12 @@ public class FileBaseService extends FileUtilService {
                     srcFile.mkdirs();
                 } else {
                     String fileName = entry.getName().substring(entry.getName().lastIndexOf("/")+1);
-                    String hash = getSH256(zipFile.getInputStream(entry));
-                    boolean dumplicate = session.getMapper(FileHashMap.class).checkDuplicate(hash).isEmpty();
-                    if (!dumplicate){
-                        //不重复
-                        String dest = duplicateFileWare + hash;
-                        OutputStream outputStream = new FileOutputStream(dest);
-                        copy(zipFile.getInputStream(entry),outputStream);
-                        if(new File(dest).exists()){
-                            session.getMapper(FileMap.class)
-                                    .buildFileMap(dirPath,fileName,hash,user.getUSER_ID(),
-                                            dirPath.substring(dirPath.lastIndexOf("/")+1));
-                            session.getMapper(FileHashMap.class).addHashMap(hash,dest, user.getUSER_ID());
-                        }
-                    }else{
-                        session.getMapper(FileMap.class)
-                                .buildFileMap(dirPath,fileName, hash,user.getUSER_ID(),
-                                        dirPath.substring(0,dirPath.lastIndexOf("/")+1));
+                    FileBaseService service = FileBaseService.getInstance(dirPath,this.user.getUSER_ID());
+                    service.getNetdiskFile().setFile_Name(fileName);
+                    try {
+                        service.uploadFile(zipFile.getInputStream(entry));
+                    } catch (RuntimeException e) {
+                        //文件已经存在
                     }
                 }
             }
@@ -519,11 +508,11 @@ public class FileBaseService extends FileUtilService {
         compress(this.file,new ZipOutputStream(new FileOutputStream(path)),netdiskFile.getFile_Name());
     }
 
-    public NetdiskFile getNetdiskFile() {
+    public AbsoluteNetdiskFile getNetdiskFile() {
         return netdiskFile;
     }
 
-    public void setNetdiskFile(NetdiskFile netdiskFile) {
+    public void setNetdiskFile(AbsoluteNetdiskFile netdiskFile) {
         this.netdiskFile = netdiskFile;
     }
 

@@ -1,7 +1,7 @@
 package com.virtualpuffer.netdisk.service.impl.file;
 
 import com.virtualpuffer.netdisk.MybatisConnect;
-import com.virtualpuffer.netdisk.entity.NetdiskFile;
+import com.virtualpuffer.netdisk.entity.AbsoluteNetdiskFile;
 import com.virtualpuffer.netdisk.entity.User;
 import com.virtualpuffer.netdisk.mapper.FileMap;
 import org.apache.ibatis.session.SqlSession;
@@ -9,7 +9,7 @@ import org.apache.ibatis.session.SqlSession;
 import java.io.FileNotFoundException;
 
 public class FileHashService extends FileBaseService {
-    public FileHashService(NetdiskFile netdiskFile, User user) throws FileNotFoundException {
+    public FileHashService(AbsoluteNetdiskFile netdiskFile, User user) throws FileNotFoundException {
         super(netdiskFile, user);
     }
     public FileHashService() throws FileNotFoundException {
@@ -17,7 +17,7 @@ public class FileHashService extends FileBaseService {
 
     public static FileHashService getInstanceByHash(String hash, String name) throws FileNotFoundException {
         FileHashService service = new FileHashService();
-        NetdiskFile netdiskFile = NetdiskFile.getInstance(hash,name);
+        AbsoluteNetdiskFile netdiskFile = AbsoluteNetdiskFile.getInstance(hash,name);
         service.setNetdiskFile(netdiskFile);
         service.setFile(netdiskFile.getFile());
         return service;

@@ -1,17 +1,14 @@
 package com.virtualpuffer.netdisk.service.impl.file;
 
-import com.virtualpuffer.netdisk.entity.File_Map;
-import com.virtualpuffer.netdisk.entity.NetdiskFile;
+import com.virtualpuffer.netdisk.entity.AbsoluteNetdiskFile;
 import com.virtualpuffer.netdisk.service.impl.BaseServiceImpl;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.security.MessageDigest;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
 
@@ -68,12 +65,12 @@ public class FileUtilService extends BaseServiceImpl {
      * 获取映射文件并放入压缩集合中
      *
      * */
-    protected static ZipOutputStream compress(File sourceFile,ZipOutputStream outputStream, LinkedList<NetdiskFile> list){
+    protected static ZipOutputStream compress(File sourceFile,ZipOutputStream outputStream, LinkedList<AbsoluteNetdiskFile> list){
         byte[] buf = new byte[BUFFER_SIZE];
-        Iterator<NetdiskFile> iterator = list.iterator();
+        Iterator<AbsoluteNetdiskFile> iterator = list.iterator();
         while (iterator.hasNext()){
             try {
-                NetdiskFile file = iterator.next().handleInstance();
+                AbsoluteNetdiskFile file = iterator.next().handleInstance();
                 outputStream.putNextEntry(new ZipEntry(file.getFile_Destination()));
                 FileInputStream inputStream = new FileInputStream(file.getFile_Path());
                 int length;

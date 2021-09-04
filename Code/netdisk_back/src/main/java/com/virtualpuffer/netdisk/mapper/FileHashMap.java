@@ -1,8 +1,7 @@
 package com.virtualpuffer.netdisk.mapper;
 
 import com.virtualpuffer.netdisk.entity.FileHash_Map;
-import com.virtualpuffer.netdisk.entity.File_Map;
-import com.virtualpuffer.netdisk.entity.NetdiskFile;
+import com.virtualpuffer.netdisk.entity.AbsoluteNetdiskFile;
 
 import java.util.LinkedList;
 
@@ -18,11 +17,11 @@ public interface FileHashMap {
 
     int addHashMap(String hash,String path,int userID);
 
-    NetdiskFile getFileMapByHash(String hash);
+    AbsoluteNetdiskFile getFileMapByHash(String hash);
 
     FileHash_Map getFileMapByPath(String path);
 
-    NetdiskFile getPath(String hash);
+    AbsoluteNetdiskFile getPath(String hash);
 
     int updateDestination(String destination, String newDestination);
 

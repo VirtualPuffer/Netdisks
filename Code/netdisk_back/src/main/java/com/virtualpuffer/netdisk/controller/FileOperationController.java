@@ -87,7 +87,6 @@ public class FileOperationController extends BaseController {
             return ResponseMessage.getExceptionInstance(404,"hash为空",null);
         }
         try {
-          /*  FileServiceImpl service = FileServiceImpl.getInstanceByHash(hash,name);*/
             FileHashService service = FileHashService.getInstanceByHash(hash,name);
             service.getNetdiskFile().setFile_Destination(destination);
             service.setUser(loginService.getUser());

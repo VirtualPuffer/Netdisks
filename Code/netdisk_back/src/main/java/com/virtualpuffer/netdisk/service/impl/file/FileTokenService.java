@@ -1,6 +1,6 @@
 package com.virtualpuffer.netdisk.service.impl.file;
 
-import com.virtualpuffer.netdisk.entity.NetdiskFile;
+import com.virtualpuffer.netdisk.entity.AbsoluteNetdiskFile;
 import com.virtualpuffer.netdisk.entity.User;
 import com.virtualpuffer.netdisk.mapper.UserMap;
 import com.virtualpuffer.netdisk.service.ParseToken;
@@ -10,7 +10,7 @@ import java.io.FileNotFoundException;
 import java.util.Map;
 
 public class FileTokenService extends FileHashService implements ParseToken {
-    public FileTokenService(NetdiskFile netdiskFile, User user) throws FileNotFoundException {
+    public FileTokenService(AbsoluteNetdiskFile netdiskFile, User user) throws FileNotFoundException {
         super(netdiskFile, user);
     }
 
@@ -44,7 +44,7 @@ public class FileTokenService extends FileHashService implements ParseToken {
                 String path = (String) map.get("path");
                 int userID = (Integer) map.get("userID");
                 User user = session.getMapper(UserMap.class).getUserByID(userID);
-                NetdiskFile netdiskFile = new NetdiskFile(path);
+                AbsoluteNetdiskFile netdiskFile = new AbsoluteNetdiskFile(path);
                 return new FileTokenService(netdiskFile,user);
             }else {
                 String hash = (String) map.get("hash");
