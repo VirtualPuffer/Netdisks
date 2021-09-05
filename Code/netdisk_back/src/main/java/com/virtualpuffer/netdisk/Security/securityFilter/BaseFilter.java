@@ -2,6 +2,8 @@ package com.virtualpuffer.netdisk.Security.securityFilter;
 
 import com.alibaba.fastjson.JSON;
 import com.virtualpuffer.netdisk.data.ResponseMessage;
+import com.virtualpuffer.netdisk.utils.RedisUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletResponse;
@@ -9,7 +11,19 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class BaseFilter {
+public abstract class BaseFilter implements Filter{
+
+    @Autowired
+    RedisUtil redisUtil;
+
+    public void init(FilterConfig filterConfig) throws ServletException {
+
+    }
+
+    public void destroy() {
+
+    }
+
     public static String getStringFromInputStream(InputStream inputStream) {
         String resultData = null;      //需要返回的结果
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -30,5 +44,9 @@ public class BaseFilter {
         response.addHeader("Content-Encoding","UTF-8");
         response.setContentType("text/html;charset=utf-8");
         response.getWriter().write(JSON.toJSONString(responseMessage));
+    }
+
+    public void setRedisUtil(RedisUtil redisUtil) {
+        this.redisUtil = redisUtil;
     }
 }

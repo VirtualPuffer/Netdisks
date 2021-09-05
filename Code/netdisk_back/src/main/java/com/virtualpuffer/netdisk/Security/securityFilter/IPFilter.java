@@ -15,22 +15,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Map;
 
-@Order()
-@Component
+
 @WebFilter(urlPatterns = "/*",filterName = "aAmessageFilter")
-public class IPFilter extends BaseFilter implements Filter {
+public class IPFilter extends BaseFilter{
 
     public static final int IPAccessLimit = 50;
-    @Autowired
-    RedisUtil redisUtil;
-
-    @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
-    }
-
-    @Override
-    public void destroy() {
-    }
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {

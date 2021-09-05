@@ -1,4 +1,4 @@
-package com.virtualpuffer.netdisk.utils;
+package com.virtualpuffer.netdisk.startup;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,17 +10,8 @@ import org.springframework.stereotype.Component;
 
 @Configuration
 public class NetdiskConfigure {
-    @Bean("redisUtil")
-    public RedisUtil redisUtil(){
-        return new RedisUtil();
-    }
-    @Bean("log")
-    public Log logs(){
-        return Log.getLog();
-    }
-
     @Bean
-    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory factory) {
+    RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory factory) {
         RedisTemplate<String, Object> template = new RedisTemplate<String, Object>();
         template.setConnectionFactory(factory);
         // key采用String的序列化方式

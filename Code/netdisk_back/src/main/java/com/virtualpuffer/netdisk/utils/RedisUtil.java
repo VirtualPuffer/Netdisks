@@ -17,11 +17,12 @@ import javax.annotation.Resource;
 
 @Component
 public class RedisUtil {
+
     @Autowired
     RedisTemplate<String, Object> redisTemplate;
 
-    public static RedisUtil getInstance(){
-        return new RedisUtil();
+    public void setRedisTemplate(RedisTemplate<String,Object> redisTemplate){
+        this.redisTemplate = redisTemplate;
     }
 
     public void delete(String key){
@@ -100,7 +101,7 @@ public class RedisUtil {
         return key == null ? null : redisTemplate.opsForValue().get(key);
     }
     public String getString(String key){
-        return key == null ? null : redisTemplate.opsForValue().get(key).toString();
+        return key == null ? null : (redisTemplate.opsForValue().get(key) == null ? null : redisTemplate.opsForValue().get(key).toString());
     }
 
     /**

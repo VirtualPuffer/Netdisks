@@ -1,10 +1,12 @@
 package com.virtualpuffer.netdisk.service.impl;
 
 import com.virtualpuffer.netdisk.utils.Log;
+import com.virtualpuffer.netdisk.utils.RedisUtil;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -17,6 +19,9 @@ public class BaseServiceImpl {
     protected static String properties = "getMess.properties";
     private static final String secretKey = "c7fp2dh6msk0";
     public static final Log errorLog = Log.getLog();
+
+    @Autowired
+    protected RedisUtil redisUtil;
 
     protected static void close(Closeable cos){
         try {
@@ -113,5 +118,9 @@ public class BaseServiceImpl {
     }
     protected  static boolean getMessByBoolean(String source){
         return Boolean.getBoolean(getMess(source));
+    }
+
+    public void setRedisUtil(RedisUtil redisUtil) {
+        this.redisUtil = redisUtil;
     }
 }

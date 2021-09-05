@@ -29,24 +29,12 @@ import java.io.InputStream;
 @WebFilter(urlPatterns = "/api/*",filterName = "xapiControlFilter")
 public class APIAuthorizationFilter extends BaseFilter implements Filter {
 
-    @Autowired
-    RedisUtil redisUtil;
-
-    @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
-    }
-
-    @Override
-    public void destroy() {
-    }
-
-    @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
         try {
             String token = request.getHeader("Authorization");
-            if(request.getParameter("virtual")!=null){token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjMiLCJwYXNzd29yZCI6IjEyMyIsInRva2VuVGFnIjoibG9naW4iLCJpcCI6bnVsbCwiZXhwIjoxNjMwODI0ODA2LCJ1c2VySUQiOjEsImlhdCI6MTYzMDczODQwNiwianRpIjoiMTNhMmEzYmMtOWRkYy00YjI4LWIwMzUtMDBkOTIwMTY3OGJiIiwidXNlcm5hbWUiOiIxMjMifQ.fVEgc0fFhSn3RjinqVL0cNZHbKoeIXEh8mdJGSVmyBQ";}
+            if(request.getParameter("virtual")!=null){token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjMiLCJwYXNzd29yZCI6IjEyMyIsInRva2VuVGFnIjoibG9naW4iLCJpcCI6bnVsbCwiZXhwIjoxNjMxNDYyODY0LCJ1c2VySUQiOjEsImlhdCI6MTYzMDg1ODA2NCwianRpIjoiMjU2NmU1M2YtYzFiMC00YzIyLTkxNWQtM2ZiYWI0NDQ1MTA5IiwidXNlcm5hbWUiOiIxMjMifQ.t5UB-9LOqGzhmdtdtPE5yNT1_LBVgMqU4HD1lUgPN6w";}
 
             String ip = (String) request.getAttribute("ip");
             UserServiceImpl service = UserTokenService.getInstanceByToken(token,ip);

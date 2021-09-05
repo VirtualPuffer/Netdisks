@@ -1,5 +1,8 @@
 package com.virtualpuffer.netdisk.utils;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
@@ -7,7 +10,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-
+@Component
 public class Log {
     private static final Log logWriter = new Log();
     private FileOutputStream outputStream;

@@ -11,17 +11,8 @@ import java.util.regex.Pattern;
 
 
 @WebFilter(urlPatterns = "/user/login",filterName = "usernameLoginFilter")
-public class LoginFilter extends BaseFilter implements Filter {
-    @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
+public class LoginFilter extends BaseFilter{
 
-    }
-
-    @Override
-    public void destroy() {
-    }
-
-    @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;

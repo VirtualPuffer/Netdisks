@@ -42,9 +42,14 @@ public class ShowData {
         Set<String> set = redisTemplate.keys("*");
         StringBuffer buffer = new StringBuffer();
         for(String key:set){
-            buffer.append(redisTemplate.opsForValue().get(key)).append('\n');
+            buffer.append(key + "       ").append(redisTemplate.opsForValue().get(key)).append('\n');
         }
-        return (String) redisUtil.get(buffer.toString());
+        return buffer.toString();
+    }
+    @RequestMapping("/flush")
+    public void saasa(HttpServletRequest request){
+        redisTemplate.delete((String)request.getAttribute("ip"));
+        return ;
     }
 
     @RequestMapping("/api/background")
@@ -295,5 +300,13 @@ public class ShowData {
         strend.append("<br>");
         strhead.append(strend);
         // json = JSON.toJSONString(Vercode);
+    }
+
+    public void setRedisUtil(RedisUtil redisUtil) {
+        this.redisUtil = redisUtil;
+    }
+
+    public void setRedisTemplate(RedisTemplate redisTemplate) {
+        this.redisTemplate = redisTemplate;
     }
 }
