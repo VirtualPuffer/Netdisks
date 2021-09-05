@@ -1,7 +1,5 @@
 package com.virtualpuffer.netdisk.utils;
 
-import com.virtualpuffer.netdisk.Singleton;
-
 import java.lang.reflect.Constructor;
 import java.util.LinkedList;
 

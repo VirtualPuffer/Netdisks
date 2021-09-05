@@ -27,7 +27,7 @@ import java.io.InputStream;
  * 出问题直接抛出异常
 * */
 @WebFilter(urlPatterns = "/api/*",filterName = "xapiControlFilter")
-public class APIAuthorizationFilter extends BaseFilter implements Filter {
+public class APIAuthorizationFilter extends BaseFilter{
 
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;

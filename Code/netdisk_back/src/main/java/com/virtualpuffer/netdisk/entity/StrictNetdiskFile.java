@@ -1,12 +1,8 @@
 package com.virtualpuffer.netdisk.entity;
 
-import com.virtualpuffer.netdisk.MybatisConnect;
-import com.virtualpuffer.netdisk.mapper.FileMap;
-import com.virtualpuffer.netdisk.mapper.UserMap;
 import com.virtualpuffer.netdisk.utils.StringUtils;
 import org.apache.ibatis.session.SqlSession;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 
 import static com.virtualpuffer.netdisk.utils.StringUtils.filePathDeal;

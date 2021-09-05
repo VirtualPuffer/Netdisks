@@ -1,6 +1,6 @@
 package com.virtualpuffer.netdisk.service.impl;
 
-import com.virtualpuffer.netdisk.MybatisConnect;
+import com.virtualpuffer.netdisk.utils.MybatisConnect;
 import com.virtualpuffer.netdisk.mapper.FileMap;
 import com.virtualpuffer.netdisk.service.impl.file.FileHashService;
 import org.apache.ibatis.session.SqlSession;

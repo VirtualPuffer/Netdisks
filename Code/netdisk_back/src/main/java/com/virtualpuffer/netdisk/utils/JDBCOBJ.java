@@ -1,8 +1,6 @@
 package com.virtualpuffer.netdisk.utils;
 
 
-import com.virtualpuffer.netdisk.Singleton;
-
 import java.sql.*;
 import java.util.LinkedList;
 

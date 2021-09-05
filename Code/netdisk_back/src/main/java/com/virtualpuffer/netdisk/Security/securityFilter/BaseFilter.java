@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.virtualpuffer.netdisk.data.ResponseMessage;
 import com.virtualpuffer.netdisk.utils.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletResponse;
@@ -11,6 +12,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+@Component
 public abstract class BaseFilter implements Filter{
 
     @Autowired

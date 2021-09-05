@@ -1,4 +1,4 @@
-package com.virtualpuffer.netdisk.startup;
+package com.virtualpuffer.netdisk;
 
 import com.virtualpuffer.netdisk.service.messageService.SendMail;
 import org.springframework.boot.SpringApplication;

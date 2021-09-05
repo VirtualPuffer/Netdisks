@@ -1,7 +1,7 @@
 package com.virtualpuffer.netdisk.service.impl.file;
 
 
-import com.virtualpuffer.netdisk.MybatisConnect;
+import com.virtualpuffer.netdisk.utils.MybatisConnect;
 import com.virtualpuffer.netdisk.data.FileCollection;
 import com.virtualpuffer.netdisk.entity.File_Map;
 import com.virtualpuffer.netdisk.entity.AbsoluteNetdiskFile;

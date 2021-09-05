@@ -1,6 +1,6 @@
 package com.virtualpuffer.netdisk.service.impl.user;
 
-import com.virtualpuffer.netdisk.MybatisConnect;
+import com.virtualpuffer.netdisk.utils.MybatisConnect;
 import com.virtualpuffer.netdisk.startup.NetdiskContextWare;
 import com.virtualpuffer.netdisk.entity.BaseEntity;
 import com.virtualpuffer.netdisk.entity.User;

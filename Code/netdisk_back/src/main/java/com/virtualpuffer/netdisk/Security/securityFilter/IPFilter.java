@@ -15,7 +15,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Map;
 
-
 @WebFilter(urlPatterns = "/*",filterName = "aAmessageFilter")
 public class IPFilter extends BaseFilter{
 

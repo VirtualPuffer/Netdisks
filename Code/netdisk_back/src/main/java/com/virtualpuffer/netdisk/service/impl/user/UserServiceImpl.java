@@ -1,19 +1,17 @@
 package com.virtualpuffer.netdisk.service.impl.user;
 
-import com.virtualpuffer.netdisk.MybatisConnect;
+import com.virtualpuffer.netdisk.utils.MybatisConnect;
 import com.virtualpuffer.netdisk.data.Mail;
 import com.virtualpuffer.netdisk.entity.User;
 import com.virtualpuffer.netdisk.mapper.LoginHistory;
 import com.virtualpuffer.netdisk.mapper.UserMap;
 import com.virtualpuffer.netdisk.service.LoginService;
 import com.virtualpuffer.netdisk.service.impl.BaseServiceImpl;
-import com.virtualpuffer.netdisk.service.messageService.PortMessage;
 import com.virtualpuffer.netdisk.service.messageService.SendMail;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
-import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.sql.Timestamp;
