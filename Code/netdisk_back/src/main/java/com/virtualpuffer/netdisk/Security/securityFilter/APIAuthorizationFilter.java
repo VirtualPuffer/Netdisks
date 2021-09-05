@@ -26,7 +26,6 @@ import java.io.InputStream;
  * LoginService检测token真实性
  * 出问题直接抛出异常
 * */
-@Component
 @WebFilter(urlPatterns = "/api/*",filterName = "xapiControlFilter")
 public class APIAuthorizationFilter extends BaseFilter implements Filter {
 

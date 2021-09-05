@@ -24,7 +24,7 @@ import java.util.Map;
 public class UserTokenService extends UserServiceImpl implements ParseToken {
 
     @Autowired
-    static RedisUtil redisUtil;
+    RedisUtil redisUtil;
 
     public UserTokenService(User loginUser) {
         super(loginUser);
@@ -41,7 +41,7 @@ public class UserTokenService extends UserServiceImpl implements ParseToken {
             Map map = parseJWT(token,null);
             User user = session.getMapper(UserMap.class).userLogin((String)map.get("username"),(String)map.get("password"));
 
-            if (user != null && !TOKEN_EXPIRE.equals(redisUtil.get(token))) {
+            if (user != null && !TOKEN_EXPIRE.equals(RedisUtil.getInstance().get(token))) {
                 UserTokenService service = new UserTokenService(user);
                 service.setTokenTag((String) map.get("tokenTag"));
                 return service;
@@ -59,7 +59,7 @@ public class UserTokenService extends UserServiceImpl implements ParseToken {
     }
 
     public static void userLogout(String token){
-        redisUtil.set(token,TOKEN_EXPIRE,UserServiceImpl.Time);
+        RedisUtil.getInstance().set(token,TOKEN_EXPIRE,UserServiceImpl.Time);
     }
     /**
      * 通过token保存账号密码

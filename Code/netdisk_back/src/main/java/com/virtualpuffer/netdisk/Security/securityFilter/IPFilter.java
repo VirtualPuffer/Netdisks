@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
@@ -43,8 +44,8 @@ public class IPFilter extends BaseFilter implements Filter {
             ip = request.getHeader("x-forwarded-for");
         }
         request.setAttribute("ip",ip);
-        String numberOfAccess = redisUtil.getString(ip);
-        if(Integer.parseInt(numberOfAccess) > IPAccessLimit){
+        Integer numberOfAccess = (Integer) redisUtil.get(ip);
+        if(numberOfAccess!=null && numberOfAccess > IPAccessLimit){
             //频率过高，拒绝服务
             ResponseMessage responseMessage =
                     ResponseMessage.getExceptionInstance

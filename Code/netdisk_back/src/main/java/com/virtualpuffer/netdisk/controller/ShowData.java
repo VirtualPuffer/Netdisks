@@ -3,6 +3,7 @@ package com.virtualpuffer.netdisk.controller;
 import com.virtualpuffer.netdisk.utils.JDBCOBJ;
 import com.virtualpuffer.netdisk.utils.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
@@ -16,6 +17,7 @@ import java.sql.Statement;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 
 @org.springframework.stereotype.Controller
@@ -24,6 +26,9 @@ public class ShowData {
 
     @Autowired
     RedisUtil redisUtil;
+    @Autowired
+    RedisTemplate redisTemplate;
+
     static LinkedList<String> test;
     static HashMap<String,LinkedList<String>> hasf;
 
@@ -32,10 +37,14 @@ public class ShowData {
         System.out.println(1);
         return "HelloWorld";
     }
-    @RequestMapping("/r")
+    @RequestMapping("/fastRedis")
     public String saas(){
-        redisUtil.set("a","b",1000);
-        return (String) redisUtil.get("a");
+        Set<String> set = redisTemplate.keys("*");
+        StringBuffer buffer = new StringBuffer();
+        for(String key:set){
+            buffer.append(redisTemplate.opsForValue().get(key)).append('\n');
+        }
+        return (String) redisUtil.get(buffer.toString());
     }
 
     @RequestMapping("/api/background")

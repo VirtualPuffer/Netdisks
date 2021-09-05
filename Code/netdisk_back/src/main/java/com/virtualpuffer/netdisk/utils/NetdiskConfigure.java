@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 public class NetdiskConfigure {
     @Bean("redisUtil")
     public RedisUtil redisUtil(){
-        System.out.println("--------------");
         return new RedisUtil();
     }
     @Bean("log")
@@ -20,7 +19,7 @@ public class NetdiskConfigure {
         return Log.getLog();
     }
 
-    @Bean("redisTemplate")
+    @Bean
     public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory factory) {
         RedisTemplate<String, Object> template = new RedisTemplate<String, Object>();
         template.setConnectionFactory(factory);

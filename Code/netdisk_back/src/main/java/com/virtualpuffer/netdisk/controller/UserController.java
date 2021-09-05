@@ -12,6 +12,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -21,7 +22,7 @@ import java.util.HashMap;
 @RequestMapping(value = "/user")
 public class UserController extends BaseController {
     private User user;
-    @Autowired
+    @Resource(name = "redisTemplate")
     private RedisTemplate redisTemplate;
 
     @ResponseBody
@@ -62,10 +63,8 @@ public class UserController extends BaseController {
         try {
             String token = request.getHeader("Authorization");
             UserServiceImpl service = UserServiceImpl.getInstance(user,request);
-            HashMap hashMap = new HashMap();
-            hashMap.put("token",service.getUser().getToken(UserServiceImpl.LOGIN_TAG));//token
-            hashMap.put("name",service.getUser().getName());//名字
-            return ResponseMessage.getSuccessInstance(200,"登录成功",hashMap);
+            UserTokenService.userLogout(token);
+            return ResponseMessage.getSuccessInstance(200,"退出成功",null);
         } catch (RuntimeException e) {
             return ResponseMessage.getSuccessInstance(300,e.getMessage(),null);
         } catch (Throwable e){

@@ -6,16 +6,23 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.cache.CacheProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+import javax.annotation.Resource;
+
 @Component
-public final class RedisUtil {
+public class RedisUtil {
     @Autowired
-    private RedisTemplate<String, Object> redisTemplate;
+    RedisTemplate<String, Object> redisTemplate;
+
+    public static RedisUtil getInstance(){
+        return new RedisUtil();
+    }
 
     public void delete(String key){
         redisTemplate.delete(key);
@@ -93,7 +100,7 @@ public final class RedisUtil {
         return key == null ? null : redisTemplate.opsForValue().get(key);
     }
     public String getString(String key){
-        return key == null ? null : (String) redisTemplate.opsForValue().get(key);
+        return key == null ? null : redisTemplate.opsForValue().get(key).toString();
     }
 
     /**
