@@ -1,6 +1,8 @@
 package com.virtualpuffer.netdisk.controller;
 
 import com.virtualpuffer.netdisk.utils.JDBCOBJ;
+import com.virtualpuffer.netdisk.utils.RedisUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
@@ -20,13 +22,20 @@ import java.util.NoSuchElementException;
 @RestController
 public class ShowData {
 
+    @Autowired
+    RedisUtil redisUtil;
     static LinkedList<String> test;
     static HashMap<String,LinkedList<String>> hasf;
 
-    @RequestMapping("/")
-    public static String a(){
+    //@RequestMapping("/")
+    public String a(){
         System.out.println(1);
         return "HelloWorld";
+    }
+    @RequestMapping("/r")
+    public String saas(){
+        redisUtil.set("a","b",1000);
+        return (String) redisUtil.get("a");
     }
 
     @RequestMapping("/api/background")

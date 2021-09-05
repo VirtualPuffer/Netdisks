@@ -30,10 +30,14 @@ public class UserServiceImpl extends BaseServiceImpl implements LoginService {
     * */
     protected User  user;
     protected String tokenTag;
-    protected static final long time = 7*24*60*60;
+    public static final long Time = 7*24*60*60;
     public static final String resetURL = getMess("resetURL");
     public static final String DefaultWare = getMess("defaultWare");
 
+    //redis状态标识
+    public static final String TOKEN_ACTIVE = "active";
+    public static final String TOKEN_EXPIRE = "expire";
+    //token作用标识
     public static final String LOGIN_TAG = "login";
     public static final String RESET_TAG = "reset";
 
