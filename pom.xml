@@ -141,6 +141,15 @@
     </dependencies>
 
     <build>
+        <sourceDirectory>Code/netdisk_back/src</sourceDirectory>
+        <resources>
+            <resource>
+                <directory>Code/netdisk_back/src/main/resources</directory>
+                <includes>
+                    <include>Code/netdisk</include>
+                </includes>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

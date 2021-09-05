@@ -7,6 +7,8 @@ import com.virtualpuffer.netdisk.service.impl.user.UserServiceImpl;
 import com.virtualpuffer.netdisk.service.impl.user.UserTokenService;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -19,6 +21,8 @@ import java.util.HashMap;
 @RequestMapping(value = "/user")
 public class UserController extends BaseController {
     private User user;
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @ResponseBody
     @RequestMapping(value = "/login",method = RequestMethod.POST)
@@ -49,6 +53,23 @@ public class UserController extends BaseController {
             return ResponseMessage.getExceptionInstance(300,e.getMessage(),null);
         } catch (Throwable e){
                 e.printStackTrace();//打印异常情况
+            return ResponseMessage.getErrorInstance(500,"系统错误",null);
+        }
+    }
+    @ResponseBody
+    @RequestMapping(value = "/loout",method = RequestMethod.POST)
+    public ResponseMessage doLogout(@RequestBody User user, HttpServletRequest request , HttpServletResponse response){
+        try {
+            String token = request.getHeader("Authorization");
+            UserServiceImpl service = UserServiceImpl.getInstance(user,request);
+            HashMap hashMap = new HashMap();
+            hashMap.put("token",service.getUser().getToken(UserServiceImpl.LOGIN_TAG));//token
+            hashMap.put("name",service.getUser().getName());//名字
+            return ResponseMessage.getSuccessInstance(200,"登录成功",hashMap);
+        } catch (RuntimeException e) {
+            return ResponseMessage.getSuccessInstance(300,e.getMessage(),null);
+        } catch (Throwable e){
+            e.printStackTrace();//打印异常情况
             return ResponseMessage.getErrorInstance(500,"系统错误",null);
         }
     }
