@@ -28,7 +28,7 @@ import java.io.InputStream;
 * */
 @Component
 @WebFilter(urlPatterns = "/api/*",filterName = "xapiControlFilter")
-public class APIAuthorizationFilter implements Filter {
+public class APIAuthorizationFilter extends BaseFilter implements Filter {
 
     @Autowired
     RedisUtil redisUtil;
@@ -59,32 +59,11 @@ public class APIAuthorizationFilter implements Filter {
             throw new RuntimeException();
         } catch (Exception e) {
             e.printStackTrace();
-            response.setStatus(200);
-            response.addHeader("Content-Encoding","UTF-8");
-            response.setContentType("text/html;charset=utf-8");
             ResponseMessage responseMessage =
                     ResponseMessage.getExceptionInstance
                             (1000,"权限校验失败，请重新登录",null);
-            response.getWriter().write(JSON.toJSONString(responseMessage));
+            buildMessage(response,responseMessage);
             return;
         }
-
     }
-
-    public static String getStringFromInputStream(InputStream inputStream) {
-        String resultData = null;      //需要返回的结果
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        byte[] data = new byte[1024];
-        int len = 0;
-        try {
-            while((len = inputStream.read(data)) != -1) {
-                byteArrayOutputStream.write(data, 0, len);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        resultData = new String(byteArrayOutputStream.toByteArray());
-        return resultData;
-    }
-
 }

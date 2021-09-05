@@ -92,6 +92,9 @@ public final class RedisUtil {
     public Object get(String key) {
         return key == null ? null : redisTemplate.opsForValue().get(key);
     }
+    public String getString(String key){
+        return key == null ? null : (String) redisTemplate.opsForValue().get(key);
+    }
 
     /**
      * 普通缓存放入
@@ -123,17 +126,9 @@ public final class RedisUtil {
         }
     }
 
-    /**
-     * 130
-     * 递增
-     * 131
-     *
-     * @param key   键
-     *              132
-     * @param delta 要增加几(大于0)
-     *              133
-     * @return 134
-     */
+    public long increase(String key) {
+        return increase(key,1);
+    }
     public long increase(String key, long delta) {
         if (delta < 0) {
             throw new RuntimeException("递增因子必须大于0");
