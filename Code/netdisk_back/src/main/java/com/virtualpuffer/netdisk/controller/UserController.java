@@ -21,10 +21,6 @@ import java.util.HashMap;
 @RestController
 @RequestMapping(value = "/user")
 public class UserController extends BaseController {
-    private User user;
-    @Resource(name = "redisTemplate")
-    private RedisTemplate redisTemplate;
-
     @ResponseBody
     @RequestMapping(value = "/login",method = RequestMethod.POST)
     public ResponseMessage doLogin(@RequestBody User user, HttpServletRequest request , HttpServletResponse response){
@@ -62,7 +58,6 @@ public class UserController extends BaseController {
     public ResponseMessage doLogout(@RequestBody User user, HttpServletRequest request , HttpServletResponse response){
         try {
             String token = request.getHeader("Authorization");
-            UserServiceImpl service = UserServiceImpl.getInstance(user,request);
             UserTokenService.userLogout(token);
             return ResponseMessage.getSuccessInstance(200,"退出成功",null);
         } catch (RuntimeException e) {
@@ -141,7 +136,7 @@ public class UserController extends BaseController {
         try {
             UserTokenService service = UserTokenService.getInstanceByToken(token,ip);
             if(password == null || password.equals("")) {
-                return new ModelAndView("/reset.html");
+                return new ModelAndView("reset.html");
             }
             service.resetPassword(password);
             return ResponseMessage.getSuccessInstance(200,"密码重置成功",null);

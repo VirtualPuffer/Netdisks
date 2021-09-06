@@ -20,7 +20,7 @@ spring:
       max-request-size: 100MB
   web:
     resources:
-      static-locations: classpath:dist/
+      static-locations: classpath:dist/,classpath:static/
   redis:
     host: 127.0.0.1
     port: 6379

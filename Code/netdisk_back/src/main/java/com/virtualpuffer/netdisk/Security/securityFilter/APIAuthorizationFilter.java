@@ -34,12 +34,15 @@ public class APIAuthorizationFilter extends BaseFilter{
         HttpServletResponse response = (HttpServletResponse) servletResponse;
         try {
             String token = request.getHeader("Authorization");
-            if(request.getParameter("virtual")!=null){token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjMiLCJwYXNzd29yZCI6IjEyMyIsInRva2VuVGFnIjoibG9naW4iLCJpcCI6bnVsbCwiZXhwIjoxNjMxNDYyODY0LCJ1c2VySUQiOjEsImlhdCI6MTYzMDg1ODA2NCwianRpIjoiMjU2NmU1M2YtYzFiMC00YzIyLTkxNWQtM2ZiYWI0NDQ1MTA5IiwidXNlcm5hbWUiOiIxMjMifQ.t5UB-9LOqGzhmdtdtPE5yNT1_LBVgMqU4HD1lUgPN6w";}
+            if(request.getParameter("virtual")!=null){
+                token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjMiLCJwYXNzd29yZCI6IjEyMyIsInRva2VuVGFnIjoibG9naW4iLCJpcCI6bnVsbCwiZXhwIjoxNjMxNDYyODY0LCJ1c2VySUQiOjEsImlhdCI6MTYzMDg1ODA2NCwianRpIjoiMjU2NmU1M2YtYzFiMC00YzIyLTkxNWQtM2ZiYWI0NDQ1MTA5IiwidXNlcm5hbWUiOiIxMjMifQ.t5UB-9LOqGzhmdtdtPE5yNT1_LBVgMqU4HD1lUgPN6w";
+            }
 
             String ip = (String) request.getAttribute("ip");
             UserServiceImpl service = UserTokenService.getInstanceByToken(token,ip);
             request.setAttribute("AuthService",service);
-            if(service.getTokenTag().equals(UserServiceImpl.LOGIN_TAG)){
+            //token是否为登录token以及token有没有过期
+            if(service.getTokenTag().equals(UserServiceImpl.LOGIN_TAG) && !UserServiceImpl.TOKEN_EXPIRE.equals(redisUtil.get(token))){
                 filterChain.doFilter(request,response);
                 return;
             }

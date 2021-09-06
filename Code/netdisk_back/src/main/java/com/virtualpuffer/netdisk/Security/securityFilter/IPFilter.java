@@ -25,6 +25,7 @@ public class IPFilter extends BaseFilter{
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
         String ip = null;
+
         //添加ip
         if (request.getHeader("x-forwarded-for") == null) {
             ip = request.getRemoteAddr();
@@ -33,6 +34,12 @@ public class IPFilter extends BaseFilter{
         }
         request.setAttribute("ip",ip);
         Integer numberOfAccess = (Integer) redisUtil.get(ip);
+
+        if(request.getParameter("virtual")!=null){
+            filterChain.doFilter(request,response);
+            return;
+        }
+
         if(numberOfAccess!=null && numberOfAccess > IPAccessLimit){
             //频率过高，拒绝服务
             ResponseMessage responseMessage =
