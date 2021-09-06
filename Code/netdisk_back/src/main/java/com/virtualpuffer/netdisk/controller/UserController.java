@@ -108,35 +108,12 @@ public class UserController extends BaseController {
             return ResponseMessage.getErrorInstance(500,"系统错误",null);
         }
     }
-
-/*    @RequestMapping(value = "/resetPassword/{token}",method = RequestMethod.POST)
-    public Object i(@PathVariable String token,String key,String password, HttpServletResponse response) throws IOException {
-        System.out.println(2 + "_______________________________________");
-        String ip = (String) request.getAttribute("ip");
+    @RequestMapping(value = "/resetPassword/{token}",method = RequestMethod.GET)
+    public Object ki(@PathVariable String token,String key,String password, HttpServletResponse response) throws IOException { ;
         try {
-            UserTokenService service = UserTokenService.getInstanceByToken(token,ip);
+            UserTokenService service = UserTokenService.getInstanceByToken(token,"ip");
             if(password == null || password.equals("")) {
                 return new ModelAndView("/reset.html");
-            }
-            service.resetPassword(password);
-            return ResponseMessage.getSuccessInstance(200,"密码重置成功",null);
-        }catch (ExpiredJwtException e){
-            return ResponseMessage.getExceptionInstance(300,"链接已失效",null);
-        }catch (JwtException e){
-            return ResponseMessage.getExceptionInstance(300,"链接错误 : " + e.getMessage(),null);
-        }catch (Exception e) {
-            e.printStackTrace();
-            return ResponseMessage.getErrorInstance(500, "链接错误 : " + e.getMessage(), null);
-        }
-    }*/
-    @RequestMapping(value = "/resetPassword/{getToken}",method = RequestMethod.GET)
-    public Object ki(@PathVariable String getToken,String key,String password, HttpServletResponse response) throws IOException {
-        System.out.println(getToken);
-        String ip = (String) request.getAttribute("ip");
-        try {
-            UserTokenService service = UserTokenService.getInstanceByToken(getToken,"ip");
-            if(password == null || password.equals("")) {
-                return new ModelAndView("reset.html");
             }
             service.resetPassword(password);
             return ResponseMessage.getSuccessInstance(200,"密码重置成功",null);
