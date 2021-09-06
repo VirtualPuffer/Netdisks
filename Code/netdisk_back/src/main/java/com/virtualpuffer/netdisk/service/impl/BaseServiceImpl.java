@@ -46,6 +46,11 @@ public class BaseServiceImpl {
         }
         return get.getProperty(source);
     }
+
+    public static String createToken(long time,Map<String,Object> claims,String subject){
+        return createToken(time,claims,subject,secretKey);
+    }
+
     /**
      * @param claims 加密集合
      * @param time 有效时间（秒）

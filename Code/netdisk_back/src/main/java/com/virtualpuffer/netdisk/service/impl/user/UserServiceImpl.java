@@ -139,7 +139,9 @@ public class UserServiceImpl extends BaseServiceImpl implements LoginService {
         return false;
     }
     public void sendResetMail(){
-        sendMess(resetURL());
+        String res = resetURL();
+        System.out.println(res);
+        sendMess(res);
     }
 
     private String resetURL(){
@@ -149,7 +151,7 @@ public class UserServiceImpl extends BaseServiceImpl implements LoginService {
         map.put("password",user.getPassword());
         map.put("userID",user.getUSER_ID());
         map.put("ip",user.getIp());
-        String token = createToken(60*10,map,user.getUsername(),null);
+        String token = createToken(60*10,map,user.getUsername());
         return resetURL + token;
     }
 

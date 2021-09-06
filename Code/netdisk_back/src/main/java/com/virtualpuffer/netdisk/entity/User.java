@@ -40,7 +40,7 @@ public class User extends BaseEntity implements Serializable {
             map.put("password",this.password);
             map.put("userID",this.USER_ID);
             map.put("ip",this.ip);
-            this.token = BaseServiceImpl.createToken(UserServiceImpl.Time,map,this.username,null);
+            this.token = BaseServiceImpl.createToken(UserServiceImpl.Time,map,this.username);
         }
         return token;
     }
