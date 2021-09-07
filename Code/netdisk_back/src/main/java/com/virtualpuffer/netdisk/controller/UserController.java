@@ -109,7 +109,7 @@ public class UserController extends BaseController {
         }
     }
     @RequestMapping(value = "/resetPassword/{token}",method = RequestMethod.GET)
-    public Object ki(@PathVariable String token,String key,String password, HttpServletResponse response) throws IOException { ;
+    public Object ki(@PathVariable String token,String key,String password, HttpServletResponse response) throws IOException {
         try {
             UserTokenService service = UserTokenService.getInstanceByToken(token,"ip");
             if(password == null || password.equals("")) {

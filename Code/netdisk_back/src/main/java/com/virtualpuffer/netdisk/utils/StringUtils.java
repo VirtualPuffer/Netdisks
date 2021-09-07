@@ -6,6 +6,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -52,11 +54,20 @@ public class StringUtils {
         return filePathDeal(new StringBuilder(),s,0);
     }
 
+    //这个有Bug,/..没处理
+    @Deprecated
     public static String filePathDeal(StringBuilder sb,String s ,int index){
+        Queue queue = new PriorityQueue();
         while(s.length() > index + 1){
             if(s.charAt(index) == '/' && (s.charAt(index+1) == '/')){
                 index = index + 1;
-            }else if(s.charAt(index) == '/' && (s.charAt(index+1) == '.')){
+            }
+            else if(s.charAt(index) == '/' && (s.charAt(index+1) == '.' && (s.charAt(index+2)) == '.')){
+                index = index + 3;
+                System.out.println(sb.toString());
+                sb.delete(sb.substring(0, sb.lastIndexOf("/")).length(),sb.length());
+            }
+            else if(s.charAt(index) == '/' && (s.charAt(index+1) == '.')){
                 index = index + 2;
             }else {
                 sb.append(s.charAt(index));
@@ -97,10 +108,11 @@ public class StringUtils {
             try {
                 String num = fir.substring(fir.lastIndexOf("(") + 1,fir.length()-1);
                 int get = Integer.parseInt(num) + 1;
-                return fir.substring(0,fir.lastIndexOf("(")+1) + get + ")" + sec;
+                return new StringBuilder().append(fir.substring(0,fir.lastIndexOf('(')+1)).append(get).append(')').append(sec).toString();
+          /*      return fir.substring(0,fir.lastIndexOf("(")+1) + get + ")" + sec;*/
             } catch (Exception e) {
                 e.printStackTrace();
-                return fir + "(1)" + sec;
+                return new StringBuilder().append(fir).append("(1)").append(sec).toString() ;
             }
         }
         throw new RuntimeException("");

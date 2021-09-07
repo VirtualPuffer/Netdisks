@@ -275,6 +275,8 @@ public class FileBaseService extends FileUtilService {
                             .buildFileMap(dest,this.file.getName(),hash,this.user.getUSER_ID(),place);
                     session.getMapper(FileHashMap.class).addHashMap(hash,hashFile_path,user.getUSER_ID());
                     session.commit();
+                }else {
+                    throw new RuntimeException("文件写入失败");
                 }
             }
         } finally {
