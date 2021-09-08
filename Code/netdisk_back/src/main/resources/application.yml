@@ -6,8 +6,6 @@ server:
 
 
 spring:
-  resources:
-    static-locations: classpath:dist/,classpath:netdisk/,file:/usr/local/MyTomcat/static
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://47.96.253.99:3306/netdisk?characterEncoding=utf-8&serverTimezone=UTC&useSSL=false

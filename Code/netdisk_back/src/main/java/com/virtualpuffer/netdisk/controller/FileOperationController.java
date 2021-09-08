@@ -66,10 +66,8 @@ public class FileOperationController extends BaseController {
             service.uploadFile(getFile.getInputStream());
             return ResponseMessage.getSuccessInstance(200,"文件上传成功",null);
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
             return ResponseMessage.getExceptionInstance(404,"传输地址无效",null);
         }  catch (RuntimeException e){
-            e.printStackTrace();
             return ResponseMessage.getExceptionInstance(300,e.getMessage(),null);
         }catch (Exception e) {
             e.printStackTrace();
@@ -97,7 +95,6 @@ public class FileOperationController extends BaseController {
             e.printStackTrace();
             return ResponseMessage.getExceptionInstance(404,"传输地址无效",null);
         }  catch (RuntimeException e){
-            e.printStackTrace();
             return ResponseMessage.getExceptionInstance(300,e.getMessage(),null);
         }catch (Exception e) {
             e.printStackTrace();

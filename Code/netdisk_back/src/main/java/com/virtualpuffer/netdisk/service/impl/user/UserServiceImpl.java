@@ -162,12 +162,6 @@ public class UserServiceImpl extends BaseServiceImpl implements LoginService {
         SendMail.sendEmail(Mail.buildMail(this.user.getAddress(),"网盘密码找回邮件",msg));
     }
 
-    public void sendMess(){
-
-        SendMail.sendEmail(Mail.buildMail(this.user.getAddress(),"网盘密码找回邮件","你的网盘账号为:" + user.getUsername()
-                + ",密码为:" + user.getPassword() + " 请妥善保管"));
-    }
-
     public String getTokenTag() {
         return tokenTag;
     }

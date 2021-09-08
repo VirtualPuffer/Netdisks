@@ -103,7 +103,6 @@ public class UserController extends BaseController {
             userService.sendResetMail();
             return ResponseMessage.getSuccessInstance(200,"邮件发送成功",null);
         } catch (RuntimeException e) {
-            e.printStackTrace();
             return ResponseMessage.getExceptionInstance(300,e.getMessage(),null);
         } catch (Throwable e){
             e.printStackTrace();//打印异常情况
@@ -122,7 +121,6 @@ public class UserController extends BaseController {
         }catch (ExpiredJwtException e){
             return ResponseMessage.getExceptionInstance(300,"链接已失效",null);
         }catch (JwtException e){
-            e.printStackTrace();
             return ResponseMessage.getExceptionInstance(300,"链接错误 : " + e.getMessage(),null);
         }catch (Exception e) {
             e.printStackTrace();

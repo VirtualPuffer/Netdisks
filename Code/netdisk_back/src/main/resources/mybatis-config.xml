@@ -17,13 +17,10 @@
                 <property name="poolMaximumActiveConnections" value="100"></property>
                 <property name="poolMaximumIdleConnections" value="15"></property>
                 <property name="poolTimeToWait" value="20000"></property>
-            <!--    <property name="poolTimeToWait" value="20000"></property>　　&lt;!&ndash;创建连接时最大等待时间20s&ndash;&gt;-->
             </dataSource>
         </environment>
     </environments>
     <mappers>
-        <!--这是告诉Mybatis区哪找持久化类的映射文件，对于在src下的文件直接写文件名，
-            如果在某包下，则要写明路径,如：com/mybatistest/config/User.xml-->
         <mapper resource="mapper/mysql/FileMap.xml"></mapper>
         <mapper resource="mapper/mysql/FileHashMap.xml"></mapper>
         <mapper resource="mapper/mysql/UserMapper.xml"></mapper>
