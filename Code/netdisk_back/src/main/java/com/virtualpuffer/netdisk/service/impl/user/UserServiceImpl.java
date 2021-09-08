@@ -11,6 +11,7 @@ import com.virtualpuffer.netdisk.service.messageService.SendMail;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
+import org.springframework.scheduling.annotation.Async;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
@@ -18,6 +19,7 @@ import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
 
+@Async
 public class UserServiceImpl extends BaseServiceImpl implements LoginService {
     /**
     * 初始阶段只传入账号密码，登录状态

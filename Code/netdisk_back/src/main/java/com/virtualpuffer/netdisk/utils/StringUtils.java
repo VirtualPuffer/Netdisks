@@ -54,8 +54,6 @@ public class StringUtils {
         return filePathDeal(new StringBuilder(),s,0);
     }
 
-    //这个有Bug,/..没处理
-    @Deprecated
     public static String filePathDeal(StringBuilder sb,String s ,int index){
         Queue queue = new PriorityQueue();
         while(s.length() > index + 1){

@@ -5,10 +5,12 @@ import com.virtualpuffer.netdisk.entity.User;
 import com.virtualpuffer.netdisk.mapper.UserMap;
 import com.virtualpuffer.netdisk.service.ParseToken;
 import org.apache.ibatis.session.SqlSession;
+import org.springframework.scheduling.annotation.Async;
 
 import java.io.FileNotFoundException;
 import java.util.Map;
 
+@Async
 public class FileTokenService extends FileHashService implements ParseToken {
     public FileTokenService(AbsoluteNetdiskFile netdiskFile, User user) throws FileNotFoundException {
         super(netdiskFile, user);

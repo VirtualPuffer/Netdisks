@@ -6,6 +6,7 @@ import com.virtualpuffer.netdisk.service.impl.file.FileBaseService;
 import com.virtualpuffer.netdisk.service.impl.file.FileTokenService;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;

@@ -7,12 +7,13 @@ import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.util.*;
 
-
+@Async
 @Service
 public class BaseServiceImpl {
     protected static final int BUFFER_SIZE = 4 * 1024;

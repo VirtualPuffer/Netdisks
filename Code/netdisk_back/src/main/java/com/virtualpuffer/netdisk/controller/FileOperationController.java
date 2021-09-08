@@ -11,6 +11,7 @@ import com.virtualpuffer.netdisk.service.impl.file.FileTokenService;
 import com.virtualpuffer.netdisk.service.impl.user.UserServiceImpl;
 import com.virtualpuffer.netdisk.utils.StringUtils;
 import org.springframework.lang.Nullable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 

@@ -11,6 +11,7 @@ import com.virtualpuffer.netdisk.utils.StringUtils;
 import org.apache.ibatis.session.SqlSession;
 import com.virtualpuffer.netdisk.mapper.*;
 import org.springframework.lang.Nullable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -38,6 +39,7 @@ import java.util.zip.ZipOutputStream;
  * @para path           文件的绝对路径
  * @para destination    文件的相对路径
 * */
+@Async
 @Service
 public class FileBaseService extends FileUtilService {
     protected User user;
