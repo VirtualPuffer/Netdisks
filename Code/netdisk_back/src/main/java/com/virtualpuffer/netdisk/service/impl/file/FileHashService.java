@@ -5,9 +5,11 @@ import com.virtualpuffer.netdisk.entity.AbsoluteNetdiskFile;
 import com.virtualpuffer.netdisk.entity.User;
 import com.virtualpuffer.netdisk.mapper.FileMap;
 import org.apache.ibatis.session.SqlSession;
+import org.springframework.scheduling.annotation.Async;
 
 import java.io.FileNotFoundException;
 
+@Async
 public class FileHashService extends FileBaseService {
     public FileHashService(AbsoluteNetdiskFile netdiskFile, User user) throws FileNotFoundException {
         super(netdiskFile, user);

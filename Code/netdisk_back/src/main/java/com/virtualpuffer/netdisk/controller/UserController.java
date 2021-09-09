@@ -9,6 +9,7 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -54,10 +55,11 @@ public class UserController extends BaseController {
         }
     }
     @ResponseBody
-    @RequestMapping(value = "/loout",method = RequestMethod.POST)
-    public ResponseMessage doLogout(@RequestBody User user, HttpServletRequest request , HttpServletResponse response){
+    @RequestMapping(value = "/logout",method = RequestMethod.POST)
+    public ResponseMessage doLogout(HttpServletRequest request , HttpServletResponse response){
         try {
             String token = request.getHeader("Authorization");
+            System.out.println(token + "?????????");
             UserTokenService.userLogout(token);
             return ResponseMessage.getSuccessInstance(200,"退出成功",null);
         } catch (RuntimeException e) {
@@ -101,7 +103,6 @@ public class UserController extends BaseController {
             userService.sendResetMail();
             return ResponseMessage.getSuccessInstance(200,"邮件发送成功",null);
         } catch (RuntimeException e) {
-            e.printStackTrace();
             return ResponseMessage.getExceptionInstance(300,e.getMessage(),null);
         } catch (Throwable e){
             e.printStackTrace();//打印异常情况
@@ -120,7 +121,6 @@ public class UserController extends BaseController {
         }catch (ExpiredJwtException e){
             return ResponseMessage.getExceptionInstance(300,"链接已失效",null);
         }catch (JwtException e){
-            e.printStackTrace();
             return ResponseMessage.getExceptionInstance(300,"链接错误 : " + e.getMessage(),null);
         }catch (Exception e) {
             e.printStackTrace();

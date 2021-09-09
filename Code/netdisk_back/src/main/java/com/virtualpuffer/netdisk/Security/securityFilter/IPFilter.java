@@ -18,7 +18,7 @@ import java.util.Map;
 @WebFilter(urlPatterns = "/*",filterName = "aAmessageFilter")
 public class IPFilter extends BaseFilter{
 
-    public static final int IPAccessLimit = 50;
+    public static final int IPAccessLimit = 5000;
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
@@ -34,6 +34,7 @@ public class IPFilter extends BaseFilter{
         }
         request.setAttribute("ip",ip);
         Integer numberOfAccess = (Integer) redisUtil.get(ip);
+
 
         if(request.getParameter("virtual")!=null){
             filterChain.doFilter(request,response);

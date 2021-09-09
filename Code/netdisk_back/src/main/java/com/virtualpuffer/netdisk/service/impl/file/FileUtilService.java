@@ -2,6 +2,7 @@ package com.virtualpuffer.netdisk.service.impl.file;
 
 import com.virtualpuffer.netdisk.entity.AbsoluteNetdiskFile;
 import com.virtualpuffer.netdisk.service.impl.BaseServiceImpl;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -11,7 +12,7 @@ import java.util.LinkedList;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-
+@Async
 @Service
 public class FileUtilService extends BaseServiceImpl {
 

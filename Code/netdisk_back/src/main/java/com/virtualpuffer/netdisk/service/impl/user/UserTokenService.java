@@ -8,12 +8,14 @@ import com.virtualpuffer.netdisk.mapper.UserMap;
 import com.virtualpuffer.netdisk.service.ParseToken;
 import com.virtualpuffer.netdisk.utils.RedisUtil;
 import org.apache.ibatis.session.SqlSession;
+import org.springframework.scheduling.annotation.Async;
 
 import java.util.Map;
 
 /**
  * 分离出来的token认证，一般不做用户信息处理和变更，只用于验证
 * */
+@Async
 public class UserTokenService extends UserServiceImpl implements ParseToken {
 
     protected static RedisUtil redisUtil = NetdiskContextWare.getBean(RedisUtil.class);
