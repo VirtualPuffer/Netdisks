@@ -2,8 +2,6 @@ package com.virtualpuffer.netdisk.entity;
 
 import com.virtualpuffer.netdisk.service.impl.BaseServiceImpl;
 import com.virtualpuffer.netdisk.service.impl.user.UserServiceImpl;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.awt.*;
 import java.io.Serializable;
