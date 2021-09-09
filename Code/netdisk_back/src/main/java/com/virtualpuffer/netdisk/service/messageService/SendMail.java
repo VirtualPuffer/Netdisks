@@ -12,18 +12,43 @@ import java.util.LinkedList;
 import java.util.Properties;
 
 public class SendMail extends BaseServiceImpl implements Runnable{
+    private String host;
+    private String from;
+    private String recipient;
+    private String password;
     public Thread thread;
-    public Session session;
+    private Session session;
     private Transport transport;
     private boolean runnable = true;
     private static volatile SendMail sendMail;
     private static LinkedList<Mail> list = new LinkedList<>();
-    private String host = "smtp.qq.com";
-    private static final String From = "547798198@qq.com";
-    private static final String Recipient = "547798198@qq.com";
-    private static final String Password = "qykmsmflodptbeea";
 
-    public SendMail(){}
+
+    public SendMail(String From,String Recipient,String Password,String host){
+        this.from  =From;
+        this.recipient = Recipient;
+        this.password = Password;
+        this.host = host;
+        Properties properties = new Properties();
+        properties.setProperty("mail.host","smtp.qq.com");
+        properties.setProperty("mail.transport.protocol","smtp");
+        properties.setProperty("mail.smtp.auth","true");
+        MailSSLSocketFactory sf = null;
+        try {
+            sf = new MailSSLSocketFactory();
+        } catch (GeneralSecurityException e) {
+            e.printStackTrace();
+        }
+        sf.setTrustAllHosts(true);
+        properties.put("mail.smtp.ssl.enable", "true");
+        properties.put("mail.smtp.ssl.socketFactory", sf);
+        session = Session.getDefaultInstance(properties, new Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(Recipient,Password);
+            }
+        });
+    }
 
     public static void sendEmail(Mail get){
         list.add(get);
@@ -31,7 +56,7 @@ public class SendMail extends BaseServiceImpl implements Runnable{
 
     public PortMessage buildMessage(Mail mail) throws MessagingException {
         MimeMessage mimeMessage = new PortMessage(session);
-        mimeMessage.setFrom(new InternetAddress(From));
+        mimeMessage.setFrom(new InternetAddress(this.from));
         mimeMessage.setRecipient(Message.RecipientType.TO,new InternetAddress(mail.getAddr()));
         mimeMessage.setSubject(mail.getSubject());
         mimeMessage.setContent(mail.getContent(),"text/html;charset=UTF-8");
@@ -41,26 +66,6 @@ public class SendMail extends BaseServiceImpl implements Runnable{
     @Override
     public void run() {
         try {
-            Properties properties = new Properties();
-            properties.setProperty("mail.host","smtp.qq.com");
-            properties.setProperty("mail.transport.protocol","smtp");
-            properties.setProperty("mail.smtp.auth","true");
-            MailSSLSocketFactory sf = null;
-            try {
-                sf = new MailSSLSocketFactory();
-            } catch (GeneralSecurityException e) {
-                e.printStackTrace();
-            }
-            sf.setTrustAllHosts(true);
-            properties.put("mail.smtp.ssl.enable", "true");
-            properties.put("mail.smtp.ssl.socketFactory", sf);
-            session = Session.getDefaultInstance(properties, new Authenticator() {
-                        @Override
-                        protected PasswordAuthentication getPasswordAuthentication() {
-                            return new PasswordAuthentication(Recipient,Password);
-                }
-            });
-
             while (runnable) {
                 try {
                     synchronized (SendMail.class) {
@@ -87,7 +92,7 @@ public class SendMail extends BaseServiceImpl implements Runnable{
         if(transport == null || !transport.isConnected()){
             try {
                 transport = session.getTransport();
-                transport.connect(host,From,Password);
+                transport.connect(host,from,password);
                 Thread.sleep(1000);
                 System.out.println("获取链接:" + transport);
             } catch (NoSuchProviderException e) {

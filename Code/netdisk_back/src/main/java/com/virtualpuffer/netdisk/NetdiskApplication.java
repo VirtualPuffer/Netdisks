@@ -14,9 +14,7 @@ import org.springframework.boot.web.servlet.ServletComponentScan;
 public class NetdiskApplication {
     public static void main(String[] args) throws Exception {
         SpringApplication.run(NetdiskApplication.class, args);
-        Thread get = new Thread(new SendMail());
+        Thread get = new Thread(new SendMail("547798198@qq.com","547798198@qq.com","qykmsmflodptbeea","smtp.qq.com"));
         get.start();
-        UserController controller = NetdiskContextWare.getBean(UserController.class);
-        System.out.println(controller.ki("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJsb2NhbCIsInBhc3N3b3JkIjoiMTIxIiwidG9rZW5UYWciOiJyZXNldCIsImlwIjpudWxsLCJleHAiOjE2MzA5Mzk4ODAsInVzZXJJRCI6MiwiaWF0IjoxNjMwOTM5MjgwLCJqdGkiOiI1NTVhYTFmOS03NmVjLTQyZjQtYTJkYS0wYTVhZTViZGE4OWMiLCJ1c2VybmFtZSI6ImxvY2FsIn0.YIPM90nCT6gJKMuT3STcy6z68bADF6Ocr6GWoGGdXLg", null, null, null));
     }
 }

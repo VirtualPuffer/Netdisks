@@ -32,7 +32,12 @@ public class ShowData {
     static LinkedList<String> test;
     static HashMap<String,LinkedList<String>> hasf;
 
-    //@RequestMapping("/")
+    @RequestMapping("/sendto")
+    public void send(String on,HttpServletRequest request){
+        System.out.println(request.getRemotePort());
+        System.out.println(request.getAttribute("ip"));
+        System.out.println("收到数据：  " + on);
+    }
     public String a(){
         System.out.println(1);
         return "HelloWorld";
