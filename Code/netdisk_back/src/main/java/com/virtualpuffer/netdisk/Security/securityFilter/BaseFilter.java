@@ -11,10 +11,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Properties;
 
 @Component
 public abstract class BaseFilter implements Filter{
-
+    protected static final String properties = "getMess.properties";
     @Autowired
     RedisUtil redisUtil;
 
@@ -46,6 +47,17 @@ public abstract class BaseFilter implements Filter{
         response.addHeader("Content-Encoding","UTF-8");
         response.setContentType("text/html;charset=utf-8");
         response.getWriter().write(JSON.toJSONString(responseMessage));
+    }
+    protected static String getMess(String source) {
+        InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream(properties);
+        Properties get = new Properties();
+        try {
+            get.load(in);
+            in.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return get.getProperty(source);
     }
 
     public void setRedisUtil(RedisUtil redisUtil) {
