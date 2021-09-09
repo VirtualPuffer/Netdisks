@@ -1,6 +1,7 @@
 package com.virtualpuffer.netdisk;
 
 import com.virtualpuffer.netdisk.controller.UserController;
+import com.virtualpuffer.netdisk.data.Mail;
 import com.virtualpuffer.netdisk.service.impl.user.UserTokenService;
 import com.virtualpuffer.netdisk.service.messageService.SendMail;
 import com.virtualpuffer.netdisk.startup.NetdiskContextWare;
@@ -8,6 +9,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.web.servlet.ServletComponentScan;
+
+import static com.virtualpuffer.netdisk.service.messageService.SendMail.sendEmail;
 
 @ServletComponentScan
 @SpringBootApplication(exclude = {SecurityAutoConfiguration.class},scanBasePackages = {"com.virtualpuffer.netdisk.*"})//核心包

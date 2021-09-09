@@ -142,7 +142,6 @@ public class UserServiceImpl extends BaseServiceImpl implements LoginService {
     }
     public void sendResetMail(){
         String res = resetURL();
-        System.out.println(res);
         sendMess(res);
     }
 

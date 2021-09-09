@@ -13,14 +13,14 @@ import java.util.Map;
 import java.util.Set;
 
 @Order(1)
-@WebFilter(urlPatterns = "/*",filterName = "aaageControlFilter")
+@WebFilter(urlPatterns = "/3231",filterName = "aaageControlFilter")
 public class StaticResourceFilter extends BaseFilter{
     private Set<String> URLWhiteList = new HashSet();
     private static final String message = "urlWhiteList";
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        String[] config = getMess(message).split("|");
+        String[] config = getMess(message).split("\\|");//用\\转义|
         for(String con : config){
             URLWhiteList.add(con);
         }
