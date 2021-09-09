@@ -38,9 +38,9 @@ public class ShowData {
         System.out.println(request.getAttribute("ip"));
         System.out.println("收到数据：  " + on);
     }
-    public String a(){
-        System.out.println(1);
-        return "HelloWorld";
+    @RequestMapping("/")
+    public Object a(){
+        return new ModelAndView("index.html");
     }
     @RequestMapping("/fastRedis")
     public String saas(){
