@@ -8,14 +8,15 @@ import org.springframework.stereotype.Component;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletResponse;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.Properties;
 
 @Component
 public abstract class BaseFilter implements Filter{
     protected static final String properties = "getMess.properties";
+    protected static final String ChineseProperties = "ChineseMess.properties";
+    private static Properties get;
+    private static Properties property;
     @Autowired
     RedisUtil redisUtil;
 
@@ -25,6 +26,16 @@ public abstract class BaseFilter implements Filter{
 
     public void destroy() {
 
+    }
+
+    protected static void close(Closeable cos){
+        try {
+            if(cos!=null){
+                cos.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static String getStringFromInputStream(InputStream inputStream) {
@@ -49,18 +60,37 @@ public abstract class BaseFilter implements Filter{
         response.getWriter().write(JSON.toJSONString(responseMessage));
     }
     protected static String getMess(String source) {
-        InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream(properties);
-        Properties get = new Properties();
-        try {
-            get.load(in);
-            in.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
         return get.getProperty(source);
     }
 
     public void setRedisUtil(RedisUtil redisUtil) {
         this.redisUtil = redisUtil;
+    }
+
+    static {
+        InputStreamReader reader = null;
+        if(property == null){
+            try {
+                property = new Properties();
+                reader = new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream(ChineseProperties), "UTF-8");
+                property.load(reader);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }finally {
+                close(reader);
+            }
+        }
+        InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream(properties);
+        if(get == null){
+            try {
+                get = new Properties();
+                get.load(in);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }finally {
+                close(in);
+            }
+        }
     }
 }

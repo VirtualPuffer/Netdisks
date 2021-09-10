@@ -27,17 +27,7 @@ public class BaseServiceImpl {
     @Autowired
     protected RedisUtil redisUtil;
 
-    protected static void close(Closeable cos){
-        try {
-            if(cos!=null){
-                cos.close();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    protected static String getChineseProperties(String source){
+    static {
         InputStreamReader reader = null;
         if(property == null){
             try {
@@ -50,12 +40,6 @@ public class BaseServiceImpl {
                 close(reader);
             }
         }
-        return property.getProperty(source);
-
-    }    /*
-    * 读取配置文件信息
-    * */
-    protected static String getMess(String source) {
         InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream(properties);
         if(get == null){
             try {
@@ -67,6 +51,25 @@ public class BaseServiceImpl {
                 close(in);
             }
         }
+    }
+
+    protected static void close(Closeable cos){
+        try {
+            if(cos!=null){
+                cos.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    protected static String getChineseProperties(String source){
+        return property.getProperty(source);
+
+    }    /*
+    * 读取配置文件信息
+    * */
+    protected static String getMess(String source) {
         return get.getProperty(source);
     }
 
