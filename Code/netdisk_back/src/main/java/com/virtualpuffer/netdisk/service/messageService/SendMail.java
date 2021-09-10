@@ -26,10 +26,10 @@ public class SendMail extends BaseServiceImpl implements Runnable{
     public static final String M163_HOST = "smtp.163.com";
 
 
-    public SendMail(String From,String Recipient,String Password,String host){
-        this.from  =From;
-        this.recipient = Recipient;
-        this.password = Password;
+    public SendMail(String from,String recipient,String password,String host){
+        this.from  =from;
+        this.recipient = recipient;
+        this.password = password;
         this.host = host;
         Properties properties = new Properties();
         properties.setProperty("mail.host",host);
@@ -47,7 +47,7 @@ public class SendMail extends BaseServiceImpl implements Runnable{
         session = Session.getDefaultInstance(properties, new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(Recipient,Password);
+                return new PasswordAuthentication(recipient,password);
             }
         });
     }
