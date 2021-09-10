@@ -18,6 +18,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -28,18 +30,21 @@ import java.io.InputStream;
 * */
 @WebFilter(urlPatterns = "/api/*",filterName = "xapiControlFilter")
 public class APIAuthorizationFilter extends BaseFilter{
+    private Map<String,UserServiceImpl> tokenMap = new HashMap();
 
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
+        UserServiceImpl service;
         try {
             String token = request.getHeader("Authorization");
             if(request.getParameter("virtual")!=null){
                 token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjMiLCJwYXNzd29yZCI6IjEyMyIsInRva2VuVGFnIjoibG9naW4iLCJpcCI6bnVsbCwiZXhwIjoxNjMxNDYyODY0LCJ1c2VySUQiOjEsImlhdCI6MTYzMDg1ODA2NCwianRpIjoiMjU2NmU1M2YtYzFiMC00YzIyLTkxNWQtM2ZiYWI0NDQ1MTA5IiwidXNlcm5hbWUiOiIxMjMifQ.t5UB-9LOqGzhmdtdtPE5yNT1_LBVgMqU4HD1lUgPN6w";
             }
-
-            String ip = (String) request.getAttribute("ip");
-            UserServiceImpl service = UserTokenService.getInstanceByToken(token,ip);
+            if((service = tokenMap.get(token)) == null){
+                String ip = (String) request.getAttribute("ip");
+                service = UserTokenService.getInstanceByToken(token,ip);
+            }
             request.setAttribute("AuthService",service);
             //token是否为登录token以及token有没有过期
             if(service.getTokenTag().equals(UserServiceImpl.LOGIN_TAG) && !UserServiceImpl.TOKEN_EXPIRE.equals(redisUtil.get(token))){
@@ -54,6 +59,11 @@ public class APIAuthorizationFilter extends BaseFilter{
                             (1000,"权限校验失败，请重新登录",null);
             buildMessage(response,responseMessage);
             return;
+        }
+    }
+    public void cleanMap(){
+        for(String key : tokenMap.keySet()){
+
         }
     }
 }

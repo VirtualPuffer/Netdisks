@@ -96,10 +96,10 @@ public class UserController extends BaseController {
     }
 
     @ResponseBody
-    @RequestMapping(value="/find")
-    public ResponseMessage findback(String addr, HttpServletRequest request , HttpServletResponse response){
+    @RequestMapping(value="/find",method = RequestMethod.POST)
+    public ResponseMessage findback(@RequestBody User user, HttpServletRequest request , HttpServletResponse response){
         try {
-            UserServiceImpl userService =  UserServiceImpl.getInstanceByAddr(addr);
+            UserServiceImpl userService =  UserServiceImpl.getInstanceByAddr(user.getEmail());
             userService.sendResetMail();
             return ResponseMessage.getSuccessInstance(200,"邮件发送成功",null);
         } catch (RuntimeException e) {
@@ -109,14 +109,11 @@ public class UserController extends BaseController {
             return ResponseMessage.getErrorInstance(500,"系统错误",null);
         }
     }
-    @RequestMapping(value = "/resetPassword/{token}",method = RequestMethod.GET)
-    public Object ki(@PathVariable String token,String key,String password, HttpServletResponse response) throws IOException {
+    @RequestMapping(value = "/resetPassword",method = RequestMethod.POST)
+    public Object ki(@RequestBody User user,String key, HttpServletResponse response) throws IOException {
         try {
-            UserTokenService service = UserTokenService.getInstanceByToken(token,"ip");
-            if(password == null || password.equals("")) {
-                return new ModelAndView("/reset.html");
-            }
-            service.resetPassword(password);
+            UserTokenService service = UserTokenService.getInstanceByToken(user.getToken(),"ip");
+            service.resetPassword(user.getPassword());
             return ResponseMessage.getSuccessInstance(200,"密码重置成功",null);
         }catch (ExpiredJwtException e){
             return ResponseMessage.getExceptionInstance(300,"链接已失效",null);

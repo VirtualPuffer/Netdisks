@@ -14,7 +14,7 @@ public class User extends BaseEntity implements Serializable {
     private String mailBox;
     private String username;
     private String password;
-    private String address;
+    private String email;
     private String URL;
     private String name;
     private int USER_ID;
@@ -28,6 +28,10 @@ public class User extends BaseEntity implements Serializable {
         this.username = username;
         this.password = password;
         this.USER_ID = id;
+    }
+
+    public String getToken() {
+        return token;
     }
 
     public String getToken(String tokenTag) {
@@ -111,12 +115,12 @@ public class User extends BaseEntity implements Serializable {
         this.mailBox = mailBox;
     }
 
-    public String getAddress() {
-        return address;
+    public String getEmail() {
+        return email;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public void setAddress(String email) {
+        this.email = email;
     }
 
 
@@ -127,7 +131,7 @@ public class User extends BaseEntity implements Serializable {
                 "mailBox='" + mailBox + '\'' +
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
-                ", address='" + address + '\'' +
+                ", address='" + email + '\'' +
                 ", URL='" + URL + '\'' +
                 ", name='" + name + '\'' +
                 ", USER_ID=" + USER_ID +

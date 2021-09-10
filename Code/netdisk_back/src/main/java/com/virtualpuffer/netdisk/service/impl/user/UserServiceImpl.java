@@ -87,7 +87,7 @@ public class UserServiceImpl extends BaseServiceImpl implements LoginService {
     }
 
     public static void registerUser(User user){
-        registerUser(user.getUsername(),user.getPassword(),user.getName(),user.getAddress());
+        registerUser(user.getUsername(),user.getPassword(),user.getName(),user.getEmail());
     }
 
     public static void registerUser(String username,String password,String name,String address)throws RuntimeException,Error{
@@ -158,7 +158,7 @@ public class UserServiceImpl extends BaseServiceImpl implements LoginService {
 
     public void sendMess(String msg){
 
-        SendMail.sendEmail(Mail.buildMail(this.user.getAddress(),"网盘密码找回邮件",msg));
+        SendMail.sendEmail(Mail.buildMail(this.user.getEmail(),"网盘密码找回邮件",msg));
     }
 
     public String getTokenTag() {

@@ -22,6 +22,8 @@ public class SendMail extends BaseServiceImpl implements Runnable{
     private boolean runnable = true;
     private static volatile SendMail sendMail;
     private static LinkedList<Mail> list = new LinkedList<>();
+    public static final String QQ_HOST = "smtp.qq.com";
+    public static final String M163_HOST = "smtp.163.com";
 
 
     public SendMail(String From,String Recipient,String Password,String host){
@@ -30,7 +32,7 @@ public class SendMail extends BaseServiceImpl implements Runnable{
         this.password = Password;
         this.host = host;
         Properties properties = new Properties();
-        properties.setProperty("mail.host","smtp.qq.com");
+        properties.setProperty("mail.host",host);
         properties.setProperty("mail.transport.protocol","smtp");
         properties.setProperty("mail.smtp.auth","true");
         MailSSLSocketFactory sf = null;
