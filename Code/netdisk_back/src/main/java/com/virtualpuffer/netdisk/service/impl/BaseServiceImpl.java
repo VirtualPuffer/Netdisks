@@ -17,9 +17,12 @@ import java.util.*;
 @Service
 public class BaseServiceImpl {
     protected static final int BUFFER_SIZE = 4 * 1024;
-    protected static String properties = "getMess.properties";
+    protected static final String properties = "getMess.properties";
+    protected static final String ChineseProperties = "ChineseMess.properties";
     private static final String secretKey = "c7fp2dh6msk0";
     public static final Log errorLog = Log.getLog();
+    private static Properties get;
+    private static Properties property;
 
     @Autowired
     protected RedisUtil redisUtil;
@@ -33,17 +36,36 @@ public class BaseServiceImpl {
             e.printStackTrace();
         }
     }
-    /*
+
+    protected static String getChineseProperties(String source){
+        InputStreamReader reader = null;
+        if(property == null){
+            try {
+                property = new Properties();
+                reader = new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream(ChineseProperties), "UTF-8");
+                property.load(reader);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }finally {
+                close(reader);
+            }
+        }
+        return property.getProperty(source);
+
+    }    /*
     * 读取配置文件信息
     * */
     protected static String getMess(String source) {
         InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream(properties);
-        Properties get = new Properties();
-        try {
-            get.load(in);
-            in.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+        if(get == null){
+            try {
+                get = new Properties();
+                get.load(in);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }finally {
+                close(in);
+            }
         }
         return get.getProperty(source);
     }

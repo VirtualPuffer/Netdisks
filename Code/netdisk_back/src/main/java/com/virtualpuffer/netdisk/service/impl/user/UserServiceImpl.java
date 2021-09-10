@@ -41,6 +41,9 @@ public class UserServiceImpl extends BaseServiceImpl implements LoginService {
     public static final String LOGIN_TAG = "login";
     public static final String RESET_TAG = "reset";
 
+    public static final String RESET_MSG_FIR = getChineseProperties("resetFirst");
+    public static final String RESET_MSG_SEC = getChineseProperties("resetSecond");
+
     public UserServiceImpl(User loginUser){
         this.user = loginUser;
     }
@@ -153,7 +156,7 @@ public class UserServiceImpl extends BaseServiceImpl implements LoginService {
         map.put("userID",user.getUSER_ID());
         map.put("ip",user.getIp());
         String token = createToken(60*10,map,user.getUsername());
-        return resetURL + token;
+        return RESET_MSG_FIR + resetURL + token + RESET_MSG_SEC;
     }
 
     public void sendMess(String msg){

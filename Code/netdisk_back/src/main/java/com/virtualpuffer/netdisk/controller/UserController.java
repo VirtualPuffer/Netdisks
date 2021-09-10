@@ -99,7 +99,7 @@ public class UserController extends BaseController {
     @RequestMapping(value="/find",method = RequestMethod.POST)
     public ResponseMessage findback(@RequestBody User user, HttpServletRequest request , HttpServletResponse response){
         try {
-            UserServiceImpl userService =  UserServiceImpl.getInstanceByAddr(user.getEmail());
+            UserServiceImpl userService =  UserServiceImpl.getInstanceByAddr(user.getAddr());
             userService.sendResetMail();
             return ResponseMessage.getSuccessInstance(200,"邮件发送成功",null);
         } catch (RuntimeException e) {

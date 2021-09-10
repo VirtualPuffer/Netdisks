@@ -15,6 +15,7 @@ public class User extends BaseEntity implements Serializable {
     private String username;
     private String password;
     private String email;
+    private String addr;
     private String URL;
     private String name;
     private int USER_ID;
@@ -45,6 +46,14 @@ public class User extends BaseEntity implements Serializable {
             this.token = BaseServiceImpl.createToken(UserServiceImpl.Time,map,this.username);
         }
         return token;
+    }
+
+    public String getAddr() {
+        return addr;
+    }
+
+    public void setAddr(String addr) {
+        this.addr = addr;
     }
 
     public void setToken(String token) {
