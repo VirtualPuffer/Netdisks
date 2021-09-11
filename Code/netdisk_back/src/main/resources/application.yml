@@ -18,7 +18,7 @@ spring:
       max-request-size: 100MB
   web:
     resources:
-      static-locations: classpath:dist/,file:/usr/local/MyTomcat/static,file:/usr/local/MyTomcat/dist
+      static-locations: classpath:dist/,file:/usr/local/MyTomcat/static,file:/usr/local/MyTomcat/dist,file:/usr/local/MyTomcat/wife
   redis:
     host: 127.0.0.1
     port: 6379
