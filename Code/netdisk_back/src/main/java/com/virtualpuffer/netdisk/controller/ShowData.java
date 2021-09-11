@@ -31,6 +31,10 @@ public class ShowData {
 
     static LinkedList<String> test;
     static HashMap<String,LinkedList<String>> hasf;
+    @RequestMapping("/getImg")
+    public Object get(){
+        return new ModelAndView("/img/bg.f90510bb.png");
+    }
 
     @RequestMapping("/sendto")
     public void send(String on,HttpServletRequest request){
