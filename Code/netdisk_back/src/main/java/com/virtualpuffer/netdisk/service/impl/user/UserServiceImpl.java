@@ -1,5 +1,6 @@
 package com.virtualpuffer.netdisk.service.impl.user;
 
+import com.virtualpuffer.netdisk.mapper.WareHouse_Map;
 import com.virtualpuffer.netdisk.utils.MybatisConnect;
 import com.virtualpuffer.netdisk.data.Mail;
 import com.virtualpuffer.netdisk.entity.User;
@@ -17,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.sql.Timestamp;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 @Async
@@ -25,11 +27,17 @@ public class UserServiceImpl extends BaseServiceImpl implements LoginService {
     * 初始阶段只传入账号密码，登录状态
      * 解析token
      * 登录成功后完善内容
+     *
+     * warehouse架构
+     * 用户可以拥有数个仓库
+     * 仓库可以私有，亦可以与他人共享
+     * 
     *
      * tokenTag用于标识token用处
     * */
     protected User  user;
     protected String tokenTag;
+    protected LinkedList wareHouse;
     public static final long Time = 7*24*60*60;
     public static final String resetURL = getMess("resetURL");
     public static final String DefaultWare = getMess("defaultWare");
@@ -45,7 +53,15 @@ public class UserServiceImpl extends BaseServiceImpl implements LoginService {
     public static final String RESET_MSG_SEC = getChineseProperties("resetSecond");
 
     public UserServiceImpl(User loginUser){
+        SqlSession session = null;
         this.user = loginUser;
+        try {
+            session = MybatisConnect.getSession();
+            LinkedList ware = session.getMapper(WareHouse_Map.class).getUserWareHouse(loginUser.getUSER_ID());
+            this.wareHouse = ware;
+        } finally {
+            session.close();
+        }
     }
     //登录这里过来
     public static UserServiceImpl getInstance(User user, @Nullable HttpServletRequest request)throws RuntimeException{

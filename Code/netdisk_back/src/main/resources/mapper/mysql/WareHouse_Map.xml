@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.virtualpuffer.netdisk.mapper.WareHouse_Map">
+    <insert id="buildWareHouse">
+        insert into User_WareHouse (USER_ID,Ware_Capacity,Current_File_Size,Ware_Location)
+        values (#{userID},#{capacity,0,#{location});
+    </insert>
+    <update id="updateSize">
+        update User_WareHouse set Current_File_Size = #{newSize} where USER_ID = #{userID};
+    </update>
+    <select id="getUserWareHouse" resultType="com.virtualpuffer.netdisk.entity.User_WareHouse">
+        select * from User_WareHouse where USER_ID = #{userID};
+    </select>
+</mapper>
