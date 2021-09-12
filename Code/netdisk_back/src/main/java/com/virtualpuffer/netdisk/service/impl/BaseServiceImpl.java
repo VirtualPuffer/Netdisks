@@ -15,7 +15,7 @@ import java.util.*;
 
 @Async
 @Service
-public class BaseServiceImpl {
+public abstract class BaseServiceImpl {
     protected static final int BUFFER_SIZE = 4 * 1024;
     protected static final String properties = "getMess.properties";
     protected static final String ChineseProperties = "ChineseMess.properties";

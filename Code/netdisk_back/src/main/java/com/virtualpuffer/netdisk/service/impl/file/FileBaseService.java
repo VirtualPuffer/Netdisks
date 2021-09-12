@@ -47,6 +47,7 @@ public class FileBaseService extends FileUtilService {
     protected AbsoluteNetdiskFile netdiskFile;
     protected String tokenTag;
     protected int file_length;
+    private static final Class SQL_LOCK = FileBaseService.class;
     protected boolean isMapper = false;
     protected static final int BUFFER_SIZE = 4 * 1024;
     public static final String downloadAPI = Message.getMess("downloadAPI");//下载链接前缀
@@ -243,6 +244,8 @@ public class FileBaseService extends FileUtilService {
      *  hashmap 维护文件物理路径和hash值的对应关系
      *  map     维护hash值和文件拥有者以及相对路径的对应关系
      *
+     * @warn 多线程安全警告
+     *
     * @param input 上传文件的输入流
     * */
     public void uploadFile(InputStream input)throws RuntimeException,Exception{
@@ -273,10 +276,14 @@ public class FileBaseService extends FileUtilService {
                 }
                 //复制成功？
                 if(new File(hashFile_path).exists()){
-                    session.getMapper(FileMap.class)
-                            .buildFileMap(dest,this.file.getName(),hash,this.user.getUSER_ID(),place);
-                    session.getMapper(FileHashMap.class).addHashMap(hash,hashFile_path,user.getUSER_ID());
-                    session.commit();
+                    synchronized (SQL_LOCK){
+                        if(!checkDuplicate(hash)){
+                            session.getMapper(FileMap.class)
+                                    .buildFileMap(dest,this.file.getName(),hash,this.user.getUSER_ID(),place);
+                            session.getMapper(FileHashMap.class).addHashMap(hash,hashFile_path,user.getUSER_ID());
+                            session.commit();
+                        }
+                    }
                 }else {
                     throw new RuntimeException("文件写入失败");
                 }

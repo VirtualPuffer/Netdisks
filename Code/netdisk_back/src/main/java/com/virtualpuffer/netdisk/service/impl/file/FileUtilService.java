@@ -14,9 +14,12 @@ import java.util.zip.ZipOutputStream;
 
 @Async
 @Service
-public class FileUtilService extends BaseServiceImpl {
+public abstract class FileUtilService extends BaseServiceImpl {
 
     private static final int BUFFER_SIZE = 4 * 1024;
+
+    public abstract void uploadFile(InputStream input) throws Exception;
+
     /**
      * 源文件获取hash值
      * 把文件转化为输入流

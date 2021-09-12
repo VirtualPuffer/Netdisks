@@ -5,13 +5,38 @@ import com.virtualpuffer.netdisk.utils.StringUtils;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Map;
+import java.util.Set;
 
 public class URLFileService extends FileUtilService {
+    public String url;
+    public String fileName;
+    public String file_location;
+    public static final Set<String> fileNameSet;
     public static final String netdiskContext = getMess("context");
     public static final String location = "/usr/local/MyTomcat/wife";
+
+    static {
+        fileNameSet = new HashSet<>();
+        File file = new File(location);
+        for(File getFile : file.listFiles()){
+            fileNameSet.add(getFile.getName());
+        }
+    }
+
+    public URLFileService(String url, String fileName) {
+        this.url = url;
+        this.fileName = fileName;
+    }
+
+    public synchronized void uploadFile(InputStream input) throws Exception {
+
+    }
 
     public static LinkedList getPicture(){
         File x = new File(location);
@@ -42,7 +67,9 @@ public class URLFileService extends FileUtilService {
         connection.setConnectTimeout(5000);
         connection.setReadTimeout(15000);
         connection.connect();
-        copy(connection.getInputStream(),new FileOutputStream(location + "/" +url.substring(url.lastIndexOf("/")+1,url.length())));
+        copy(connection.getInputStream(),new FileOutputStream(location + "/" +url.substring(url.lastIndexOf("/")+1)));
         return;
     }
+
+
 }
