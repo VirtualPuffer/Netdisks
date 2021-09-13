@@ -23,9 +23,9 @@ public class ServerConfig extends Thread {
         this.socket = socket;
     }
     // 获取spring容器管理的类，可以获取到sevrice的类
-/*    private EnvironmentService service = SpringUtil.getBean(EnvironmentServiceImpl.class);
+  /*  private EnvironmentService service = SpringUtil.getBean(EnvironmentServiceImpl.class);*/
 
-    private String handle(InputStream inputStream) throws IOException, DataFormException {
+    private String handle(InputStream inputStream) throws IOException{
         byte[] bytes = new byte[1024];
         int len = inputStream.read(bytes);
         if (len != -1) {
@@ -33,18 +33,19 @@ public class ServerConfig extends Thread {
             request.append(new String(bytes, 0, len, "UTF-8"));
             System.out.println("接受的数据: " + request);
             System.out.println("from client ... " + request + "当前线程" + Thread.currentThread().getName());
-            Map<String, String> map = MessageChain.out(request.toString());
+           /* Map<String, String> map = MessageChain.out(request.toString());
             System.out.println("处理的数据" + map);
-            Integer res = service.addEnvironment(map);
-            if (res == 1) {
+            Integer res = service.addEnvironment(map);*/
+          /*  if (res == 1) {
                 return "ok";
             } else {
-                throw new DataFormException("数据处理异常");
-            }
+                throw new RuntimeException("数据处理异常");
+            }*/
         } else {
-            throw new DataFormException("数据处理异常");
+            throw new RuntimeException("数据处理异常");
         }
-    }*/
+        return "324324";
+    }
 
     @Override
     public void run() {

@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Configuration
 @PropertySource("classpath:application.yml")
-@ConfigurationProperties(prefix = "socket")
+@ConfigurationProperties(prefix = "spring.socket")
 public class SocketProperties {
     private Integer port;
     private Integer poolKeep;

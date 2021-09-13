@@ -13,7 +13,7 @@ import org.springframework.boot.web.servlet.ServletComponentScan;
 import static com.virtualpuffer.netdisk.service.messageService.SendMail.sendEmail;
 
 @ServletComponentScan
-@SpringBootApplication(exclude = {SecurityAutoConfiguration.class},scanBasePackages = {"com.virtualpuffer.netdisk.*"})//核心包
+@SpringBootApplication(exclude = {SecurityAutoConfiguration.class},scanBasePackages = {"com.virtualpuffer.*"})//核心包
 public class NetdiskApplication {
     public static void main(String[] args) throws Exception {
         //Class.forName("com.virtualpuffer.netdisk.utils.DemoFactory");
