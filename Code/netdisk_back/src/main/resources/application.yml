@@ -31,4 +31,10 @@ spring:
       maxActive: 8
   main:
     allow-bean-definition-overriding: true
+  socket:
+    port: 10004
+    pool-keep: 20
+    pool-core: 10
+    pool-max: 30
+    pool-queue-init: 10
 

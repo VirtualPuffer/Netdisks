@@ -2,10 +2,13 @@ package com.virtualpuffer.netdisk.service.impl.file;
 
 import com.virtualpuffer.netdisk.entity.AbsoluteNetdiskFile;
 import com.virtualpuffer.netdisk.service.impl.BaseServiceImpl;
+import org.apache.catalina.connector.CoyoteInputStream;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 import java.security.MessageDigest;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -64,6 +67,12 @@ public abstract class FileUtilService extends BaseServiceImpl {
                 outputStream.write(buffer, 0, length);
             }
     }
+
+    protected static void readCopy(FileInputStream inputStream,OutputStream outputStream){
+        ByteBuffer byteBuffer = ByteBuffer.allocateDirect(1024);
+    }
+
+    protected static void writeCopy(){}
 
     /**
      * 获取映射文件并放入压缩集合中
