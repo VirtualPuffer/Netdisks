@@ -1,13 +1,10 @@
-package com.virtualpuffer.onlineChat.test1;
+package com.virtualpuffer.onlineChat.chat;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.Socket;
-import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * 该类为多线程类，用于服务端

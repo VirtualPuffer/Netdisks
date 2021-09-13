@@ -1,29 +1,36 @@
-package com.virtualpuffer.onlineChat.test1;
+package com.virtualpuffer.onlineChat.chat;
 
+import com.virtualpuffer.netdisk.service.impl.user.UserTokenService;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.websocket.OnClose;
-import javax.websocket.OnMessage;
-import javax.websocket.OnOpen;
-import javax.websocket.Session;
+import javax.websocket.*;
+import javax.websocket.server.HandshakeRequest;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 @Component
-@ServerEndpoint("/webSocket")
+@ServerEndpoint(value = "/webSocket",configurator = HttpSessionConfigurator.class)
 public class WebSocket {
     private Session session;
     private static CopyOnWriteArraySet<WebSocket> webSocketSet=new CopyOnWriteArraySet<>();
-    private static HashMap<Session,WebSocket> hashMap = new HashMap<>();
+    private static HashMap<Integer,WebSocket> hashMap = new HashMap<>();
     @OnOpen
-    public void onOpen(Session session){
+    public void onOpen(Session session, EndpointConfig config){
+        HandshakeRequest request = (HandshakeRequest)config.getUserProperties().get("request");
+
+        try {
+            String token =  request.getHeaders().get("Authorization").get(0);
+            UserTokenService tokenService = UserTokenService.getInstanceByToken(token,"");
+            int id = tokenService.getUser().getUSER_ID();
+            hashMap.put(id,this);
+            sendMessage("认证成功，账号为" + tokenService.getUser().getUsername());
+        } catch (Exception e) {
+            sendMessage("认证失败，当前无token");
+        }
         this.session=session;
-        hashMap.put(session,this);
         webSocketSet.add(this);
-        System.out.println("新连接");
     }
     @OnClose
     public void onClose(){
@@ -34,7 +41,6 @@ public class WebSocket {
     public void onMessage(String message){
         System.out.println(message);
         sendMessage(message);
-        //log.info("【websocket消息】收到客户端发来的消息：{}",message);
     }
     public void sendMessage(String message){
         for(WebSocket webSocket:webSocketSet){

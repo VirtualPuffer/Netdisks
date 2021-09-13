@@ -1,4 +1,4 @@
-package com.virtualpuffer.onlineChat.test1;
+package com.virtualpuffer.onlineChat.chat;
 
 
 import org.springframework.context.annotation.Bean;
