@@ -7,7 +7,7 @@ import java.io.PrintStream;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 
-public class Client2 {
+public class Client {
     public static void main(String[] args) throws Exception {
         Socket client = new Socket("47.96.253.99", 10004);
         client.setSoTimeout(10000);
@@ -17,8 +17,8 @@ public class Client2 {
         while(Out.runnable){
             String str = input.readLine();
             out.println(str);
-            if("byebye".equals(str)){
-                Thread.sleep(5000);
+            if(ServerThread.DISCONNECT_REQUEST.equals(str)){
+                Thread.sleep(3000);
             }
         }
     }
@@ -43,7 +43,7 @@ class Out extends Thread{
             try{
                 String echo = buf.readLine();
                 System.out.println(echo);
-                if("byebye111".equals(echo) || echo == null){
+                if(ServerThread.DISCONNECT_RESPONSE.equals(echo) || echo == null){
                     runnable = false;
                     client.close();
                 }
