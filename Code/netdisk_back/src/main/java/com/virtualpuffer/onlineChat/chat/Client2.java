@@ -8,7 +8,7 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 
 public class Client2 {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
         Socket client = new Socket("47.96.253.99", 10004);
         client.setSoTimeout(10000);
         new Out(client).start();
@@ -17,6 +17,9 @@ public class Client2 {
         while(Out.runnable){
             String str = input.readLine();
             out.println(str);
+            if("byebye".equals(str)){
+                Thread.sleep(5000);
+            }
         }
     }
 }
