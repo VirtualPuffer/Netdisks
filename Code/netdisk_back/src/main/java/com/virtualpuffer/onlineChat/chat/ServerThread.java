@@ -33,18 +33,12 @@ public class ServerThread extends BaseServiceImpl implements Runnable{
             while (flag) {
                 //接收从客户端发送过来的数据
                 String str = buf.readLine();
-                    if (str == null || "".equals(str)) {
-                        flag = false;
-                    } else {
-                        if ("bye".equals(str)) {
-                            flag = false;
-                            out.println("bye");
-                        } else {
-                            System.setOut(out);
-                        }
-                    }
+                if ("bye".equals(str)) {
+                    out.println("byebye111");
+                    return;
                 }
-            } catch (IOException ioException) {
+            }
+        } catch (IOException ioException) {
             ioException.printStackTrace();
         } catch (Exception exception){
 

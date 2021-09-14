@@ -36,7 +36,7 @@ public class UserTokenService extends UserServiceImpl implements ParseToken {
             User user = session.getMapper(UserMap.class).userLogin((String)map.get("username"),(String)map.get("password"));
             if((String)map.get("ip") != ip){
                 //throw new RuntimeException("");
-                System.out.println("ip校验异常");
+                //System.out.println("ip校验异常");
             }
 
             if (user != null && !TOKEN_EXPIRE.equals(redisUtil.get(token))) {
