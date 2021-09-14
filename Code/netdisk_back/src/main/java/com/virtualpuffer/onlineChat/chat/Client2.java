@@ -11,8 +11,7 @@ public class Client2 {
     public static void main(String[] args) throws IOException {
         System.out.println("来了来了");
         //客户端请求与本机在20006端口建立TCP连接
-        Socket client = new Socket("47.96.253.99", 10001);
-        client.setSoTimeout(32131);
+        Socket client = new Socket("47.96.253.99", 10004);
         client.setSoTimeout(10000);
         //获取键盘输入
         BufferedReader input = new BufferedReader(new InputStreamReader(System.in));

@@ -14,18 +14,12 @@ import java.util.ArrayList;
 @RestController
 public class StaticPage {
     public static final String path = "/usr/local/MyTomcat/dist/img";
-    @RequestMapping(value = {"/main/*","/authpage/*","/main","/authpage"})
+    @RequestMapping(value = {"/main/*","/authpage/*","/main","/authpage","/WSChat","/WSChat/*"})
     public ModelAndView getPage(){
         return new ModelAndView("/index.html");
     }
     @RequestMapping(value = {"/{path}}"})
     public Object ret(@PathVariable String path){
         return path;
-    }
-    @ResponseBody
-    @RequestMapping(value = {"/getPicture"})
-    public File[] getPicture(){
-        File get = new File(path);
-        return get.listFiles();
     }
 }
