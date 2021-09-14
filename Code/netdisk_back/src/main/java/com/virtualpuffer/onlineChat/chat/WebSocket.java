@@ -69,10 +69,10 @@ public class WebSocket {
     }
     public void messageCache(String message){
         if(messageList.size() < 10){
-            messageList.add(message);
+            messageList.addLast(message);
         }else {
-            messageList.addFirst(message);
-            messageList.removeLast();
+            messageList.addLast(message);
+            messageList.removeFirst();
         }
     }
     public void printMessage(WebSocket socket) throws IOException {
