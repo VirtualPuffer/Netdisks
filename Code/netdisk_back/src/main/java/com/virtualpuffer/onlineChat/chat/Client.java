@@ -39,9 +39,10 @@ public class Client {
     }
 }
 class Out extends Thread{
-    public static boolean runnable = true;
     Socket client;
     Thread mainThread;
+    public static boolean runnable = true;
+
     public Out(Socket socket,Thread mainThread) {
         this.mainThread = mainThread;
         this.client = socket;
@@ -50,7 +51,10 @@ class Out extends Thread{
     @Override
     public void run() {
         BufferedReader buf = null;
+        PrintStream out = null;
+        //获取流
         try {
+            out = new PrintStream(client.getOutputStream());
             buf = new BufferedReader(new InputStreamReader(client.getInputStream()));
         } catch (IOException e) {
             e.printStackTrace();
@@ -58,14 +62,15 @@ class Out extends Thread{
         try {
             while(runnable){
                 try{
-                    String echo = buf.readLine();
-                    System.out.println(echo);
+                    String echo = buf.readLine();//获取数据
                     if(ServerThread.DISCONNECT_RESPONSE.equals(echo) || echo == null){
                         runnable = false;
                         client.close();
+                    }else if(ServerThread.CONNECTTEST_REQUEST.equals(echo)){
+                        out.println(ServerThread.CONNECTTEST_RESPONSE);//响应心跳包
+                    }else {
+                        System.out.println(echo);
                     }
-                }catch(SocketTimeoutException e){
-                    //System.out.println("Time out, No response");
                 } catch (IOException e) {
                 }
             }
