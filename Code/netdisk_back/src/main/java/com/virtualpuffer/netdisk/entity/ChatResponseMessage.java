@@ -6,6 +6,7 @@ public class ChatResponseMessage {
     private String time;
     private String user;
     private String content;
+    private String target;
 
     public ChatResponseMessage() {
     }
@@ -20,15 +21,6 @@ public class ChatResponseMessage {
         this.time = time;
         this.user = user;
         this.content = content;
-    }
-
-    @Override
-    public String toString() {
-        return "ChatResponseMessage{" +
-                "time='" + time + '\'' +
-                ", user='" + user + '\'' +
-                ", content='" + content + '\'' +
-                '}';
     }
 
     public String getTime() {

@@ -1,5 +1,6 @@
 package com.virtualpuffer.netdisk.service.aspectService;
 
+import com.virtualpuffer.netdisk.utils.Log;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.After;
@@ -29,6 +30,7 @@ public class LogAop {
 
         System.out.println("----------------------  [" + tag++ + "]  ----------------------");
         Signature signature = joinPoint.getSignature();
+        System.out.println("当前时间：  " + Log.getTime());
         System.out.println("返回目标方法的签名：" + signature);
         System.out.println("代理方法：" + signature.getName());
         Object[] args = joinPoint.getArgs();

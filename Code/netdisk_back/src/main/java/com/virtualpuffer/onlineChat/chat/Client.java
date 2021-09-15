@@ -41,6 +41,7 @@ public class Client {
 class Out extends Thread{
     Socket client;
     Thread mainThread;
+    int connectTag = 0;
     public static boolean runnable = true;
 
     public Out(Socket socket,Thread mainThread) {
@@ -68,10 +69,19 @@ class Out extends Thread{
                         client.close();
                     }else if(ServerThread.CONNECTTEST_REQUEST.equals(echo)){
                         out.println(ServerThread.CONNECTTEST_RESPONSE);//响应心跳包
+                    }else if(ServerThread.CONNECTTEST_RESPONSE.equals(echo)){
+                        connectTag = 0;
                     }else {
                         System.out.println(echo);
                     }
                 } catch (IOException e) {
+                    if(connectTag < 3){
+                        out.println(ServerThread.CONNECTTEST_REQUEST);
+                        connectTag ++;
+                    }else {
+                        out.println(ServerThread.DISCONNECT_REQUEST);
+                        return;
+                    }
                 }
             }
         } finally {

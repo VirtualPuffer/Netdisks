@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.LinkedList;
 
@@ -29,13 +30,19 @@ public class ServerThread extends BaseServiceImpl implements Runnable{
 
     @Override
     public void run() {
+        String str = null;
         PrintStream out = null;
+
         synchronized (threadLock) {
             try {
                 socket.close();
             } catch (Exception e) {
             }
-            socket = this.client;
+            try {
+                socket = this.client;
+                socket.setSoTimeout(10000);
+            } catch (SocketException e) {
+            }
         }
         try{
             out = new PrintStream(socket.getOutputStream());
@@ -44,7 +51,19 @@ public class ServerThread extends BaseServiceImpl implements Runnable{
             out.println("欢迎回来，连接已建立");
             boolean flag = true;
             while (flag && !socket.isClosed()) {
-                String str = buf.readLine();
+
+                try {
+                    str = buf.readLine();
+                } catch (SocketTimeoutException e){
+                    if(connectTag < 3){
+                        out.println(ServerThread.CONNECTTEST_REQUEST);
+                        connectTag ++;
+                    }else {
+                        out.println(DISCONNECT_RESPONSE);
+                        return;
+                    }
+                }
+
                 if (DISCONNECT_REQUEST.equals(str) && client.equals(socket)) {
                     out.println(DISCONNECT_RESPONSE);
                     return;
@@ -54,15 +73,8 @@ public class ServerThread extends BaseServiceImpl implements Runnable{
                     connectTag = 0;
                 }
             }
-        }catch (SocketTimeoutException e){
-            if(connectTag < 3){
-                out.println(ServerThread.CONNECTTEST_REQUEST);
-                connectTag ++;
-            }else {
-                out.println(DISCONNECT_RESPONSE);
-                return;
-            }
         } catch (IOException ioException) {
+            ioException.printStackTrace();
         } catch (Exception exception){
         }finally {
             System.setOut(systemStream);
