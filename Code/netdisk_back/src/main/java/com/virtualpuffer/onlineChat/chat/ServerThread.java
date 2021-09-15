@@ -48,7 +48,7 @@ public class ServerThread extends BaseServiceImpl implements Runnable{
             out = new PrintStream(socket.getOutputStream());
             System.setOut(out);
             BufferedReader buf = new BufferedReader(new InputStreamReader(client.getInputStream()));
-            out.println("欢迎回来，连接已建立");
+            out.println("欢迎回来，连接已建立，通信地址：" + socket.getRemoteSocketAddress());
             boolean flag = true;
             while (flag && !socket.isClosed()) {
 
