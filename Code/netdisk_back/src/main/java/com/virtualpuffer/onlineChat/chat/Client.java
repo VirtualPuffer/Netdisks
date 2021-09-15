@@ -8,17 +8,32 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 
 public class Client {
+    private static int tag = 0;
     public static void main(String[] args) throws Exception {
-        Socket client = new Socket("47.96.253.99", 10004);
+        Thread nowThread = Thread.currentThread();
+        Socket client = null;
+        try {
+            client = new Socket("47.96.253.99", 10004);
+        } catch (IOException e) {
+            if (tag < 3) {
+                Thread.sleep(1000);
+                System.out.println("连接失败，尝试重连");
+                tag++;
+                main(args);
+            }else {
+                System.out.println("连接失败，程序结束");
+                System.exit(0);
+            }
+        }
         client.setSoTimeout(10000);
-        new Out(client).start();
+        new Out(client,nowThread).start();
         BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
         PrintStream out = new PrintStream(client.getOutputStream());
         while(Out.runnable){
             String str = input.readLine();
             out.println(str);
             if(ServerThread.DISCONNECT_REQUEST.equals(str)){
-                Thread.sleep(3000);
+                Thread.sleep(1000);
             }
         }
     }
@@ -26,33 +41,36 @@ public class Client {
 class Out extends Thread{
     public static boolean runnable = true;
     Socket client;
-    public Out(Socket socket) {
+    Thread mainThread;
+    public Out(Socket socket,Thread mainThread) {
+        this.mainThread = mainThread;
         this.client = socket;
     }
 
     @Override
     public void run() {
-        BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
         BufferedReader buf = null;
         try {
             buf = new BufferedReader(new InputStreamReader(client.getInputStream()));
         } catch (IOException e) {
             e.printStackTrace();
         }
-        while(runnable){
-            try{
-                String echo = buf.readLine();
-                System.out.println(echo);
-                if(ServerThread.DISCONNECT_RESPONSE.equals(echo) || echo == null){
-                    runnable = false;
-                    client.close();
+        try {
+            while(runnable){
+                try{
+                    String echo = buf.readLine();
+                    System.out.println(echo);
+                    if(ServerThread.DISCONNECT_RESPONSE.equals(echo) || echo == null){
+                        runnable = false;
+                        client.close();
+                    }
+                }catch(SocketTimeoutException e){
+                    //System.out.println("Time out, No response");
+                } catch (IOException e) {
                 }
-
-            }catch(SocketTimeoutException e){
-                //System.out.println("Time out, No response");
-            } catch (IOException e) {
-                e.printStackTrace();
             }
+        } finally {
+            System.exit(0);
         }
     }
 }
