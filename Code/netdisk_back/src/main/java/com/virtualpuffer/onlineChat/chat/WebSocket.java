@@ -1,5 +1,7 @@
 package com.virtualpuffer.onlineChat.chat;
 
+import com.alibaba.fastjson.JSON;
+import com.virtualpuffer.netdisk.entity.ChatResponseMessage;
 import com.virtualpuffer.netdisk.entity.User;
 import com.virtualpuffer.netdisk.service.impl.user.UserServiceImpl;
 import com.virtualpuffer.netdisk.service.impl.user.UserTokenService;
@@ -67,12 +69,15 @@ public class WebSocket {
 
     private void broadCastMessage(String messageContent,boolean isCache){
         String message = null;
+        ChatResponseMessage responseMessage = null;
         try {
             String name = service.getUser().getName();
-            message = Log.getTime() + " : " + name + "   说：   " +messageContent;
+            responseMessage = new ChatResponseMessage(Log.getTime(),name,messageContent);
         } catch (NullPointerException e) {
-            message = Log.getTime() + " : "  + "  " +messageContent;
+            responseMessage = new ChatResponseMessage(Log.getTime(),null,messageContent);
         }
+        message = JSON.toJSONString(responseMessage);
+
         if (isCache) {
             messageCache(message);
         }

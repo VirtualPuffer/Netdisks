@@ -4,6 +4,7 @@ import com.virtualpuffer.netdisk.entity.AbsoluteNetdiskFile;
 import com.virtualpuffer.netdisk.entity.User;
 import com.virtualpuffer.netdisk.mapper.UserMap;
 import com.virtualpuffer.netdisk.service.ParseToken;
+import com.virtualpuffer.netdisk.utils.MybatisConnect;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.scheduling.annotation.Async;
 
@@ -43,6 +44,7 @@ public class FileTokenService extends FileHashService implements ParseToken {
         try {
             Map map = parseJWT(token,key);
             if(map.get("hash") == null){
+                session = MybatisConnect.getSession();
                 String path = (String) map.get("path");
                 int userID = (Integer) map.get("userID");
                 User user = session.getMapper(UserMap.class).getUserByID(userID);

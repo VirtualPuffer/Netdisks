@@ -14,7 +14,7 @@ import java.util.ArrayList;
 @RestController
 public class StaticPage {
     public static final String path = "/usr/local/MyTomcat/dist/img";
-    @RequestMapping(value = {"/main/*","/authpage/*","/main","/authpage","/WSchat","/WSchat/*"})
+    @RequestMapping(value = {"/main/*","/authpage/*","/main","/authpage","/WSchat","/WSchat/*","/WSchat","/WSchat/*"})
     public ModelAndView getPage(){
         return new ModelAndView("/index.html");
     }
