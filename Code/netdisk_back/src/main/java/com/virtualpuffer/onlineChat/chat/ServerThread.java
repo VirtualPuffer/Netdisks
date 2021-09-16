@@ -30,8 +30,10 @@ public class ServerThread extends BaseServiceImpl implements Runnable{
 
     @Override
     public void run() {
+        int tryTime = 0;
         String str = null;
         PrintStream out = null;
+        boolean permit = true;
 
         synchronized (threadLock) {
             try {
@@ -40,14 +42,27 @@ public class ServerThread extends BaseServiceImpl implements Runnable{
             }
             try {
                 socket = this.client;
-                socket.setSoTimeout(10000);
+                socket.setSoTimeout(50000);
             } catch (SocketException e) {
             }
         }
         try{
             out = new PrintStream(socket.getOutputStream());
-            System.setOut(out);
             BufferedReader buf = new BufferedReader(new InputStreamReader(client.getInputStream()));
+            out.println("password: ");
+            while (permit){
+                if("123456".equals(buf.readLine())){
+                    permit = false;
+                }else if(tryTime > 3){
+                    return;
+                }else {
+                    tryTime++;
+                    out.println("please try again");
+                    out.println("password: ");
+                }
+            }
+            System.setOut(out);
+            socket.setSoTimeout(10000);
             out.println("欢迎回来，连接已建立，通信地址：" + socket.getRemoteSocketAddress());
             boolean flag = true;
             while (flag && !socket.isClosed()) {

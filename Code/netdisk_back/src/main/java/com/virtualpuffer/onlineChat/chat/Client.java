@@ -85,6 +85,7 @@ class Out extends Thread{
                 }
             }
         } finally {
+            System.out.println("连接断开，程序结束");
             System.exit(0);
         }
     }
