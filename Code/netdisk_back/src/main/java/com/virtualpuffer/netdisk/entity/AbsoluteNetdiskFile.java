@@ -1,9 +1,9 @@
 package com.virtualpuffer.netdisk.entity;
 
 import com.virtualpuffer.netdisk.utils.MybatisConnect;
-import com.virtualpuffer.netdisk.mapper.FileHashMap;
-import com.virtualpuffer.netdisk.mapper.FileMap;
-import com.virtualpuffer.netdisk.mapper.UserMap;
+import com.virtualpuffer.netdisk.mapper.netdiskFile.FileHashMap;
+import com.virtualpuffer.netdisk.mapper.netdiskFile.FileMap;
+import com.virtualpuffer.netdisk.mapper.user.UserMap;
 import com.virtualpuffer.netdisk.service.impl.file.FileUtilService;
 import com.virtualpuffer.netdisk.utils.Message;
 import com.virtualpuffer.netdisk.utils.StringUtils;

@@ -5,6 +5,13 @@ import com.virtualpuffer.netdisk.enums.Accessible;
 
 import java.util.LinkedList;
 
+/**
+ * 父类
+ *     public int user_id;
+ *     public int thumb;//点赞
+ *     public String contentText;
+ *
+ * */
 public class Blog extends AbstractBlog {
     private int blog_id;
     public String time;

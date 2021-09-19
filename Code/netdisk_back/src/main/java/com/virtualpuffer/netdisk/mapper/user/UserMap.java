@@ -1,4 +1,4 @@
-package com.virtualpuffer.netdisk.mapper;
+package com.virtualpuffer.netdisk.mapper.user;
 
 
 import com.virtualpuffer.netdisk.entity.User;
@@ -16,11 +16,7 @@ public interface UserMap {
 
     User userLogin(String username,String password);
     LinkedList<User> getName(String verCode);
-/*    LinkedList contain();*/
-    LinkedList verCodeVerify(String verCode);
-    LinkedList freeLogVerify(String verCode,String ip);
-    LinkedList userLoginVerify(String username,String password);
-    LinkedList getMessage(String verCode);
+
     User getUserByID(int userID);
 
     /*注册逻辑线*/

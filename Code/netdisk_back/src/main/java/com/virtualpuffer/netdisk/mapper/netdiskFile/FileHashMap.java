@@ -1,4 +1,4 @@
-package com.virtualpuffer.netdisk.mapper;
+package com.virtualpuffer.netdisk.mapper.netdiskFile;
 
 import com.virtualpuffer.netdisk.entity.file.FileHash_Map;
 import com.virtualpuffer.netdisk.entity.AbsoluteNetdiskFile;

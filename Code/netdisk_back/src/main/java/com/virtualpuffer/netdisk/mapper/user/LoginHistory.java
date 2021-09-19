@@ -1,4 +1,4 @@
-package com.virtualpuffer.netdisk.mapper;
+package com.virtualpuffer.netdisk.mapper.user;
 
 import java.sql.Timestamp;
 

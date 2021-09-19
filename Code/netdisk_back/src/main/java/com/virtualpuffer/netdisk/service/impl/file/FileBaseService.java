@@ -1,6 +1,9 @@
 package com.virtualpuffer.netdisk.service.impl.file;
 
 
+import com.virtualpuffer.netdisk.mapper.netdiskFile.FileHashMap;
+import com.virtualpuffer.netdisk.mapper.netdiskFile.FileMap;
+import com.virtualpuffer.netdisk.mapper.user.UserMap;
 import com.virtualpuffer.netdisk.utils.MybatisConnect;
 import com.virtualpuffer.netdisk.data.FileCollection;
 import com.virtualpuffer.netdisk.entity.file.File_Map;
@@ -9,7 +12,6 @@ import com.virtualpuffer.netdisk.entity.User;
 import com.virtualpuffer.netdisk.utils.Message;
 import com.virtualpuffer.netdisk.utils.StringUtils;
 import org.apache.ibatis.session.SqlSession;
-import com.virtualpuffer.netdisk.mapper.*;
 import org.springframework.lang.Nullable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;

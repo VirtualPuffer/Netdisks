@@ -21,10 +21,13 @@
         </environment>
     </environments>
     <mappers>
+        <mapper resource="mapper/mysql/SpaceBlog.xml"></mapper>
+        <mapper resource="mapper/mysql/SpaceBlogCommentMap.xml"></mapper>
+
         <mapper resource="mapper/mysql/FileMap.xml"></mapper>
         <mapper resource="mapper/mysql/FileHashMap.xml"></mapper>
+
         <mapper resource="mapper/mysql/UserMapper.xml"></mapper>
         <mapper resource="mapper/mysql/LoginVerifyMap.xml"></mapper>
-        <mapper resource="mapper/mysql/SpaceBlog.xml"></mapper>
     </mappers>
 </configuration>
