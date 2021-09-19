@@ -1,4 +1,4 @@
-package com.virtualpuffer.netdisk.entity;
+package com.virtualpuffer.netdisk.entity.file;
 
 import org.springframework.web.multipart.MultipartFile;
 

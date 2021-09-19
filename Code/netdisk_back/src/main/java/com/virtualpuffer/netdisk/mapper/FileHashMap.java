@@ -1,6 +1,6 @@
 package com.virtualpuffer.netdisk.mapper;
 
-import com.virtualpuffer.netdisk.entity.FileHash_Map;
+import com.virtualpuffer.netdisk.entity.file.FileHash_Map;
 import com.virtualpuffer.netdisk.entity.AbsoluteNetdiskFile;
 
 import java.util.LinkedList;

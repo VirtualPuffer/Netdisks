@@ -9,7 +9,7 @@
         delete from File_Map where File_Destination_Place = #{path} and USER_ID = #{userID};
     </delete>
 
-    <select id="invokeOnExit" resultType="com.virtualpuffer.netdisk.entity.File_Map">
+    <select id="invokeOnExit" resultType="com.virtualpuffer.netdisk.entity.file.File_Map">
         select * from File_Map where File_Hash = #{hash};
     </select>
 
@@ -30,7 +30,7 @@
           #{fileHash} as File_Hash from File_Map where File_Hash = #{fileHash};
     </insert>
 
-    <select id="getDirectoryMap" resultType="com.virtualpuffer.netdisk.entity.File_Map">
+    <select id="getDirectoryMap" resultType="com.virtualpuffer.netdisk.entity.file.File_Map">
         select File_Destination from File_Map where File_Destination_Place = #{destination} and USER_ID = #{userID};
     </select>
 
@@ -42,7 +42,7 @@
                                 and FileHash_Map.File_Hash = File_Map.File_Hash;
     </select>
 
-    <select id="getFileMapByPath" resultType="com.virtualpuffer.netdisk.entity.File_Map">
+    <select id="getFileMapByPath" resultType="com.virtualpuffer.netdisk.entity.file.File_Map">
         select * from File_Map,FileHash_Map
         where
         File_Map.USER_ID = #{userID}

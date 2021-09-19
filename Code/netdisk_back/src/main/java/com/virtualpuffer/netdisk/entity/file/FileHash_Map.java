@@ -1,4 +1,4 @@
-package com.virtualpuffer.netdisk.entity;
+package com.virtualpuffer.netdisk.entity.file;
 
 public class FileHash_Map {
     String File_Hash;

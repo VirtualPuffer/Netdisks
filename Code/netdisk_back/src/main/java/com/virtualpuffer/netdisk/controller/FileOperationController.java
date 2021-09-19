@@ -4,14 +4,13 @@ package com.virtualpuffer.netdisk.controller;
 import com.virtualpuffer.netdisk.controller.base.BaseController;
 import com.virtualpuffer.netdisk.data.FileCollection;
 import com.virtualpuffer.netdisk.data.ResponseMessage;
-import com.virtualpuffer.netdisk.entity.File_Map;
+import com.virtualpuffer.netdisk.entity.file.File_Map;
 import com.virtualpuffer.netdisk.service.impl.file.FileBaseService;
 import com.virtualpuffer.netdisk.service.impl.file.FileHashService;
 import com.virtualpuffer.netdisk.service.impl.file.FileTokenService;
 import com.virtualpuffer.netdisk.service.impl.user.UserServiceImpl;
 import com.virtualpuffer.netdisk.utils.StringUtils;
 import org.springframework.lang.Nullable;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
