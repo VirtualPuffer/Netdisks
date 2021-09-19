@@ -15,11 +15,20 @@ import java.util.LinkedList;
 public class Blog extends AbstractBlog {
     private int blog_id;
     public String time;
+    public int blog_tag;//0表示临时，1表示完成
     public Accessible accessible;
     public LinkedList<String> photoList;
     public LinkedList<Comment> commentList;
 
     public Blog() {
+    }
+
+    public int getBlog_tag() {
+        return blog_tag;
+    }
+
+    public void setBlog_tag(int blog_tag) {
+        this.blog_tag = blog_tag;
     }
 
     public void setAccessible(Accessible accessible) {
@@ -34,7 +43,9 @@ public class Blog extends AbstractBlog {
         return time;
     }
 
-
+    public void setPhotoList(LinkedList<String> photoList) {
+        this.photoList = photoList;
+    }
 
     public int getID() {
         return user_id;

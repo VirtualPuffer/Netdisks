@@ -5,6 +5,20 @@
         select * from Space_Blog;
     </select>
 
+    <select id="getBlog" resultType="com.virtualpuffer.netdisk.entity.online_chat.Blog">
+        select * from Space_Blog_Map where blog_id = #{blog_id};
+    </select>
+
+    <select id="getTempBlog" resultType="com.virtualpuffer.netdisk.entity.online_chat.Blog">
+        select * from Space_Blog_Map where blog_tag = 0 and USER_ID = #{USER_ID};
+    </select>
+
+    <update id="buildBlog">
+        update Space_Blog_Map
+        set blog_tag = 1,contentText = #{contentText},time=#{time}
+        where blog_id = #{blog_id};
+    </update>
+
     <update id="addThumb">
         UPDATE Space_Blog_Map
         set thumb = thumb + #{number}
