@@ -1,5 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.virtualpuffer.netdisk.mapper.blog.SpaceBlogCommentMap">
-
+    <insert id="makeComment">
+        INSERT into Space_Blog_Comment
+            (contentText,blog_id,USER_ID,reply_comment_id,time)
+        values
+            (#{contentText},#{blog_id},#{USER_ID},#{reply_comment_id},#{time});
+    </insert>
+    <update id="addThumb">
+        UPDATE Space_Blog_Comment
+        set thumb = thumb + #{number}
+        where comment_id = #{comment_id};
+    </update>
+    <delete id="deleteComment">
+        delete from Space_Blog_Comment where comment_id = #{comment_id};
+    </delete>
 </mapper>

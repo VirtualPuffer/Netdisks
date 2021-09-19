@@ -5,4 +5,14 @@
         select * from Space_Blog;
     </select>
 
+    <update id="addThumb">
+        UPDATE Space_Blog_Map
+        set thumb = thumb + #{number}
+        where blog_id = #{blog_id};
+    </update>
+
+    <delete id="deleteBlog">
+        delete from Space_Blog_Map where blog_id = #{blog_id};
+    </delete>
+
 </mapper>
