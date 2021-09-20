@@ -59,7 +59,6 @@ public abstract class BaseServiceImpl {
                 cos.close();
             }
         } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
