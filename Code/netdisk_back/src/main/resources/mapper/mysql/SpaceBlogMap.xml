@@ -6,27 +6,27 @@
     </select>
 
     <select id="getBlog" resultType="com.virtualpuffer.netdisk.entity.online_chat.Blog">
-        select * from Space_Blog_Map where blog_id = #{blog_id};
+        select * from Space_Blog where blog_id = #{blog_id};
     </select>
 
     <select id="getTempBlog" resultType="com.virtualpuffer.netdisk.entity.online_chat.Blog">
-        select * from Space_Blog_Map where blog_tag = 0 and USER_ID = #{USER_ID};
+        select * from Space_Blog where blog_tag = 0 and USER_ID = #{USER_ID};
     </select>
 
     <update id="buildBlog">
-        update Space_Blog_Map
+        update Space_Blog
         set blog_tag = 1,contentText = #{contentText},time=#{time}
         where blog_id = #{blog_id};
     </update>
 
     <update id="addThumb">
-        UPDATE Space_Blog_Map
+        UPDATE Space_Blog
         set thumb = thumb + #{number}
         where blog_id = #{blog_id};
     </update>
 
     <delete id="deleteBlog">
-        delete from Space_Blog_Map where blog_id = #{blog_id};
+        delete from Space_Blog where blog_id = #{blog_id};
     </delete>
 
 </mapper>

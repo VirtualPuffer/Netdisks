@@ -82,13 +82,15 @@ public class BlogService extends BaseServiceImpl {
         Blog newBlog = null;
         SqlSession session = null;
         try {
-            session = MybatisConnect.getSession();
-            newBlog = session.getMapper(SpaceBlogMap.class).getTempBlog(user.getUSER_ID());
-            if(newBlog == null){
-                session.getMapper(SpaceBlogMap.class).makeBlog(null,user.getUSER_ID(),null);
+            synchronized (threadLock) {
+                session = MybatisConnect.getSession();
                 newBlog = session.getMapper(SpaceBlogMap.class).getTempBlog(user.getUSER_ID());
+                if(newBlog == null){
+                    session.getMapper(SpaceBlogMap.class).makeBlog(null,user.getUSER_ID(),null);
+                    newBlog = session.getMapper(SpaceBlogMap.class).getTempBlog(user.getUSER_ID());
+                }
+                session.commit();
             }
-            session.commit();
         }finally {
             close(session);
         }
