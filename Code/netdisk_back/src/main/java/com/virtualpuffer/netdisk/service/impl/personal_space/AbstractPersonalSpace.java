@@ -10,12 +10,18 @@ import com.virtualpuffer.netdisk.utils.MybatisConnect;
 import org.apache.ibatis.session.SqlSession;
 
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Set;
 
-public abstract class AbstractPersonalSpace extends BaseServiceImpl {
+/**
+ * space对象通过user构造
+ *blogService只能通过space对象获取
+ *保证权限控制
+* */
+public class AbstractPersonalSpace extends BaseServiceImpl {
     protected User user;
     protected SpaceAttribute spaceAttribute;
-    protected LinkedList<Blog> blogList;
+    protected Map<Integer,Blog> blogMap;
     protected Set<Photo_Album> photoSet;
 
     public AbstractPersonalSpace(User user) {
@@ -23,11 +29,16 @@ public abstract class AbstractPersonalSpace extends BaseServiceImpl {
         try {
             session = MybatisConnect.getSession();
             this.spaceAttribute = session.getMapper(SpaceMap.class).getSpaceProperties(user.getUSER_ID());
-            this.blogList = session.getMapper(SpaceBlogMap.class).getAllBlog(user.getUSER_ID());
+            this.blogMap = session.getMapper(SpaceBlogMap.class).getAllBlog(user.getUSER_ID());
         } finally {
             close(session);
         }
     }
-
+    public Map<Integer,Blog> getAllBlog(){
+        return blogMap;
+    }
+    public BlogService getBlogService(int blog_id){
+        return new BlogService(blogMap.get(blog_id));
+    }
 
 }

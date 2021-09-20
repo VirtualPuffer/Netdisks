@@ -73,6 +73,11 @@ public class BlogService extends BaseServiceImpl {
         }
     }
 
+    public BlogService(Blog blog){
+            this.blog = blog;
+            isHost = true;
+    }
+
     public static Blog buildBlog(User user){
         Blog newBlog = null;
         SqlSession session = null;
