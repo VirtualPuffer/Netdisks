@@ -46,21 +46,24 @@ public class ServerThread extends BaseServiceImpl implements Runnable{
             } catch (SocketException e) {
             }
         }
-        try{
+        try {
             out = new PrintStream(socket.getOutputStream());
             BufferedReader buf = new BufferedReader(new InputStreamReader(client.getInputStream()));
             out.println("password: ");
-            while (permit){
-                if("123456".equals(buf.readLine())){
+            while (permit) {
+                String get = buf.readLine();
+                if ("123456".equals(get)) {
                     permit = false;
-                }else if(tryTime > 3){
+                } else if (tryTime > 2) {
                     return;
-                }else {
-                    tryTime++;
-                    out.println("please try again");
-                    out.println("password: ");
-                }
+                } else if (CONNECTTEST_REQUEST.equals(get)) {
+                    out.println(CONNECTTEST_RESPONSE);
+                } else{
+                tryTime++;
+                out.println("please try again");
+                out.println("password: ");
             }
+        }
             System.setOut(out);
             socket.setSoTimeout(10000);
             out.println("欢迎回来，连接已建立，通信地址：" + socket.getRemoteSocketAddress());

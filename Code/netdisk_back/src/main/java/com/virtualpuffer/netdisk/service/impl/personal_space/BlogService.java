@@ -9,7 +9,11 @@ import org.apache.ibatis.session.SqlSession;
 
 import java.sql.Timestamp;
 
-
+/**
+ * 创建博客时，先建立属于作者的空博客（同时只能存在一个）
+ * 这个博客没有任何内容，只有归属者（作者）和blog_id
+ * 后续通过id获取对象并进行操作
+ * */
 public class BlogService extends BaseServiceImpl {
     public Blog blog;
     public boolean isHost;
@@ -28,11 +32,6 @@ public class BlogService extends BaseServiceImpl {
             close(session);
         }
     }
-    /**
-     * 创建博客时，先建立属于作者的空博客（同时只能存在一个）
-     * 这个博客没有任何内容，只有归属者（作者）和blog_id
-     * 后续通过id获取对象并进行操作
-    * */
 
     public static Blog buildBlog(User user){
         Blog newBlog = null;

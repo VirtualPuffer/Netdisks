@@ -36,6 +36,16 @@ public class WifeController {
             return ResponseMessage.getErrorInstance(500,"下载失败",null);
         }
     }
+    @RequestMapping("/pullHttpsWife")
+    public ResponseMessage DownloadHttpsWife(String url) throws IOException {
+        try {
+                URLFileService.httpsDownload(url);
+                return ResponseMessage.getSuccessInstance(200,"下载成功",null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseMessage.getErrorInstance(500,"下载失败",null);
+        }
+    }
     @ResponseBody
     @RequestMapping("/getAllWife")
     public ResponseMessage getAllWife(){

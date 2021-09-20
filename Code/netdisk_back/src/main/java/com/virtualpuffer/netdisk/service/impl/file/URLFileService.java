@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.HashSet;
@@ -60,16 +61,21 @@ public class URLFileService extends FileUtilService {
 
     public static void downloadFromURL(String url) throws IOException {
         URL realUrl = new URL(url);
-        URLConnection connection = realUrl.openConnection();
+        System.out.println("下载Url: " + url);
+        System.out.println(realUrl);
+        HttpURLConnection connection = (HttpURLConnection)realUrl.openConnection();
         connection.setRequestProperty("accept", "*/*");
         connection.setRequestProperty("connection", "Keep-Alive");
         connection.setRequestProperty("user-agent","Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
         connection.setConnectTimeout(5000);
         connection.setReadTimeout(15000);
         connection.connect();
-        copy(connection.getInputStream(),new FileOutputStream(location + "/" +url.substring(url.lastIndexOf("/")+1)));
-        return;
+        if(connection.getResponseCode()>=300 && connection.getResponseCode() < 400){
+            String newURL = connection.getHeaderField("Location");
+            downloadFromURL(newURL);
+        }else {
+            copy(connection.getInputStream(),new FileOutputStream(location + "/" +url.substring(url.lastIndexOf("/")+1)));
+            return;
+        }
     }
-
-
 }
