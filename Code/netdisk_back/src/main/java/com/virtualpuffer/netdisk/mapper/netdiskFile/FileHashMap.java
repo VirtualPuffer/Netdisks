@@ -15,7 +15,7 @@ public interface FileHashMap {
 
     int updatePath(String fileHash,String filePath);
 
-    int addHashMap(String hash,String path,int userID);
+    int addHashMap(String hash,String path,int userID,int length);
 
     AbsoluteNetdiskFile getFileMapByHash(String hash);
 
