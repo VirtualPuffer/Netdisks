@@ -21,7 +21,7 @@
     <update id="updateURL">
         Update user set URL = USER_ID where URL is null ;
     </update>
-    <select id="getIDbyName" resultType="int">
+    <select id="getIDbyUsername" resultType="int">
         select USER_ID from user where username = #{username};
     </select>
 

@@ -49,7 +49,11 @@ public class AbstractPersonalSpace extends BaseServiceImpl {
             if(spaceAttribute.accessible == Accessible.PRIVATE && isHost){
                 throw new RuntimeException("该空间尚未开放");
             }
-            this.blogMap = session.getMapper(SpaceBlogMap.class).getAllPublicBlog(id);
+            if(isHost){
+                this.blogMap = session.getMapper(SpaceBlogMap.class).getAllBlog(id);
+            }else {
+                this.blogMap = session.getMapper(SpaceBlogMap.class).getAllPublicBlog(id);
+            }
         } finally {
             close(session);
         }
@@ -58,11 +62,9 @@ public class AbstractPersonalSpace extends BaseServiceImpl {
     public Map<Integer,Blog> getAllBlog(){
         return blogMap;
     }
-
-
-
+    //保证是这个空间的
     public BlogService getBlogService(int blog_id){
-        return new BlogService(blogMap.get(blog_id));
+        return new BlogService(blogMap.get(blog_id).getBlog_id(),isHost);
     }
 
 }

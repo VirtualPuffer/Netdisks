@@ -2,6 +2,8 @@ package com.virtualpuffer.netdisk.service.impl.personal_space;
 
 import com.virtualpuffer.netdisk.entity.User;
 import com.virtualpuffer.netdisk.entity.online_chat.Blog;
+import com.virtualpuffer.netdisk.entity.online_chat.Comment;
+import com.virtualpuffer.netdisk.mapper.blog.SpaceBlogCommentMap;
 import com.virtualpuffer.netdisk.mapper.blog.SpaceBlogMap;
 import com.virtualpuffer.netdisk.service.impl.BaseServiceImpl;
 import com.virtualpuffer.netdisk.utils.MybatisConnect;
@@ -10,6 +12,7 @@ import org.apache.ibatis.session.SqlSession;
 import javax.persistence.criteria.CriteriaBuilder;
 import java.sql.Timestamp;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 /**
@@ -58,24 +61,26 @@ public class BlogService extends BaseServiceImpl {
         new Thread(runnable).start();
     }
 
-    public BlogService(int blog_id,User user){
+    public BlogService(int blog_id,boolean isHost){
         SqlSession session = null;
         try{
             session = MybatisConnect.getSession();
             this.blog = session.getMapper(SpaceBlogMap.class).getBlog(blog_id);
-            if(blog.getUser_id() == user.getUSER_ID()){
-                isHost = true;
-            }else {
-                isHost = false;
-            }
+            Map<Integer, Comment> commentMap = session.getMapper(SpaceBlogCommentMap.class).getComment(blog_id);
+            this.blog.setCommentMap(commentMap);
+            this.isHost = isHost;
         }finally {
             close(session);
         }
     }
 
-    public BlogService(Blog blog){
+/*    public BlogService(Blog blog){
             this.blog = blog;
             isHost = true;
+    }*/
+
+    public Map<Integer,Comment> getCommentMap(){
+        return this.blog.getCommentMap();
     }
 
     public static int buildBlog(User user){
@@ -110,6 +115,7 @@ public class BlogService extends BaseServiceImpl {
             throw new RuntimeException("该博客已经发表");
         }
     }
+
     public void addThumb(){
         Integer thumbNumber = 0;
         int id = blog.getID();

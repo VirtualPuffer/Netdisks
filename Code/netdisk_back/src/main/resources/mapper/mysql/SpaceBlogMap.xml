@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.virtualpuffer.netdisk.mapper.blog.SpaceBlogMap">
+
+    <resultMap id="blog_map" type="com.virtualpuffer.netdisk.entity.online_chat.Blog">
+       <!-- <result column="USER_ID" property="USER_ID" javaType="java.lang.Integer"/>-->
+        <result column="blog_id" property="blog_id" javaType="java.lang.Integer"/>
+        <result column="time" property="time" javaType="java.lang.String"/>
+        <result column="accessible" property="accessible" javaType="com.virtualpuffer.netdisk.enums.Accessible"/>
+        <result column="thumb" property="thumb" javaType="java.lang.Integer"/>
+    </resultMap>
+
     <select id="all" resultType="com.virtualpuffer.netdisk.entity.online_chat.Blog">
         select * from Space_Blog;
     </select>
@@ -9,10 +18,10 @@
         select * from Space_Blog_Map where blog_id = #{blog_id};
     </select>
 
-    <select id="getAllPublicBlog" resultType="com.virtualpuffer.netdisk.entity.online_chat.Blog">
-        select * from Space_Blog_Map where USER_ID = #{USER_ID} and accessible = 'PUBLIC';
+    <select id="getAllPublicBlog" resultMap="blog_map">
+        select * from Space_Blog_Map where USER_ID = #{USER_ID} and access = 'PUBLIC';
     </select>
-    <select id="getAllBlog" resultType="com.virtualpuffer.netdisk.entity.online_chat.Blog">
+    <select id="getAllBlog" resultMap="blog_map">
         select * from Space_Blog_Map where USER_ID = #{USER_ID};
     </select>
 

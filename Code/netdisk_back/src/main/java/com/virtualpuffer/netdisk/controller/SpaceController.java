@@ -42,4 +42,20 @@ public class SpaceController {
             return ResponseMessage.getErrorInstance(500,e.getMessage(),null);
         }
     }
+    @ResponseBody
+    @RequestMapping(value = "/getComment/{username}/{blog_id}",method = RequestMethod.GET)
+    public ResponseMessage getComment(@PathVariable String username,@PathVariable int blog_id, HttpServletRequest request, HttpServletResponse response){
+        UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
+        try {
+            User user = loginService.getUser();
+            AbstractPersonalSpace space = new AbstractPersonalSpace(user,username);
+            Map map = space.getBlogService(blog_id).getCommentMap();
+            return ResponseMessage.getSuccessInstance(200,"评论获取成功",map);
+        } catch (RuntimeException e) {
+            return ResponseMessage.getExceptionInstance(300,e.getMessage(),null);
+        } catch (Exception e) {
+            return ResponseMessage.getErrorInstance(500,e.getMessage(),null);
+        }
+    }
+
 }
