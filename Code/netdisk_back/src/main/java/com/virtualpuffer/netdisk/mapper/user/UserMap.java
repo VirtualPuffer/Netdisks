@@ -23,7 +23,7 @@ public interface UserMap {
     User duplicationUsername(String username);
     int register(String username,String password,String name,String address);
     int updateURL();
-    int getIDbyName(String username);
+    int getIDbyUsername(String username);
 
 
     //找回密码

@@ -78,7 +78,7 @@ public class BlogService extends BaseServiceImpl {
             isHost = true;
     }
 
-    public static Blog buildBlog(User user){
+    public static int buildBlog(User user){
         Blog newBlog = null;
         SqlSession session = null;
         try {
@@ -92,7 +92,7 @@ public class BlogService extends BaseServiceImpl {
         }finally {
             close(session);
         }
-        return newBlog;
+        return newBlog.getBlog_id();
     }
 
     public void buildBlog(String contentText){

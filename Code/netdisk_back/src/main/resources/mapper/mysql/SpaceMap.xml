@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.virtualpuffer.netdisk.mapper.blog.SpaceMap">
-    <select id="all" resultType="com.virtualpuffer.netdisk.entity.online_chat.Blog">
+<!--    <select id="all" resultType="com.virtualpuffer.netdisk.entity.online_chat.Blog">
         select * from Space_Blog;
     </select>
 
@@ -13,6 +13,10 @@
 
     <delete id="deleteBlog">
         delete from Space_Blog_Map where blog_id = #{blog_id};
-    </delete>
+    </delete>-->
+
+    <select id="getSpaceProperties" resultType="com.virtualpuffer.netdisk.entity.online_chat.SpaceAttribute">
+        select * from Space where USER_ID = #{USER_ID};
+    </select>
 
 </mapper>

@@ -9,6 +9,14 @@
         select * from Space_Blog_Map where blog_id = #{blog_id};
     </select>
 
+    <select id="getAllPublicBlog" resultType="com.virtualpuffer.netdisk.entity.online_chat.Blog">
+        select * from Space_Blog_Map where USER_ID = #{USER_ID} and accessible = 'PUBLIC';
+    </select>
+    <select id="getAllBlog" resultType="com.virtualpuffer.netdisk.entity.online_chat.Blog">
+        select * from Space_Blog_Map where USER_ID = #{USER_ID};
+    </select>
+
+
     <select id="getTempBlog" resultType="com.virtualpuffer.netdisk.entity.online_chat.Blog">
         select * from Space_Blog_Map where blog_tag = 0 and USER_ID = #{USER_ID};
     </select>

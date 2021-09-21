@@ -3,8 +3,10 @@ package com.virtualpuffer.netdisk.service.impl.personal_space;
 import com.virtualpuffer.netdisk.entity.User;
 import com.virtualpuffer.netdisk.entity.online_chat.Blog;
 import com.virtualpuffer.netdisk.entity.online_chat.SpaceAttribute;
+import com.virtualpuffer.netdisk.enums.Accessible;
 import com.virtualpuffer.netdisk.mapper.blog.SpaceBlogMap;
 import com.virtualpuffer.netdisk.mapper.blog.SpaceMap;
+import com.virtualpuffer.netdisk.mapper.user.UserMap;
 import com.virtualpuffer.netdisk.service.impl.BaseServiceImpl;
 import com.virtualpuffer.netdisk.utils.MybatisConnect;
 import org.apache.ibatis.session.SqlSession;
@@ -20,6 +22,7 @@ import java.util.Set;
 * */
 public class AbstractPersonalSpace extends BaseServiceImpl {
     protected User user;
+    protected boolean isHost;
     protected SpaceAttribute spaceAttribute;
     protected Map<Integer,Blog> blogMap;
     protected Set<Photo_Album> photoSet;
@@ -27,6 +30,7 @@ public class AbstractPersonalSpace extends BaseServiceImpl {
     public AbstractPersonalSpace(User user) {
         SqlSession session = null;
         try {
+            isHost = true;
             session = MybatisConnect.getSession();
             this.spaceAttribute = session.getMapper(SpaceMap.class).getSpaceProperties(user.getUSER_ID());
             this.blogMap = session.getMapper(SpaceBlogMap.class).getAllBlog(user.getUSER_ID());
@@ -34,9 +38,29 @@ public class AbstractPersonalSpace extends BaseServiceImpl {
             close(session);
         }
     }
+
+    public AbstractPersonalSpace(User user,String username)throws RuntimeException {
+        SqlSession session = null;
+        try {
+            session = MybatisConnect.getSession();
+            int id = session.getMapper(UserMap.class).getIDbyUsername(username);
+            isHost = (user.getUSER_ID() == id);
+            this.spaceAttribute = session.getMapper(SpaceMap.class).getSpaceProperties(id);
+            if(spaceAttribute.accessible == Accessible.PRIVATE && isHost){
+                throw new RuntimeException("该空间尚未开放");
+            }
+            this.blogMap = session.getMapper(SpaceBlogMap.class).getAllPublicBlog(id);
+        } finally {
+            close(session);
+        }
+    }
+
     public Map<Integer,Blog> getAllBlog(){
         return blogMap;
     }
+
+
+
     public BlogService getBlogService(int blog_id){
         return new BlogService(blogMap.get(blog_id));
     }
