@@ -6,7 +6,6 @@
             <result column="comment_id" property="comment_id" javaType="java.lang.Integer"/>
             <result column="reply_comment_id" property="reply_comment_id" javaType="java.lang.Integer"/>
             <result column="time" property="time" javaType="java.lang.String"/>
-            <result column="accessible" property="accessible" javaType="com.virtualpuffer.netdisk.enums.Accessible"/>
             <result column="thumb" property="thumb" javaType="java.lang.Integer"/>
     </resultMap>
     <insert id="makeComment">
@@ -25,6 +24,8 @@
     </delete>
 
     <select id="getComment" resultMap="commentMap">
-        select * from Space_Blog_Comment where blog_id = #{blog_id};
+        select S.blog_id,S.comment_id,S.reply_comment_id,S.time,S.thumb,U.name
+        from Space_Blog_Comment S,user U
+        where S.blog_id = #{blog_id} and U.USER_ID = S.USER_ID;
     </select>
 </mapper>

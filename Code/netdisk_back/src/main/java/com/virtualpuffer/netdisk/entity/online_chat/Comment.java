@@ -5,7 +5,7 @@ import com.virtualpuffer.netdisk.entity.BaseEntity;
 import com.virtualpuffer.netdisk.entity.User;
 
 public class Comment extends BaseEntity {
-    public int user_id;
+    public String name;
     public int thumb;//点赞
     public String time;
     public int blog_id;

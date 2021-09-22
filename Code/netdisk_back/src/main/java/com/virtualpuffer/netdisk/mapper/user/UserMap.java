@@ -10,6 +10,8 @@ public interface UserMap {
     /**
      * 登录逻辑
      * */
+    int getIDByName(String name);
+
     User getUserByPassword(String username);
 
     User getInstanceByAddr(String addr);
