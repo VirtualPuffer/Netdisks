@@ -30,12 +30,12 @@ public class SpaceController {
         }
     }
     @ResponseBody
-    @RequestMapping(value = "/getSpace/{username}",method = RequestMethod.GET)
-    public ResponseMessage getSpaceBlog(@PathVariable String username, HttpServletRequest request, HttpServletResponse response){
+    @RequestMapping(value = "/getSpace/{name}",method = RequestMethod.GET)
+    public ResponseMessage getSpaceBlog(@PathVariable String name, HttpServletRequest request, HttpServletResponse response){
         UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
         try {
             User user = loginService.getUser();
-            AbstractPersonalSpace space = new AbstractPersonalSpace(user,username);
+            AbstractPersonalSpace space = new AbstractPersonalSpace(user,name);
             return ResponseMessage.getSuccessInstance(200,"动态获取成功",space.getAllBlog());
         } catch (RuntimeException e) {
             return ResponseMessage.getExceptionInstance(300,e.getMessage(),null);

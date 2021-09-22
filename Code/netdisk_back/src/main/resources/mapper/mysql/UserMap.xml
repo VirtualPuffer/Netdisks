@@ -30,7 +30,7 @@
         update user set password = #{password} where USER_ID = #{userID};
     </update>
 
-    <select id="getIDByName">
+    <select id="getIDByName" resultType="int">
         select USER_ID from user where name = #{name};
     </select>
     <!--<select id="getName" resultType="com.virtualpuffer.netdisk.mapper.User">

@@ -41,11 +41,11 @@ public class AbstractPersonalSpace extends BaseServiceImpl {
         }
     }
     //访问模式
-    public AbstractPersonalSpace(User user,String username)throws RuntimeException {
+    public AbstractPersonalSpace(User user,String name)throws RuntimeException {
         SqlSession session = null;
         try {
             session = MybatisConnect.getSession();
-            int id = session.getMapper(UserMap.class).getIDbyUsername(username);
+            int id = session.getMapper(UserMap.class).getIDByName(name);
             isHost = (user.getUSER_ID() == id);
             this.spaceAttribute = session.getMapper(SpaceMap.class).getSpaceProperties(id);
             if(spaceAttribute.getAccess() == Accessible.PRIVATE && !isHost){
