@@ -70,7 +70,13 @@ public class AbstractPersonalSpace extends BaseServiceImpl {
         SqlSession session = null;
         try {
             session = MybatisConnect.getSession();
-            int count = session.getMapper(SpaceMap.class).setSpaceProperties(spaceAttribute,user.getUSER_ID());
+            int count = 0;
+            if (spaceAttribute.access!=null) {
+                count+=session.getMapper(SpaceMap.class).setSpaceAccess(spaceAttribute.access.name(),user.getUSER_ID());
+            }
+            if (spaceAttribute.backgroundPictureURL!=null) {
+                count+=session.getMapper(SpaceMap.class).setSpaceBackground(spaceAttribute.backgroundPictureURL,user.getUSER_ID());
+            }
             if(count > 0) session.commit();
         } finally {
             close(session);

@@ -3,6 +3,7 @@ package com.virtualpuffer.netdisk.controller.spaceController;
 import com.virtualpuffer.netdisk.data.ResponseMessage;
 import com.virtualpuffer.netdisk.entity.User;
 import com.virtualpuffer.netdisk.entity.online_chat.SpaceAttribute;
+import com.virtualpuffer.netdisk.enums.Accessible;
 import com.virtualpuffer.netdisk.service.impl.personal_space.AbstractPersonalSpace;
 import com.virtualpuffer.netdisk.service.impl.user.UserServiceImpl;
 import org.springframework.web.bind.annotation.*;
@@ -42,6 +43,25 @@ public class SpaceSettingController {
             Map ret = new HashMap();
             ret.put("attribute",attribute);
             return ResponseMessage.getSuccessInstance(200,"配置获取成功",ret);
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            return ResponseMessage.getExceptionInstance(300,e.getMessage(),null);
+        } catch (Exception e) {
+            return ResponseMessage.getErrorInstance(500,e.getMessage(),null);
+        }
+    }
+    @ResponseBody
+    @RequestMapping(value = "/setAttribute/access")
+    public ResponseMessage setAccess(@RequestBody SpaceAttribute attribute,HttpServletRequest request, HttpServletResponse response){
+        UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
+        try {
+            User user = loginService.getUser();
+            AbstractPersonalSpace space = new AbstractPersonalSpace(user);
+            space.setSpaceAttribute(attribute);
+            SpaceAttribute newAttribute = space.getSpaceAttribute();
+            Map ret = new HashMap();
+            ret.put("attribute",newAttribute);
+            return ResponseMessage.getSuccessInstance(200,"设置成功",ret);
         } catch (RuntimeException e) {
             e.printStackTrace();
             return ResponseMessage.getExceptionInstance(300,e.getMessage(),null);

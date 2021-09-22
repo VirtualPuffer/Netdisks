@@ -29,4 +29,12 @@
         select * from Space where USER_ID = #{USER_ID};
     </select>
 
+    <update id="setSpaceAccess">
+        update Space set access = #{access} where USER_ID = #{USER_ID};
+    </update>
+
+    <update id="setSpaceBackground">
+        update Space set backgroundURL = #{URL} where USER_ID = #{USER_ID};
+    </update>
+
 </mapper>

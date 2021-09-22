@@ -6,16 +6,15 @@ import com.virtualpuffer.netdisk.utils.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.RandomAccess;
 
 @RestController
 @RequestMapping("/wife")
@@ -56,5 +55,12 @@ public class WifeController {
         } catch (Exception e) {
             return ResponseMessage.getErrorInstance(404,"获取失败",null);
         }
+    }
+    @ResponseBody
+    @RequestMapping("/getImage")
+    public static ModelAndView get(){
+        File f = new File("/usr/local/MyTomcat/wife");
+        File[] r = f.listFiles();
+        return new ModelAndView();
     }
 }
