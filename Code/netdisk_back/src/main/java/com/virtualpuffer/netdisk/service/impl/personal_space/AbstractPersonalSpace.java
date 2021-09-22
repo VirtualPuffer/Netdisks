@@ -27,10 +27,12 @@ public class AbstractPersonalSpace extends BaseServiceImpl {
     protected Map<Integer,Blog> blogMap;
     protected Set<Photo_Album> photoSet;
 
+    //设置模式
     public AbstractPersonalSpace(User user) {
         SqlSession session = null;
         try {
             isHost = true;
+            this.user = user;
             session = MybatisConnect.getSession();
             this.spaceAttribute = session.getMapper(SpaceMap.class).getSpaceProperties(user.getUSER_ID());
             this.blogMap = session.getMapper(SpaceBlogMap.class).getAllBlog(user.getUSER_ID());
@@ -38,7 +40,7 @@ public class AbstractPersonalSpace extends BaseServiceImpl {
             close(session);
         }
     }
-
+    //访问模式
     public AbstractPersonalSpace(User user,String username)throws RuntimeException {
         SqlSession session = null;
         try {
@@ -46,10 +48,11 @@ public class AbstractPersonalSpace extends BaseServiceImpl {
             int id = session.getMapper(UserMap.class).getIDbyUsername(username);
             isHost = (user.getUSER_ID() == id);
             this.spaceAttribute = session.getMapper(SpaceMap.class).getSpaceProperties(id);
-            if(spaceAttribute.accessible == Accessible.PRIVATE && isHost){
+            if(spaceAttribute.getAccess() == Accessible.PRIVATE && isHost){
                 throw new RuntimeException("该空间尚未开放");
             }
             if(isHost){
+                this.user = session.getMapper(UserMap.class).getUserByID(id);
                 this.blogMap = session.getMapper(SpaceBlogMap.class).getAllBlog(id);
             }else {
                 this.blogMap = session.getMapper(SpaceBlogMap.class).getAllPublicBlog(id);
@@ -57,6 +60,22 @@ public class AbstractPersonalSpace extends BaseServiceImpl {
         } finally {
             close(session);
         }
+    }
+
+    public SpaceAttribute getSpaceAttribute() {
+        return spaceAttribute;
+    }
+
+    public void setSpaceAttribute(SpaceAttribute spaceAttribute) {
+        SqlSession session = null;
+        try {
+            session = MybatisConnect.getSession();
+            int count = session.getMapper(SpaceMap.class).setSpaceProperties(spaceAttribute,user.getUSER_ID());
+            if(count > 0) session.commit();
+        } finally {
+            close(session);
+        }
+
     }
 
     public Map<Integer,Blog> getAllBlog(){

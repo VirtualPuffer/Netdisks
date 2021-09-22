@@ -14,6 +14,16 @@
     <delete id="deleteBlog">
         delete from Space_Blog_Map where blog_id = #{blog_id};
     </delete>-->
+    <select id="setSpaceProperties" parameterType="com.virtualpuffer.netdisk.entity.online_chat.SpaceAttribute">
+        UPDATE Space set
+        <if test="access!=null and access!=''">
+            and access = #{access}
+        </if>
+        <if test="backgroundPictureURL!=null and backgroundPictureURL != ''">
+            and backgroundPictureURL = #{backgroundPictureURL}
+        </if>
+            where USER_ID = #{USER_ID};
+    </select>
 
     <select id="getSpaceProperties" resultType="com.virtualpuffer.netdisk.entity.online_chat.SpaceAttribute">
         select * from Space where USER_ID = #{USER_ID};

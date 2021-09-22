@@ -1,8 +1,9 @@
-package com.virtualpuffer.netdisk.controller;
+package com.virtualpuffer.netdisk.controller.spaceController;
 
 
 import com.virtualpuffer.netdisk.data.ResponseMessage;
 import com.virtualpuffer.netdisk.entity.User;
+import com.virtualpuffer.netdisk.entity.online_chat.SpaceAttribute;
 import com.virtualpuffer.netdisk.service.impl.personal_space.AbstractPersonalSpace;
 import com.virtualpuffer.netdisk.service.impl.personal_space.BlogService;
 import com.virtualpuffer.netdisk.service.impl.user.UserServiceImpl;
