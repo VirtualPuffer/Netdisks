@@ -48,7 +48,7 @@ public class AbstractPersonalSpace extends BaseServiceImpl {
             int id = session.getMapper(UserMap.class).getIDbyUsername(username);
             isHost = (user.getUSER_ID() == id);
             this.spaceAttribute = session.getMapper(SpaceMap.class).getSpaceProperties(id);
-            if(spaceAttribute.getAccess() == Accessible.PRIVATE && isHost){
+            if(spaceAttribute.getAccess() == Accessible.PRIVATE && !isHost){
                 throw new RuntimeException("该空间尚未开放");
             }
             if(isHost){
