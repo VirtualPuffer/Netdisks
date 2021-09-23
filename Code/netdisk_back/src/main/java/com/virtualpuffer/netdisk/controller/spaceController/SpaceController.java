@@ -4,6 +4,7 @@ package com.virtualpuffer.netdisk.controller.spaceController;
 import com.virtualpuffer.netdisk.data.ResponseMessage;
 import com.virtualpuffer.netdisk.entity.User;
 import com.virtualpuffer.netdisk.entity.online_chat.SpaceAttribute;
+import com.virtualpuffer.netdisk.enums.Accessible;
 import com.virtualpuffer.netdisk.service.impl.personal_space.AbstractPersonalSpace;
 import com.virtualpuffer.netdisk.service.impl.personal_space.BlogService;
 import com.virtualpuffer.netdisk.service.impl.user.UserServiceImpl;
@@ -18,15 +19,20 @@ import java.util.Map;
 public class SpaceController {
     @ResponseBody
     @RequestMapping(value = "/SendBlog",method = RequestMethod.POST)
-    public void buildBlog(String content_text,HttpServletRequest request, HttpServletResponse response){
+    public ResponseMessage buildBlog(String content_text, Accessible access, HttpServletRequest request, HttpServletResponse response){
         UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
         User user = loginService.getUser();
+        if(access == null){
+            access = Accessible.PUBLIC;
+        }
         try {
             AbstractPersonalSpace space = new AbstractPersonalSpace(user);
             int blog_id = BlogService.buildBlog(user);
-            space.getBlogService(blog_id).buildBlog(content_text);
+            space.getBlogService(blog_id).buildBlog(content_text,access);
+            return ResponseMessage.getSuccessInstance(200,"动态发布成功",space.getAllBlog());
         } catch (Exception exception) {
             exception.printStackTrace();
+            return ResponseMessage.getErrorInstance(500, exception.getMessage(),null);
         }
     }
     @ResponseBody

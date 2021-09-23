@@ -74,8 +74,8 @@ public class AbstractPersonalSpace extends BaseServiceImpl {
             if (spaceAttribute.access!=null) {
                 count+=session.getMapper(SpaceMap.class).setSpaceAccess(spaceAttribute.access.name(),user.getUSER_ID());
             }
-            if (spaceAttribute.backgroundPictureURL!=null) {
-                count+=session.getMapper(SpaceMap.class).setSpaceBackground(spaceAttribute.backgroundPictureURL,user.getUSER_ID());
+            if (spaceAttribute.backgroundURL!=null) {
+                count+=session.getMapper(SpaceMap.class).setSpaceBackground(spaceAttribute.backgroundURL,user.getUSER_ID());
             }
             if(count > 0) session.commit();
         } finally {
@@ -88,8 +88,8 @@ public class AbstractPersonalSpace extends BaseServiceImpl {
         return blogMap;
     }
     //保证是这个空间的
-    public BlogService getBlogService(int blog_id){
-        return new BlogService(blogMap.get(blog_id).getBlog_id(),isHost);
+    public BlogService getBlogService(int blog_id) throws NullPointerException{
+        return new BlogService(blogMap.get(blog_id).getBlog_id(),isHost,this);
     }
 
 }

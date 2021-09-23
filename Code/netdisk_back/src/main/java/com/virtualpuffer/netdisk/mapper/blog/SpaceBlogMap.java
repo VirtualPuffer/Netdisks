@@ -24,7 +24,7 @@ public interface SpaceBlogMap {
 
     int deleteBlog(int blog_id);
     int addThumb(int comment_id,int number);
-    int buildBlog(String contentText, Timestamp time,int blog_id);
+    int buildBlog(String contentText, Timestamp time,int blog_id,String access);
     int makeBlog(String contentText,int USER_ID,Timestamp time);
 
 }

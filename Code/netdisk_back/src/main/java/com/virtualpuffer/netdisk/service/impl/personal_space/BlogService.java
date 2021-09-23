@@ -3,13 +3,13 @@ package com.virtualpuffer.netdisk.service.impl.personal_space;
 import com.virtualpuffer.netdisk.entity.User;
 import com.virtualpuffer.netdisk.entity.online_chat.Blog;
 import com.virtualpuffer.netdisk.entity.online_chat.Comment;
+import com.virtualpuffer.netdisk.enums.Accessible;
 import com.virtualpuffer.netdisk.mapper.blog.SpaceBlogCommentMap;
 import com.virtualpuffer.netdisk.mapper.blog.SpaceBlogMap;
 import com.virtualpuffer.netdisk.service.impl.BaseServiceImpl;
 import com.virtualpuffer.netdisk.utils.MybatisConnect;
 import org.apache.ibatis.session.SqlSession;
 
-import javax.persistence.criteria.CriteriaBuilder;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -23,6 +23,8 @@ import java.util.Map;
 public class BlogService extends BaseServiceImpl {
     public Blog blog;
     public boolean isHost;
+    public AbstractPersonalSpace space;
+    public Map<Integer,Blog> blog_Map;
     private static final Class threadLock = BlogService.class;
     private static Map<Integer, Integer> thumbMap = new HashMap();
     private static Map<Integer, Integer> executeMap = new HashMap();
@@ -61,8 +63,9 @@ public class BlogService extends BaseServiceImpl {
         new Thread(runnable).start();
     }
 
-    public BlogService(int blog_id,boolean isHost){
+    public BlogService(int blog_id,boolean isHost,AbstractPersonalSpace space){
         SqlSession session = null;
+        this.space = space;
         try{
             session = MybatisConnect.getSession();
             this.blog = session.getMapper(SpaceBlogMap.class).getBlog(blog_id);
@@ -74,10 +77,6 @@ public class BlogService extends BaseServiceImpl {
         }
     }
 
-/*    public BlogService(Blog blog){
-            this.blog = blog;
-            isHost = true;
-    }*/
 
     public Map<Integer,Comment> getCommentMap(){
         return this.blog.getCommentMap();
@@ -100,13 +99,13 @@ public class BlogService extends BaseServiceImpl {
         return newBlog.getBlog_id();
     }
 
-    public void buildBlog(String contentText){
+    public void buildBlog(String contentText, Accessible access){
         if(blog.getBlog_tag() == 0){
             SqlSession session = null;
             Timestamp time = new Timestamp(System.currentTimeMillis());
             try {
                 session = MybatisConnect.getSession();
-                session.getMapper(SpaceBlogMap.class).buildBlog(contentText,time,blog.getBlog_id());
+                session.getMapper(SpaceBlogMap.class).buildBlog(contentText,time,blog.getBlog_id(),access.name());
                 session.commit();
             }finally {
                 close(session);
@@ -118,7 +117,7 @@ public class BlogService extends BaseServiceImpl {
 
     public void addThumb(){
         Integer thumbNumber = 0;
-        int id = blog.getID();
+        int id = blog.getUser_id();
         synchronized (threadLock) {
             if ((thumbNumber = thumbMap.get(id))!= null) {
                 thumbMap.put(id,thumbNumber);

@@ -1,5 +1,6 @@
 package com.virtualpuffer.netdisk.entity.online_chat;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.virtualpuffer.netdisk.entity.BaseEntity;
 import com.virtualpuffer.netdisk.entity.User;
 import com.virtualpuffer.netdisk.enums.Accessible;
@@ -16,7 +17,7 @@ import java.util.Map;
  *
  * */
 public class Blog extends BaseEntity implements Serializable {
-    public int user_id;
+    private int user_id;
     public int thumb;//点赞
     public String contentText;
     private int blog_id;
@@ -29,6 +30,7 @@ public class Blog extends BaseEntity implements Serializable {
     public Blog() {
     }
 
+    @JsonIgnore
     public int getUser_id() {
         return user_id;
     }
@@ -76,10 +78,6 @@ public class Blog extends BaseEntity implements Serializable {
 
     public void setPhotoList(LinkedList<String> photoList) {
         this.photoList = photoList;
-    }
-
-    public int getID() {
-        return user_id;
     }
 
     public int getThumb() {

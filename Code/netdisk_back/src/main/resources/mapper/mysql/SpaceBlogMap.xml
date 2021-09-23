@@ -19,12 +19,15 @@
     </select>
 
     <select id="getAllPublicBlog" resultMap="blog_map">
-        select * from Space_Blog_Map where USER_ID = #{USER_ID} and access = 'PUBLIC';
+        select * from Space_Blog_Map where USER_ID = #{USER_ID} and access = 'PUBLIC' and blog_tag = 1;
     </select>
     <select id="getAllBlog" resultMap="blog_map">
         select * from Space_Blog_Map where USER_ID = #{USER_ID};
     </select>
 
+    <insert id="makeBlog">
+        insert into Space_Blog_Map (USER_ID,time,contentText) values (#{USER_ID},#{time},#{contentText});
+    </insert>
 
     <select id="getTempBlog" resultType="com.virtualpuffer.netdisk.entity.online_chat.Blog">
         select * from Space_Blog_Map where blog_tag = 0 and USER_ID = #{USER_ID};
@@ -32,7 +35,7 @@
 
     <update id="buildBlog">
         update Space_Blog_Map
-        set blog_tag = 1,contentText = #{contentText},time=#{time}
+        set blog_tag = 1,contentText = #{contentText},time=#{time},access = #{access}
         where blog_id = #{blog_id};
     </update>
 
@@ -45,5 +48,6 @@
     <delete id="deleteBlog">
         delete from Space_Blog_Map where blog_id = #{blog_id};
     </delete>
+
 
 </mapper>

@@ -34,7 +34,7 @@
     </update>
 
     <update id="setSpaceBackground">
-        update Space set backgroundURL = #{URL} where USER_ID = #{USER_ID};
+        update Space set backgroundURL = #{url} where USER_ID = #{USER_ID};
     </update>
 
 </mapper>

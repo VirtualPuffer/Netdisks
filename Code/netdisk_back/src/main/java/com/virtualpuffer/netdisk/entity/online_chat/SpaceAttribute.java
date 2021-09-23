@@ -5,7 +5,7 @@ import com.virtualpuffer.netdisk.enums.Accessible;
 public class SpaceAttribute {
     public int thumb;
     public Accessible access;
-    public String backgroundPictureURL;
+    public String backgroundURL;
 
     public SpaceAttribute() {
     }
