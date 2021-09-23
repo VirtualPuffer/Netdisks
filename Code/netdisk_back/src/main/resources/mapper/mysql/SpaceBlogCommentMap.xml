@@ -28,4 +28,9 @@
         from Space_Blog_Comment S,user U
         where S.blog_id = #{blog_id} and U.USER_ID = S.USER_ID;
     </select>
+
+    <insert id="makeComment" parameterType="com.virtualpuffer.netdisk.entity.online_chat.Comment">
+        insert into Space_Blog_Comment (USER_ID,time,blog_id,reply_comment_id,contentText)
+        values(#{USER_ID},#{time},#{blog_id},#{reply_comment_id},#{contentText});
+    </insert>
 </mapper>

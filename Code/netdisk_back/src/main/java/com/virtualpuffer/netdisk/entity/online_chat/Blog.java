@@ -25,7 +25,6 @@ public class Blog extends BaseEntity implements Serializable {
     public int blog_tag;//0表示临时，1表示完成
     public Accessible access;
     public LinkedList<String> photoList;
-    public Map<Integer,Comment> commentMap;
 
     public Blog() {
     }
@@ -96,11 +95,4 @@ public class Blog extends BaseEntity implements Serializable {
         return photoList;
     }
 
-    public Map<Integer, Comment> getCommentMap() {
-        return commentMap;
-    }
-
-    public void setCommentMap(Map<Integer, Comment> commentList) {
-        this.commentMap = commentList;
-    }
 }

@@ -9,6 +9,7 @@ import com.virtualpuffer.netdisk.mapper.blog.SpaceBlogMap;
 import com.virtualpuffer.netdisk.service.impl.BaseServiceImpl;
 import com.virtualpuffer.netdisk.utils.MybatisConnect;
 import org.apache.ibatis.session.SqlSession;
+import sun.jvm.hotspot.gc.shared.Space;
 
 import java.sql.Timestamp;
 import java.util.HashMap;
@@ -26,6 +27,7 @@ public class BlogService extends BaseServiceImpl {
     public AbstractPersonalSpace space;
     public Map<Integer,Blog> blog_Map;
     private static final Class threadLock = BlogService.class;
+    protected CommentService commentService;
     private static Map<Integer, Integer> thumbMap = new HashMap();
     private static Map<Integer, Integer> executeMap = new HashMap();
 
@@ -69,17 +71,15 @@ public class BlogService extends BaseServiceImpl {
         try{
             session = MybatisConnect.getSession();
             this.blog = session.getMapper(SpaceBlogMap.class).getBlog(blog_id);
-            Map<Integer, Comment> commentMap = session.getMapper(SpaceBlogCommentMap.class).getComment(blog_id);
-            this.blog.setCommentMap(commentMap);
+            this.commentService = new CommentService(this.blog);
             this.isHost = isHost;
         }finally {
             close(session);
         }
     }
 
-
     public Map<Integer,Comment> getCommentMap(){
-        return this.blog.getCommentMap();
+        return this.commentService.getCommentMap();
     }
 
     public static int buildBlog(User user){
@@ -131,6 +131,7 @@ public class BlogService extends BaseServiceImpl {
         try {
             session = MybatisConnect.getSession();
             session.getMapper(SpaceBlogMap.class).deleteBlog(this.blog.getBlog_id());
+            session.commit();
         } finally {
             close(session);
         }

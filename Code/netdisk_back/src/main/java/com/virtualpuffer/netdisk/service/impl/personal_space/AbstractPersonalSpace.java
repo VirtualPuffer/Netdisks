@@ -11,6 +11,7 @@ import com.virtualpuffer.netdisk.service.impl.BaseServiceImpl;
 import com.virtualpuffer.netdisk.utils.MybatisConnect;
 import org.apache.ibatis.session.SqlSession;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
@@ -23,6 +24,7 @@ import java.util.Set;
 public class AbstractPersonalSpace extends BaseServiceImpl {
     protected User user;
     protected boolean isHost;
+    private int id;
     protected SpaceAttribute spaceAttribute;
     protected Map<Integer,Blog> blogMap;
     protected Set<Photo_Album> photoSet;
@@ -45,7 +47,7 @@ public class AbstractPersonalSpace extends BaseServiceImpl {
         SqlSession session = null;
         try {
             session = MybatisConnect.getSession();
-            int id = session.getMapper(UserMap.class).getIDByName(name);
+            this.id = session.getMapper(UserMap.class).getIDByName(name);
             isHost = (user.getUSER_ID() == id);
             this.spaceAttribute = session.getMapper(SpaceMap.class).getSpaceProperties(id);
             if(spaceAttribute.getAccess() == Accessible.PRIVATE && !isHost){
@@ -89,6 +91,12 @@ public class AbstractPersonalSpace extends BaseServiceImpl {
     }
     //保证是这个空间的
     public BlogService getBlogService(int blog_id) throws NullPointerException{
+     /*   SqlSession session = null;
+        if(isHost){
+            this.blogMap = session.getMapper(SpaceBlogMap.class).getAllBlog(id);
+        }else {
+            this.blogMap = session.getMapper(SpaceBlogMap.class).getAllPublicBlog(id);
+        }*/
         return new BlogService(blogMap.get(blog_id).getBlog_id(),isHost,this);
     }
 

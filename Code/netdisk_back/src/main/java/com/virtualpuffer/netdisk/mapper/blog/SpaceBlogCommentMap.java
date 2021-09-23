@@ -12,7 +12,8 @@ import java.util.Map;
 public interface SpaceBlogCommentMap {
     int addThumb(int comment_id,int number);
     int deleteComment(int comment_id);
-    int makeComment(String contentText, int reply_comment_id, int blog_id, int USER_ID, Timestamp time);
+   // int makeComment(String contentText, int reply_comment_id, int blog_id, int USER_ID, Timestamp time);
+    int makeComment(Comment comment);
 
     @MapKey("comment_id")
     Map<Integer,Comment> getComment(int blog_id);
