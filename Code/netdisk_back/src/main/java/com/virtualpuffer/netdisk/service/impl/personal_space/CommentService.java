@@ -13,6 +13,9 @@ import java.util.Map;
 
 
 public class CommentService extends BaseServiceImpl {
+    private boolean isHost;
+    private int currentComment_id;
+    private Comment currentComment;
     public Map<Integer,Comment> commentMap;
 
     public CommentService(Blog blog){
@@ -24,13 +27,18 @@ public class CommentService extends BaseServiceImpl {
             close(session);
         }
     }
-    public static void buildComment(Blog blog,Comment comment){
+
+    public CommentService(Blog blog,int comment_id,boolean isHost){
+        this.isHost = isHost;
         SqlSession session = null;
-        comment.setTime(getTimestamp());
         try {
             session = MybatisConnect.getSession();
-            session.getMapper(SpaceBlogCommentMap.class).makeComment(comment);
-            session.commit();
+            this.commentMap = session.getMapper(SpaceBlogCommentMap.class).getComment(blog.getBlog_id());
+            this.currentComment_id = comment_id;
+            this.currentComment = commentMap.get(comment_id);
+            if(currentComment == null){
+                throw new RuntimeException("评论定位失败");
+            }
         } finally {
             close(session);
         }

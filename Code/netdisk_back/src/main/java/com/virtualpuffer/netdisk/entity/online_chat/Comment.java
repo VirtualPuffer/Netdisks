@@ -7,11 +7,11 @@ import com.virtualpuffer.netdisk.entity.User;
 import java.sql.Timestamp;
 
 public class Comment extends BaseEntity {
-    public String name;
-    public String USER_ID;
-    public int thumb;//点赞
-    public Timestamp time;
-    public int blog_id;
+    private String name;
+    private String USER_ID;
+    private int thumb;//点赞
+    private Timestamp time;
+    private int blog_id;
     private int comment_id;
     public int replyComment_id;
     public String contentText;

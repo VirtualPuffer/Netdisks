@@ -88,15 +88,18 @@ public class SpaceController {
         }
     }
     @ResponseBody
-    @RequestMapping(value = "/addComment/{username}/{blog_id}",method = RequestMethod.GET)
-    public ResponseMessage addComment(@RequestBody Comment comment,@PathVariable String username,
-                                      @PathVariable int blog_id, HttpServletRequest request, HttpServletResponse response){
+    @RequestMapping(value = "/addComment/{username}",method = RequestMethod.GET)
+    public ResponseMessage addComment(@RequestBody Comment comment,@PathVariable String username
+            , HttpServletRequest request, HttpServletResponse response){
         UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
+        if(comment.getContentText() == null || comment.getBlog_id() == 0){
+            return ResponseMessage.getExceptionInstance(300,"缺少参数",null);
+        }
         try {
             User user = loginService.getUser();
             AbstractPersonalSpace space = new AbstractPersonalSpace(user,username);
-            space.getBlogService(blog_id);
-            Map map = space.getBlogService(blog_id).getCommentMap();
+            space.getBlogService(comment.getBlog_id()).addComment(comment);
+            Map map = space.getBlogService(comment.getBlog_id()).getCommentMap();
             return ResponseMessage.getSuccessInstance(200,"评论获取成功",map);
         } catch (RuntimeException e) {
             return ResponseMessage.getExceptionInstance(300,e.getMessage(),null);

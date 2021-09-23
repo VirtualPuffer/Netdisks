@@ -91,12 +91,6 @@ public class AbstractPersonalSpace extends BaseServiceImpl {
     }
     //保证是这个空间的
     public BlogService getBlogService(int blog_id) throws NullPointerException{
-     /*   SqlSession session = null;
-        if(isHost){
-            this.blogMap = session.getMapper(SpaceBlogMap.class).getAllBlog(id);
-        }else {
-            this.blogMap = session.getMapper(SpaceBlogMap.class).getAllPublicBlog(id);
-        }*/
         return new BlogService(blogMap.get(blog_id).getBlog_id(),isHost,this);
     }
 

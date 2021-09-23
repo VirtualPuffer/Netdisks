@@ -82,6 +82,10 @@ public class BlogService extends BaseServiceImpl {
         return this.commentService.getCommentMap();
     }
 
+    public CommentService getCommentService(int comment_id){
+        return new CommentService(this.blog,comment_id,isHost);
+    }
+
     public static int buildBlog(User user){
         Blog newBlog = null;
         SqlSession session = null;
@@ -100,18 +104,38 @@ public class BlogService extends BaseServiceImpl {
     }
 
     public void buildBlog(String contentText, Accessible access){
-        if(blog.getBlog_tag() == 0){
+        if(!isHost){
+            throw new RuntimeException("没有操作权限");
+        }else {
+            if(blog.getBlog_tag() == 0){
+                SqlSession session = null;
+                Timestamp time = new Timestamp(System.currentTimeMillis());
+                try {
+                    session = MybatisConnect.getSession();
+                    session.getMapper(SpaceBlogMap.class).buildBlog(contentText,time,blog.getBlog_id(),access.name());
+                    session.commit();
+                }finally {
+                    close(session);
+                }
+            }else {
+                throw new RuntimeException("该博客已经发表");
+            }
+        }
+    }
+
+    public void addComment(Comment comment){
+        if (!isHost) {
+            throw new RuntimeException("没有操作权限");
+        } else {
             SqlSession session = null;
-            Timestamp time = new Timestamp(System.currentTimeMillis());
+            comment.setTime(getTimestamp());
             try {
                 session = MybatisConnect.getSession();
-                session.getMapper(SpaceBlogMap.class).buildBlog(contentText,time,blog.getBlog_id(),access.name());
+                session.getMapper(SpaceBlogCommentMap.class).makeComment(comment);
                 session.commit();
-            }finally {
+            } finally {
                 close(session);
             }
-        }else {
-            throw new RuntimeException("该博客已经发表");
         }
     }
 
@@ -127,13 +151,17 @@ public class BlogService extends BaseServiceImpl {
         }
     }
     public void delete(){
-        SqlSession session =  null;
-        try {
-            session = MybatisConnect.getSession();
-            session.getMapper(SpaceBlogMap.class).deleteBlog(this.blog.getBlog_id());
-            session.commit();
-        } finally {
-            close(session);
+        if(!isHost){
+            throw new RuntimeException("没有操作权限");
+        }else {
+            SqlSession session =  null;
+            try {
+                session = MybatisConnect.getSession();
+                session.getMapper(SpaceBlogMap.class).deleteBlog(this.blog.getBlog_id());
+                session.commit();
+            } finally {
+                close(session);
+            }
         }
     }
 }
