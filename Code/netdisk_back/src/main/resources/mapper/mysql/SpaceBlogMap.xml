@@ -49,5 +49,9 @@
         delete from Space_Blog_Map where blog_id = #{blog_id};
     </delete>
 
+    <select id="checkDuplicateThumb" resultType="com.virtualpuffer.netdisk.entity.online_chat.Blog">
+        select * from Space_Blog_Map where blog_id = #{blog_id} and USER_ID=#{USER_ID};
+    </select>
+
 
 </mapper>

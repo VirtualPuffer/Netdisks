@@ -20,6 +20,8 @@ public interface SpaceBlogMap {
     @MapKey("blog_id")
     Map<Integer,Blog> getAllPublicBlog(int USER_ID);
 
+    Blog checkDuplicateThumb(int blog_id,int USER_ID);
+
     Blog getTempBlog(int USER_ID);
 
     int deleteBlog(int blog_id);

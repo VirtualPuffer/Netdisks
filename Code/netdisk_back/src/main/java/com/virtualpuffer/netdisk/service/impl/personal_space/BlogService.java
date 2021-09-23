@@ -48,7 +48,9 @@ public class BlogService extends BaseServiceImpl {
                             session = MybatisConnect.getSession();
                             for(Integer key : executeMap.keySet()){
                                 try {
-                                    session.getMapper(SpaceBlogMap.class).addThumb(key,executeMap.get(key));
+                                    SpaceBlogMap blogMap = session.getMapper(SpaceBlogMap.class);
+                                    
+                                    blogMap.addThumb(key,executeMap.get(key));
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
