@@ -11,10 +11,7 @@ import org.springframework.web.servlet.ModelAndView;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.RandomAccess;
+import java.util.*;
 
 @RestController
 @RequestMapping("/wife")
@@ -57,10 +54,21 @@ public class WifeController {
         }
     }
     @ResponseBody
-    @RequestMapping("/getImage")
-    public static ModelAndView get(){
-        File f = new File("/usr/local/MyTomcat/wife");
+    @RequestMapping("/getPC")
+    public ModelAndView getpc(){
+        File f = new File("/usr/local/MyTomcat/wife/PC");
         File[] r = f.listFiles();
-        return new ModelAndView();
+        Random getRan = new Random();
+        int index = getRan.nextInt(r.length);
+        return new ModelAndView("/" + r[index].getName());
+    }
+    @ResponseBody
+    @RequestMapping("/getPE")
+    public ModelAndView getPE(){
+        File f = new File("/usr/local/MyTomcat/wife/PE");
+        File[] r = f.listFiles();
+        Random getRan = new Random();
+        int index = getRan.nextInt(r.length);
+        return new ModelAndView("/" + r[index].getName());
     }
 }
