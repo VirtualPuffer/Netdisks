@@ -38,6 +38,7 @@ public class BlogService extends BaseServiceImpl {
                 SqlSession session = null;
                 while (true) {
                     synchronized (threadLock) {
+                        //交换Map,和点赞那边一起锁了
                         Map<Integer,Integer> temp = thumbMap;
                         thumbMap = executeMap;
                         executeMap = temp;
@@ -49,7 +50,7 @@ public class BlogService extends BaseServiceImpl {
                             for(Integer key : executeMap.keySet()){
                                 try {
                                     SpaceBlogMap blogMap = session.getMapper(SpaceBlogMap.class);
-                                    
+
                                     blogMap.addThumb(key,executeMap.get(key));
                                 } catch (Exception e) {
                                     e.printStackTrace();
@@ -130,7 +131,7 @@ public class BlogService extends BaseServiceImpl {
             throw new RuntimeException("没有操作权限");
         } else {
             SqlSession session = null;
-            comment.setTime(getTimestamp());
+            comment.setTimestamp(getTimestamp());
             try {
                 session = MybatisConnect.getSession();
                 session.getMapper(SpaceBlogCommentMap.class).makeComment(comment);

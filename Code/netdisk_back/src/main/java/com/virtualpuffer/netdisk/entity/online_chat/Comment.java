@@ -1,5 +1,6 @@
 package com.virtualpuffer.netdisk.entity.online_chat;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.virtualpuffer.netdisk.Security.securityFilter.BaseFilter;
 import com.virtualpuffer.netdisk.entity.BaseEntity;
 import com.virtualpuffer.netdisk.entity.User;
@@ -8,12 +9,13 @@ import java.sql.Timestamp;
 
 public class Comment extends BaseEntity {
     private String name;
-    private String USER_ID;
+    private int USER_ID;
     private int thumb;//点赞
-    private Timestamp time;
+    private String time;
+    private Timestamp timestamp;
     private int blog_id;
     private int comment_id;
-    public int replyComment_id;
+    public int reply_Comment_id;
     public String contentText;
 
     public String getName() {
@@ -24,11 +26,11 @@ public class Comment extends BaseEntity {
         this.name = name;
     }
 
-    public String getUSER_ID() {
+    public int getUSER_ID() {
         return USER_ID;
     }
 
-    public void setUSER_ID(String USER_ID) {
+    public void setUSER_ID(int USER_ID) {
         this.USER_ID = USER_ID;
     }
 
@@ -40,12 +42,21 @@ public class Comment extends BaseEntity {
         this.thumb = thumb;
     }
 
-    public Timestamp getTime() {
+    public String getTime() {
         return time;
     }
 
-    public void setTime(Timestamp time) {
+    public void setTime(String time) {
         this.time = time;
+    }
+
+    @JsonIgnore
+    public Timestamp getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Timestamp timestamp) {
+        this.timestamp = timestamp;
     }
 
     public int getBlog_id() {
@@ -64,12 +75,12 @@ public class Comment extends BaseEntity {
         this.comment_id = comment_id;
     }
 
-    public int getReplyComment_id() {
-        return replyComment_id;
+    public int getReply_comment_id() {
+        return reply_Comment_id;
     }
 
-    public void setReplyComment_id(int replyComment_id) {
-        this.replyComment_id = replyComment_id;
+    public void setReply_comment_id(int replyComment_id) {
+        this.reply_Comment_id = replyComment_id;
     }
 
     public String getContentText() {
