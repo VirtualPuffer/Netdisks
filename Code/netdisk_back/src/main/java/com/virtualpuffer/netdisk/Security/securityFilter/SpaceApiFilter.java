@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@WebFilter(urlPatterns = "/api/space/*",filterName = "xeapiControlFilter")
+@WebFilter(urlPatterns = "/ap1i/space/*",filterName = "xeapiControlFilter")
 public class SpaceApiFilter extends BaseFilter{
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {

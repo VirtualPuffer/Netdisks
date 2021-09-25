@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.virtualpuffer.netdisk.mapper.blog.SpaceBlogCommentMap">
-    <insert id="makeComment">
-        INSERT into Space_Blog_Comment
-            (contentText,blog_id,USER_ID,reply_comment_id,time)
-        values
-            (#{contentText},#{blog_id},#{USER_ID},#{reply_comment_id},#{time});
-    </insert>
+    <resultMap id="commentMap" type="com.virtualpuffer.netdisk.entity.online_chat.Comment">
+            <result column="blog_id" property="blog_id" javaType="java.lang.Integer"/>
+            <result column="comment_id" property="comment_id" javaType="java.lang.Integer"/>
+            <result column="reply_comment_id" property="reply_comment_id" javaType="java.lang.Integer"/>
+            <result column="time" property="time" javaType="java.lang.String"/>
+            <result column="contentText" property="contentText" javaType="java.lang.String"/>
+            <result column="thumb" property="thumb" javaType="java.lang.Integer"/>
+    </resultMap>
     <update id="addThumb">
         UPDATE Space_Blog_Comment
         set thumb = thumb + #{number}
@@ -15,4 +17,15 @@
     <delete id="deleteComment">
         delete from Space_Blog_Comment where comment_id = #{comment_id};
     </delete>
+
+    <select id="getComment" resultMap="commentMap">
+        select S.blog_id,S.comment_id,S.reply_comment_id,S.time,S.thumb,U.name,S.contentText
+        from Space_Blog_Comment S,user U
+        where S.blog_id = #{blog_id} and U.USER_ID = S.USER_ID;
+    </select>
+
+    <insert id="makeComment" parameterType="com.virtualpuffer.netdisk.entity.online_chat.Comment">
+        insert into Space_Blog_Comment (USER_ID,time,blog_id,reply_comment_id,contentText)
+        values(#{USER_ID},#{timestamp},#{blog_id},#{reply_comment_id},#{contentText});
+    </insert>
 </mapper>

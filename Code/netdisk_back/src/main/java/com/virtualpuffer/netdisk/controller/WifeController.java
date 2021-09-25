@@ -6,16 +6,12 @@ import com.virtualpuffer.netdisk.utils.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/wife")
@@ -56,5 +52,23 @@ public class WifeController {
         } catch (Exception e) {
             return ResponseMessage.getErrorInstance(404,"获取失败",null);
         }
+    }
+    @ResponseBody
+    @RequestMapping("/getPC")
+    public ModelAndView getpc(){
+        File f = new File("/usr/local/MyTomcat/wife/PC");
+        File[] r = f.listFiles();
+        Random getRan = new Random();
+        int index = getRan.nextInt(r.length);
+        return new ModelAndView("/PC/" + r[index].getName());
+    }
+    @ResponseBody
+    @RequestMapping("/getPE")
+    public ModelAndView getPE(){
+        File f = new File("/usr/local/MyTomcat/wife/PE");
+        File[] r = f.listFiles();
+        Random getRan = new Random();
+        int index = getRan.nextInt(r.length);
+        return new ModelAndView("/PE/" + r[index].getName());
     }
 }

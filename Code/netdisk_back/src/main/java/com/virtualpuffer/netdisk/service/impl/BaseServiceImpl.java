@@ -11,6 +11,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
+import java.sql.Timestamp;
 import java.util.*;
 
 @Async
@@ -60,6 +61,10 @@ public abstract class BaseServiceImpl {
             }
         } catch (IOException e) {
         }
+    }
+
+    protected static Timestamp getTimestamp(){
+        return new Timestamp(System.currentTimeMillis());
     }
 
     protected static String getChineseProperties(String source){

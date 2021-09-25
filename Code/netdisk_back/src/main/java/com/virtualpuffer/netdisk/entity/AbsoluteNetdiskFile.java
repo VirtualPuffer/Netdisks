@@ -27,6 +27,7 @@ import static com.virtualpuffer.netdisk.utils.StringUtils.filePathDeal;
 public class AbsoluteNetdiskFile extends BaseEntity implements Serializable {
     private String File_Name;
     private String File_Path;//真实路径
+    private int File_Length;
     private String File_Destination_Place;//父级路径
     private String File_Destination;//映射路径（客户真实看到的）
     private String File_Hash;//计算SHA256

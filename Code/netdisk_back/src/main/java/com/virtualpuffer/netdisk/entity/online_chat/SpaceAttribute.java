@@ -4,7 +4,8 @@ import com.virtualpuffer.netdisk.enums.Accessible;
 
 public class SpaceAttribute {
     public int thumb;
-    public Accessible accessible;
+    public Accessible access;
+    public String backgroundURL;
 
     public SpaceAttribute() {
     }
@@ -17,11 +18,11 @@ public class SpaceAttribute {
         this.thumb = thumb;
     }
 
-    public Accessible getAccessible() {
-        return accessible;
+    public Accessible getAccess() {
+        return access;
     }
 
     public void setAccessible(Accessible accessible) {
-        this.accessible = accessible;
+        this.access = access;
     }
 }

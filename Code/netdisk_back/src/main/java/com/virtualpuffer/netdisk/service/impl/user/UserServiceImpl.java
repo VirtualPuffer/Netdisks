@@ -118,7 +118,7 @@ public class UserServiceImpl extends BaseServiceImpl implements LoginService {
                     throw new Error("注册失败");
                 }
             }
-            int userID = map.getIDbyName(username);
+            int userID = map.getIDbyUsername(username);
             if(registerBuild(userID)){//创建仓库
                 session.commit();
             }else {

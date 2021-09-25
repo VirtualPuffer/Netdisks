@@ -268,6 +268,7 @@ public class FileBaseService extends FileUtilService {
             }else {
                 String hashFile_path = duplicateFileWare + hash;//map里面的位置
                 outputStream = new FileOutputStream(hashFile_path);
+                int length = inputStream.available();
                 try {
                     copy(inputStream,outputStream);
                 } catch (IOException e) {
@@ -282,7 +283,7 @@ public class FileBaseService extends FileUtilService {
                         if(!checkDuplicate(hash)){
                             session.getMapper(FileMap.class)
                                     .buildFileMap(dest,this.file.getName(),hash,this.user.getUSER_ID(),place);
-                            session.getMapper(FileHashMap.class).addHashMap(hash,hashFile_path,user.getUSER_ID());
+                            session.getMapper(FileHashMap.class).addHashMap(hash,hashFile_path,user.getUSER_ID(),length);
                             session.commit();
                         }
                     }

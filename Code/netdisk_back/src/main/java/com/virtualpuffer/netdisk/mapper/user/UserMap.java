@@ -10,6 +10,8 @@ public interface UserMap {
     /**
      * 登录逻辑
      * */
+    int getIDByName(String name);
+
     User getUserByPassword(String username);
 
     User getInstanceByAddr(String addr);
@@ -23,7 +25,7 @@ public interface UserMap {
     User duplicationUsername(String username);
     int register(String username,String password,String name,String address);
     int updateURL();
-    int getIDbyName(String username);
+    int getIDbyUsername(String username);
 
 
     //找回密码
