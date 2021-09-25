@@ -60,7 +60,7 @@ public class WifeController {
         File[] r = f.listFiles();
         Random getRan = new Random();
         int index = getRan.nextInt(r.length);
-        return new ModelAndView("/" + r[index].getName());
+        return new ModelAndView("/PC/" + r[index].getName());
     }
     @ResponseBody
     @RequestMapping("/getPE")
@@ -69,6 +69,6 @@ public class WifeController {
         File[] r = f.listFiles();
         Random getRan = new Random();
         int index = getRan.nextInt(r.length);
-        return new ModelAndView("/" + r[index].getName());
+        return new ModelAndView("/PE/" + r[index].getName());
     }
 }
