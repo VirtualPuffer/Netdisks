@@ -17,7 +17,7 @@
     <insert id="addHashMap">
         insert into FileHash_Map (File_Hash,File_Path,USER_ID,File_Length) values (#{hash},#{path},#{userID},#{length});
     </insert>
-    <select id="getFileMapByHash" resultType="com.virtualpuffer.netdisk.entity.AbsoluteNetdiskFile">
+    <select id="getFileMapByHash" resultType="com.virtualpuffer.netdisk.entity.file.AbsoluteNetdiskFile">
         select File_Map.File_Hash,File_Map.File_Destination,
                File_Map.File_Name,FileHash_Map.USER_ID,FileHash_Map.File_Path
         from File_Map,FileHash_Map

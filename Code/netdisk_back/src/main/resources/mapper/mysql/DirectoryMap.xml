@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.virtualpuffer.netdisk.mapper.netdiskFile.DirectoryMap">
+    <!--删除文件映射,删除文件时直接匹配，目录时相对路径+'/'后正则匹配-->
+    <select id="getDirectory" resultType="com.virtualpuffer.netdisk.entity.file.AbsoluteNetdiskDirectory">
+        select * from Directory_Map where USER_ID = #{USER_ID} and Directory_Destination = #{destination};
+    </select>
+    <insert id="mkdir">
+        insert into Directory_Map (USER_ID,Directory_Name,Directory_Parent_ID)
+            values (#{USER_ID},#{name},#{Directory_Parent_ID});
+    </insert>
+
+
+</mapper>

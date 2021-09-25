@@ -94,12 +94,4 @@ public class AbstractPersonalSpace extends BaseServiceImpl {
         return new BlogService(blogMap.get(blog_id).getBlog_id(),isHost,this);
     }
 
-    /**
-     * 创建之前没有id
-     * 所以只能用静态方法创建并返回
-    * */
-    public Blog buildBlog(){
-        return BlogService.buildBlog(this.user);
-    }
-
 }

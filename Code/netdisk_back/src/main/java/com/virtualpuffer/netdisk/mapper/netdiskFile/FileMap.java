@@ -3,7 +3,7 @@ package com.virtualpuffer.netdisk.mapper.netdiskFile;
 
 
 import com.virtualpuffer.netdisk.entity.file.File_Map;
-import com.virtualpuffer.netdisk.entity.AbsoluteNetdiskFile;
+import com.virtualpuffer.netdisk.entity.file.AbsoluteNetdiskFile;
 
 import java.util.LinkedList;
 

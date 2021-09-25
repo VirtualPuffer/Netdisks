@@ -34,7 +34,7 @@
         select File_Destination from File_Map where File_Destination_Place = #{destination} and USER_ID = #{userID};
     </select>
 
-    <select id="getFileMap" resultType="com.virtualpuffer.netdisk.entity.AbsoluteNetdiskFile">
+    <select id="getFileMap" resultType="com.virtualpuffer.netdisk.entity.file.AbsoluteNetdiskFile">
         select File_Map.File_Hash,File_Map.File_Destination,File_Map.File_Destination_Place,
                File_Map.File_Name,FileHash_Map.USER_ID,FileHash_Map.File_Path,FileHash_Map.File_Length
         from File_Map,FileHash_Map
@@ -50,7 +50,7 @@
         and FileHash_Map.File_Path = #{path};
     </select>
 
-    <select id="searchFile" resultType="com.virtualpuffer.netdisk.entity.AbsoluteNetdiskFile">
+    <select id="searchFile" resultType="com.virtualpuffer.netdisk.entity.file.AbsoluteNetdiskFile">
         select File_Map.File_Hash,File_Map.File_Destination,
                File_Map.File_Name,FileHash_Map.USER_ID,FileHash_Map.File_Path
         from File_Map,FileHash_Map
@@ -58,7 +58,7 @@
           and FileHash_Map.File_Hash = File_Map.File_Hash;
     </select>
 
-    <select id="gc" resultType="com.virtualpuffer.netdisk.entity.AbsoluteNetdiskFile">
+    <select id="gc" resultType="com.virtualpuffer.netdisk.entity.file.AbsoluteNetdiskFile">
         select File_Hash from (select FileHash_Map.File_Hash,File_Map.File_Destination from FileHash_Map left join File_Map on FileHash_Map.File_Hash = File_Map.File_Hash)a where a.File_Destination is null;
     </select>
 

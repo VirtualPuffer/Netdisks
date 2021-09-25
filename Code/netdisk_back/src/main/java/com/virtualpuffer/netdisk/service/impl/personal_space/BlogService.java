@@ -9,8 +9,6 @@ import com.virtualpuffer.netdisk.mapper.blog.SpaceBlogMap;
 import com.virtualpuffer.netdisk.service.impl.BaseServiceImpl;
 import com.virtualpuffer.netdisk.utils.MybatisConnect;
 import org.apache.ibatis.session.SqlSession;
-import sun.jvm.hotspot.gc.shared.Space;
-
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.LinkedList;

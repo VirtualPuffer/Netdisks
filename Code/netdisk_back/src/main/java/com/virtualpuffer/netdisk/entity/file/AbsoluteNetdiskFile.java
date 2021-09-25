@@ -1,5 +1,7 @@
-package com.virtualpuffer.netdisk.entity;
+package com.virtualpuffer.netdisk.entity.file;
 
+import com.virtualpuffer.netdisk.entity.BaseEntity;
+import com.virtualpuffer.netdisk.entity.User;
 import com.virtualpuffer.netdisk.utils.MybatisConnect;
 import com.virtualpuffer.netdisk.mapper.netdiskFile.FileHashMap;
 import com.virtualpuffer.netdisk.mapper.netdiskFile.FileMap;
@@ -24,7 +26,7 @@ import static com.virtualpuffer.netdisk.utils.StringUtils.filePathDeal;
  * 通过path映射或者destination反向映射
  *
  * */
-public class AbsoluteNetdiskFile extends BaseEntity implements Serializable {
+public class AbsoluteNetdiskFile extends AbsoluteNetdiskEntity{
     private String File_Name;
     private String File_Path;//真实路径
     private int File_Length;
@@ -34,9 +36,6 @@ public class AbsoluteNetdiskFile extends BaseEntity implements Serializable {
     private int userID;//拥有者ID
     private File file;
     private boolean lock = false;
-    public static final String downloadAPI = Message.getMess("downloadAPI");//下载链接前缀
-    public static final String defaultWare = Message.getMess("defaultWare");
-    public static final String duplicateFileWare = Message.getMess("duplicateFileWare");
 
     /**
      * 构造方法有两种：

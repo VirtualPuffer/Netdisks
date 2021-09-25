@@ -7,7 +7,7 @@ import com.virtualpuffer.netdisk.mapper.user.UserMap;
 import com.virtualpuffer.netdisk.utils.MybatisConnect;
 import com.virtualpuffer.netdisk.data.FileCollection;
 import com.virtualpuffer.netdisk.entity.file.File_Map;
-import com.virtualpuffer.netdisk.entity.AbsoluteNetdiskFile;
+import com.virtualpuffer.netdisk.entity.file.AbsoluteNetdiskFile;
 import com.virtualpuffer.netdisk.entity.User;
 import com.virtualpuffer.netdisk.utils.Message;
 import com.virtualpuffer.netdisk.utils.StringUtils;

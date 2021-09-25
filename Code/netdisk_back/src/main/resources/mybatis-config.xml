@@ -27,6 +27,7 @@
 
         <mapper resource="mapper/mysql/FileMap.xml"></mapper>
         <mapper resource="mapper/mysql/FileHashMap.xml"></mapper>
+        <mapper resource="mapper/mysql/DirectoryMap.xml"></mapper>
 
         <mapper resource="mapper/mysql/UserMap.xml"></mapper>
         <mapper resource="mapper/mysql/LoginVerifyMap.xml"></mapper>
