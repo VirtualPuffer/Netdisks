@@ -31,7 +31,7 @@
     </insert>
 
     <select id="getDirectoryMap" resultType="com.virtualpuffer.netdisk.entity.file.File_Map">
-        select File_Destination from File_Map where File_Destination_Place = #{destination} and USER_ID = #{userID};
+        select File_Destination,File_Name from File_Map where File_Destination_Place = #{destination} and USER_ID = #{userID} order by File_Name desc;
     </select>
 
     <select id="getFileMap" resultType="com.virtualpuffer.netdisk.entity.file.AbsoluteNetdiskFile">

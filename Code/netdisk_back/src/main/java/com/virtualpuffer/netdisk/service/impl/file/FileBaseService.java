@@ -165,12 +165,14 @@ public class FileBaseService extends FileUtilService {
 
         if(!list1.isEmpty()){
             for(File_Map fileMap : list1){
-                filelist.add(fileMap.getFile_Destination().substring(fileMap.getFile_Destination().lastIndexOf("/")+1));
+               /* filelist.add(fileMap.getFile_Destination().substring(fileMap.getFile_Destination().lastIndexOf("/")+1));*/
+                filelist.add(fileMap.getFile_Name());
             }
         }
         if(!list2.isEmpty()){
             for(File_Map fileMap : list2){
-                filelist.add(fileMap.getFile_Destination().substring(fileMap.getFile_Destination().lastIndexOf("/")+1));
+               /* filelist.add(fileMap.getFile_Destination().substring(fileMap.getFile_Destination().lastIndexOf("/")+1));*/
+                filelist.add(fileMap.getFile_Name());
             }
         }
         if(!file.isDirectory()&&dirList.isEmpty()){
