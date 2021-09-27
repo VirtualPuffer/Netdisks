@@ -28,13 +28,17 @@ public class LogAop {
         RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = ((ServletRequestAttributes)requestAttributes).getRequest();
 
-        System.out.println("----------------------  [" + tag++ + "]  ----------------------");
-        Signature signature = joinPoint.getSignature();
-        System.out.println("当前时间：  " + Log.getTime());
-        System.out.println("返回目标方法的签名：" + signature);
-        System.out.println("代理方法：" + signature.getName());
-        Object[] args = joinPoint.getArgs();
-        System.out.println("参数信息：" + Arrays.asList(args));
+        try {
+            System.out.println("----------------------  [" + tag++ + "]  ----------------------");
+            Signature signature = joinPoint.getSignature();
+            System.out.println("操作ip:   " + request.getAttribute("ip"));
+            System.out.println("当前时间：  " + Log.getTime());
+            System.out.println("返回目标方法的签名：" + signature);
+            System.out.println("代理方法：" + signature.getName());
+            Object[] args = joinPoint.getArgs();
+            System.out.println("参数信息：" + Arrays.asList(args));
+        } catch (Exception exception) {
+        }
 
     }
 
