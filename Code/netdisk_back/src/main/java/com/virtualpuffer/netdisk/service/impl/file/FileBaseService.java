@@ -229,7 +229,6 @@ public class FileBaseService extends FileUtilService {
         }
         } finally {
             close(inputStream);
-            close(zipOutputStream);
         }
     }
     /**   __________________________记住把substring机制改回去

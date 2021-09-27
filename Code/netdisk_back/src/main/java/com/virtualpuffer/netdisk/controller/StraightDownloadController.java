@@ -25,7 +25,6 @@ public class StraightDownloadController extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/download/{token}")
     public ResponseMessage test(@PathVariable String token,String key, HttpServletResponse response){
-        InputStream inputStream = null;
         try {
             FileBaseService fileService = FileTokenService.getInstanceByToken(token,key);
             response.setContentType("application/force-download");
@@ -40,8 +39,6 @@ public class StraightDownloadController extends BaseController {
         }catch (Exception e){
             e.printStackTrace();
             return ResponseMessage.getErrorInstance(500,"下载失败",null);
-        }finally {
-            close(inputStream);
         }
     }
     @RequestMapping(value = "/download/key/{token}")
