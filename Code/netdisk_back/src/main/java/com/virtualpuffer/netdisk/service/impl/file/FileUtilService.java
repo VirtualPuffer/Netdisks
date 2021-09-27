@@ -13,7 +13,7 @@ import java.util.LinkedList;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-@Async
+//@Async
 @Service
 public abstract class FileUtilService extends BaseServiceImpl {
 

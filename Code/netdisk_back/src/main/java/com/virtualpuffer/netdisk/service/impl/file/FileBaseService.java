@@ -41,7 +41,7 @@ import java.util.zip.ZipOutputStream;
  * @para path           文件的绝对路径
  * @para destination    文件的相对路径
 * */
-@Async
+//@Async
 @Service
 public class FileBaseService extends FileUtilService {
     protected User user;

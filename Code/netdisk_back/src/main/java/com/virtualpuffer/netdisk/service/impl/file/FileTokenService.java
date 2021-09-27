@@ -11,7 +11,7 @@ import org.springframework.scheduling.annotation.Async;
 import java.io.FileNotFoundException;
 import java.util.Map;
 
-@Async
+//@Async
 public class FileTokenService extends FileHashService implements ParseToken {
     public FileTokenService(AbsoluteNetdiskFile netdiskFile, User user) throws FileNotFoundException {
         super(netdiskFile, user);

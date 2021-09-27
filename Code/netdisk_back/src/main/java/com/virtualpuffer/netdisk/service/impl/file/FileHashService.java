@@ -9,7 +9,7 @@ import org.springframework.scheduling.annotation.Async;
 
 import java.io.FileNotFoundException;
 
-@Async
+//@Async
 public class FileHashService extends FileBaseService {
     public FileHashService(AbsoluteNetdiskFile netdiskFile, User user) throws FileNotFoundException {
         super(netdiskFile, user);
