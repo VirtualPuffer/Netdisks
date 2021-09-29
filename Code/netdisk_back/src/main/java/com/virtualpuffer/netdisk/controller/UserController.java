@@ -5,6 +5,7 @@ import com.virtualpuffer.netdisk.data.ResponseMessage;
 import com.virtualpuffer.netdisk.entity.User;
 import com.virtualpuffer.netdisk.service.impl.user.UserServiceImpl;
 import com.virtualpuffer.netdisk.service.impl.user.UserTokenService;
+import com.virtualpuffer.netdisk.utils.RedisUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +15,12 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.annotation.Resource;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/user")
@@ -39,7 +42,16 @@ public class UserController extends BaseController {
             return ResponseMessage.getErrorInstance(500,"系统错误",null);
         }
     }
+    @RequestMapping(value = "/salt")
+    @ResponseBody
+    public ResponseMessage getSalt(HttpServletRequest request , HttpServletResponse response){
+        String code = String.valueOf(request.hashCode());
+        String salt = code.substring(code.length()-8);
+        Cookie cookie = new Cookie("salt",salt);
+        response.addCookie(cookie);
 
+        return ResponseMessage.getSuccessInstance(200,salt,null);
+    }
     //三个参数：username,password,name
     @ResponseBody
     @RequestMapping(value = "/register",method = RequestMethod.POST)

@@ -7,6 +7,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.util.ArrayList;
 
@@ -15,7 +18,7 @@ import java.util.ArrayList;
 public class StaticPage {
     public static final String path = "/usr/local/MyTomcat/dist/img";
     @RequestMapping(value = {"/main/*","/authpage/*","/main","/authpage","/WSchat","/WSchat/*","/WSchat","/WSchat/*"})
-    public ModelAndView getPage(){
+    public ModelAndView getPage(HttpServletRequest request, HttpServletResponse response){
         return new ModelAndView("/index.html");
     }
     @RequestMapping(value = {"/{path}}"})
