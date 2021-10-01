@@ -59,7 +59,14 @@
     </select>
 
     <select id="gc" resultType="com.virtualpuffer.netdisk.entity.file.AbsoluteNetdiskFile">
-        select File_Hash from (select FileHash_Map.File_Hash,File_Map.File_Destination from FileHash_Map left join File_Map on FileHash_Map.File_Hash = File_Map.File_Hash)a where a.File_Destination is null;
+        select File_Hash from
+                              (select FileHash_Map.File_Hash,File_Map.File_Destination
+                              from FileHash_Map left join File_Map
+                                  on FileHash_Map.File_Hash = File_Map.File_Hash)a where a.File_Destination is null;
+    </select>
+
+    <select id="getDir">
+        select File_Name from File_Map where USER_ID = #{USER_ID} and Directory_Parent_ID = #{Directory_ID};
     </select>
 
    <!-- <update id="updateDestination">

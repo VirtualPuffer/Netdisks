@@ -46,6 +46,10 @@ public class StringUtils {
         return  obj.hashCode() ^ (obj.hashCode() >>> 16);
     }
 
+    public static String[] getFileSequence(String destination){
+        return destination.split("/");
+    };
+
     public static String filePathDeal(String s ){
         if(!s.startsWith("/")){
             s = new StringBuilder().append("/").append(s).toString();

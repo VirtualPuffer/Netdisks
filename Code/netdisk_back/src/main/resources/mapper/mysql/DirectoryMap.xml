@@ -5,10 +5,26 @@
     <select id="getDirectory" resultType="com.virtualpuffer.netdisk.entity.file.AbsoluteNetdiskDirectory">
         select * from Directory_Map where USER_ID = #{USER_ID} and Directory_Destination = #{destination};
     </select>
+
+    <select id="getChildrenDirectory" resultType="com.virtualpuffer.netdisk.entity.file.AbsoluteNetdiskDirectory">
+        select * from Directory_Map
+        where USER_ID = #{USER_ID}
+          and Directory_Parent_ID = #{Directory_Parent_ID}
+          and Directory_Name = #{childrenDirectoryName};
+    </select>
+
     <insert id="mkdir">
         insert into Directory_Map (USER_ID,Directory_Name,Directory_Parent_ID)
             values (#{USER_ID},#{name},#{Directory_Parent_ID});
     </insert>
+    <!--获取文件下面的子目录-->
+    <select id="getDir" resultType="java.lang.String">
+        select Directory_Name from Directory_Map where Directory_Parent_ID = #{Directory_ID};
+    </select>
 
+    <select id="onExists" resultType="com.virtualpuffer.netdisk.entity.file.AbsoluteNetdiskDirectory">
+        select * from Directory_Map
+        where USER_ID = #{USER_ID} and Directory_Parent_ID = #{Directory_Parent_ID} and Directory_Name = #{name};
+    </select>
 
 </mapper>

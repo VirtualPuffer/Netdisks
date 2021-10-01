@@ -8,7 +8,7 @@ import com.virtualpuffer.netdisk.entity.file.AbsoluteNetdiskFile;
 import java.util.LinkedList;
 
 public interface FileMap {
-    LinkedList userFile();
+    LinkedList<String> getDir(int USER_ID,int Directory_ID);
     /*
     * 删除文件
     * */

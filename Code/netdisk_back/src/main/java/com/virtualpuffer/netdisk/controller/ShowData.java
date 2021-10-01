@@ -44,7 +44,7 @@ public class ShowData {
     }
     @RequestMapping("/")
     public Object a(){
-        return new ModelAndView("index.html");
+        return new ModelAndView("/index.html");
     }
     @RequestMapping("/fastRedis")
     public String saas(){
