@@ -4,6 +4,7 @@ package com.virtualpuffer.netdisk.controller;
 import com.virtualpuffer.netdisk.controller.base.BaseController;
 import com.virtualpuffer.netdisk.data.FileCollection;
 import com.virtualpuffer.netdisk.data.ResponseMessage;
+import com.virtualpuffer.netdisk.entity.file.DownloadCollection;
 import com.virtualpuffer.netdisk.entity.file.File_Map;
 import com.virtualpuffer.netdisk.service.impl.file.FileBaseService;
 import com.virtualpuffer.netdisk.service.impl.file.FileHashService;
@@ -76,7 +77,7 @@ public class FileOperationController extends BaseController {
             return ResponseMessage.getErrorInstance(500,"系统错误",null);
         }
     }
-
+    @Deprecated
     @ResponseBody
     @RequestMapping(value = "/uploadHashFile",method = RequestMethod.POST)
     public ResponseMessage uploadHash(String destination,String hash,String name, HttpServletRequest request, HttpServletResponse response){
@@ -201,27 +202,28 @@ public class FileOperationController extends BaseController {
     }
     @ResponseBody
     @RequestMapping(value = "shareFile",method = RequestMethod.GET)
-    public ResponseMessage shareFile(String destination, @Nullable String second,@Nullable String key,boolean getRandom, HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException {
+    public ResponseMessage shareFile(@RequestBody DownloadCollection collection, HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException {
         FileBaseService service = null;
+        String key = null;
+        key = collection.getKey();
         try {
             UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
-            service = FileBaseService.getInstance(destination, loginService.getUser());
-        } catch (FileNotFoundException e) {
-            return ResponseMessage.getExceptionInstance(300,e.getMessage(),null);
-        }
-        try {
+            //service = FileBaseService.getInstance(destination, loginService.getUser());
+
             int time = 900;
-            if (second!=null) {
-                time = Integer.parseInt(second);
+            if (collection.getSecond()!=null) {
+                time = collection.getSecond();
             }
-            if (key == null && getRandom) {
+            if (key == null && collection.isGetRandom()) {
                 key = StringUtils.ranStr(6);//随机生成提取码
             }
-            String url = service.getDownloadURL(time,key, FileBaseService.DOWNLOAD_TAG);
+            collection.setSecond(time);
+            //String url = service.getDownloadURL(time,key, FileBaseService.DOWNLOAD_TAG);
+            String url = FileBaseService.getDownloadURL(collection, loginService.getUser());
             String date = getTime(System.currentTimeMillis() + time * 1000);
             HashMap hashMap = new HashMap();
             hashMap.put("downloadURL",url);//token
-            hashMap.put("destination",destination);//名字
+          //  hashMap.put("destination",destination);//名字
             hashMap.put("efficient time",date);
             hashMap.put("key",key);
             return ResponseMessage.getSuccessInstance(200,"链接获取成功",hashMap);
@@ -312,3 +314,5 @@ public class FileOperationController extends BaseController {
         }
     }
 }
+
+

@@ -1,15 +1,12 @@
 package com.virtualpuffer.netdisk.service.impl.file;
 
 
-import com.virtualpuffer.netdisk.entity.file.AbsoluteNetdiskDirectory;
-import com.virtualpuffer.netdisk.entity.file.AbsoluteNetdiskEntity;
+import com.virtualpuffer.netdisk.entity.file.*;
 import com.virtualpuffer.netdisk.mapper.netdiskFile.FileHashMap;
 import com.virtualpuffer.netdisk.mapper.netdiskFile.FileMap;
 import com.virtualpuffer.netdisk.mapper.user.UserMap;
 import com.virtualpuffer.netdisk.utils.MybatisConnect;
 import com.virtualpuffer.netdisk.data.FileCollection;
-import com.virtualpuffer.netdisk.entity.file.File_Map;
-import com.virtualpuffer.netdisk.entity.file.AbsoluteNetdiskFile;
 import com.virtualpuffer.netdisk.entity.User;
 import com.virtualpuffer.netdisk.utils.Message;
 import com.virtualpuffer.netdisk.utils.StringUtils;
@@ -146,6 +143,7 @@ public class FileBaseService extends FileUtilService {
             close(session);
         }
     }
+
     /**
     * 物理路径计算
      * @param destination 相对路径位置（网盘）
@@ -182,6 +180,31 @@ public class FileBaseService extends FileUtilService {
         }
     }
 
+    public static String getDownloadURL(DownloadCollection collection,User user) throws FileNotFoundException {
+        Map<String,Object> map = new HashMap();
+        ArrayList<Integer> file_id = new ArrayList<>();
+        ArrayList<Integer> dir_id = new ArrayList<>();
+
+        for(String destination : collection.getDestination()){
+            FileBaseService baseService = getInstance(destination,user);
+            if (baseService.netdiskDirectory == null) {
+                AbsoluteNetdiskFile netdiskFile = baseService.getNetdiskFile();
+                file_id.add(netdiskFile.getMap_id());
+            }else {
+                AbsoluteNetdiskDirectory netdiskDirectory = baseService.getNetdiskDirectory();
+                dir_id.add(netdiskDirectory.getDirectory_ID());
+            }
+        }
+        map.put("file_id",file_id.toArray(new Integer[file_id.size()]));
+        map.put("dir_id",dir_id.toArray(new Integer[dir_id.size()]));
+        map.put("tokenTag",DOWNLOAD_TAG);
+        map.put("userID",user.getUSER_ID());
+        if (collection.getKey() == null) {
+            return  downloadAPI + createToken(collection.getSecond(),map,user.getUsername(),collection.getKey());
+        } else {
+            return  downloadAPI + "key/" + createToken(collection.getSecond(),map,user.getUsername(),collection.getKey());
+        }
+    }
 
     /**
      * 获取路径下文件
@@ -542,6 +565,14 @@ public class FileBaseService extends FileUtilService {
 
     public void setNetdiskEntity(AbsoluteNetdiskEntity netdiskEntity) {
         this.netdiskEntity = netdiskEntity;
+    }
+
+    public AbsoluteNetdiskDirectory getNetdiskDirectory() {
+        return netdiskDirectory;
+    }
+
+    public void setNetdiskDirectory(AbsoluteNetdiskDirectory netdiskDirectory) {
+        this.netdiskDirectory = netdiskDirectory;
     }
 
     @Override

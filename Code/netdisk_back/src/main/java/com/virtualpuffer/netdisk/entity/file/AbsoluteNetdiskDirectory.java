@@ -37,8 +37,10 @@ public class AbsoluteNetdiskDirectory extends AbsoluteNetdiskEntity{
     private int Directory_ID;
     private int Directory_Parent_ID;
     private String Directory_Name;
+    private String destination;
     LinkedList<AbsoluteNetdiskFile> fileList;
     public static final int HEAD_NODE_ID = -1;
+    public static final String SUPER_ROOT = ".";
 
     public AbsoluteNetdiskDirectory(){
 
@@ -52,7 +54,6 @@ public class AbsoluteNetdiskDirectory extends AbsoluteNetdiskEntity{
             ArrayList<String> fileSequence = getFileSequence(destination);
             int parentID = HEAD_NODE_ID;//头节点位置
             for(String file : fileSequence){
-                System.out.println("______________  " + file);
                 netdiskDirectory = session.getMapper(DirectoryMap.class).getChildrenDirectory(id,parentID,file);
                 if(netdiskDirectory == null){
                     throw new FileNotFoundException("文件夹不存在: 问题路径->  " + file);
@@ -61,6 +62,7 @@ public class AbsoluteNetdiskDirectory extends AbsoluteNetdiskEntity{
                     parentID = netdiskDirectory.getDirectory_ID();
                 }
             }
+            netdiskDirectory.setDestination(destination);
             return netdiskDirectory;
         } finally {
             close(session);
@@ -151,5 +153,13 @@ public class AbsoluteNetdiskDirectory extends AbsoluteNetdiskEntity{
 
     public void setDirectory_Name(String directory_Name) {
         Directory_Name = directory_Name;
+    }
+
+    public String getDestination() {
+        return destination;
+    }
+
+    public void setDestination(String destination) {
+        this.destination = destination;
     }
 }

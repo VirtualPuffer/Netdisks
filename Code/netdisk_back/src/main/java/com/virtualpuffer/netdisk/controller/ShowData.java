@@ -5,8 +5,7 @@ import com.virtualpuffer.netdisk.utils.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -19,6 +18,13 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
 import java.util.Set;
+
+class tess{
+    public String[] destination;
+
+    public tess() {
+    }
+}
 
 @org.springframework.stereotype.Controller
 @RestController
@@ -34,6 +40,17 @@ public class ShowData {
     @RequestMapping("/getImg")
     public Object get(){
         return new ModelAndView("/img/bg.f90510bb.png");
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "test",method = RequestMethod.POST)
+    public Object share(@RequestBody tess z,HttpServletRequest request){
+        System.out.println(request.getHeader("content-type"));
+        StringBuilder builder = new StringBuilder();
+        for(String r : z.destination){
+            builder.append(r).append("   ");
+        }
+        return builder.toString();
     }
 
     @RequestMapping("/sendto")

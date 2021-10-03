@@ -4,12 +4,15 @@ import com.virtualpuffer.netdisk.entity.file.AbsoluteNetdiskDirectory;
 import com.virtualpuffer.netdisk.entity.file.AbsoluteNetdiskEntity;
 import com.virtualpuffer.netdisk.entity.file.AbsoluteNetdiskFile;
 import com.virtualpuffer.netdisk.entity.User;
+import com.virtualpuffer.netdisk.mapper.netdiskFile.FileMap;
 import com.virtualpuffer.netdisk.mapper.user.UserMap;
 import com.virtualpuffer.netdisk.service.ParseToken;
 import com.virtualpuffer.netdisk.utils.MybatisConnect;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.scheduling.annotation.Async;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Map;
 
@@ -43,20 +46,24 @@ public class FileTokenService extends FileHashService implements ParseToken {
      * */
     public static FileBaseService getInstanceByToken(String token, String key) throws FileNotFoundException {
         SqlSession session = null;
+        AbsoluteNetdiskDirectory netdiskDirectory = null;
+        AbsoluteNetdiskFile netdiskFile = null;
+        User user = null;
         try {
+            session = MybatisConnect.getSession();
             Map map = parseJWT(token,key);
-            if(map.get("hash") == null){
-                session = MybatisConnect.getSession();
-                int dir_id = (Integer) map.get("DIR_ID");
-                int userID = (Integer) map.get("userID");
+            int userID = (Integer) map.get("userID");
+            Integer[] dirCollection = (Integer[]) map.get("dir_id");
+            Integer[] fileCollection = (Integer[])map.get("file_id");
+            user = session.getMapper(UserMap.class).getUserByID(userID);
 
-                AbsoluteNetdiskDirectory netdiskDirectory = AbsoluteNetdiskDirectory.getInstance(dir_id);
-                User user = session.getMapper(UserMap.class).getUserByID(userID);
-                return new FileTokenService(netdiskDirectory,user);
-            }else {
-                String hash = (String) map.get("hash");
-                String name = (String) map.get("name");
-                return  getInstanceByHash(hash,name);
+            for (Integer dir_id : dirCollection) {
+                netdiskDirectory = AbsoluteNetdiskDirectory.getInstance(dir_id);
+                new FileTokenService(netdiskDirectory,user);
+            }
+            for(Integer file_id : fileCollection){
+                netdiskFile = session.getMapper(FileMap.class).getFileByMapID(file_id);
+                File file = new FileTokenService(netdiskFile,user).getFile();
             }
         } finally {
             close(session);

@@ -20,7 +20,7 @@ public abstract class BaseServiceImpl {
     protected static final int BUFFER_SIZE = 4 * 1024;
     protected static final String properties = "getMess.properties";
     protected static final String ChineseProperties = "ChineseMess.properties";
-    private static final String secretKey = "c7fp2dh6msk0";
+    public static final String secretKey = "c7fp2dh6msk0";
     public static final Log errorLog = Log.getLog();
     private static Properties get;
     private static Properties property;

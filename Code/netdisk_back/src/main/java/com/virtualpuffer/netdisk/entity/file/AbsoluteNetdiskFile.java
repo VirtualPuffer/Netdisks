@@ -92,9 +92,6 @@ public class AbsoluteNetdiskFile extends AbsoluteNetdiskEntity{
         String directoryPath = map.get("path");
         String fileName = map.get("name");
         AbsoluteNetdiskDirectory netdiskDirectory = AbsoluteNetdiskDirectory.getInstance(directoryPath,id);
-        if(netdiskDirectory == null){
-            throw new RuntimeException("上级文件不存在：" + directoryPath);
-        }else{
             try {
                 session = MybatisConnect.getSession();
                 netdiskFile = session.getMapper(FileMap.class).getFileMap(id,netdiskDirectory.getDirectory_ID(),fileName);
@@ -108,7 +105,7 @@ public class AbsoluteNetdiskFile extends AbsoluteNetdiskEntity{
             } finally {
                 session.close();
             }
-        }
+       // }
     }
     public static AbsoluteNetdiskFile getInstance(String hash, String name) throws FileNotFoundException{
         SqlSession session = null;
@@ -276,6 +273,14 @@ public class AbsoluteNetdiskFile extends AbsoluteNetdiskEntity{
         File_Name = file_Name;
     }
 
+    public int getMap_id() {
+        return Map_id;
+    }
+
+    public void setMap_id(int map_id) {
+        Map_id = map_id;
+    }
+
     public String getFile_Path() {
         return File_Path;
     }
@@ -292,10 +297,7 @@ public class AbsoluteNetdiskFile extends AbsoluteNetdiskEntity{
         File_Destination = StringUtils.filePathDeal(file_Destination);
     }
 
-    public String getFile_Hash() throws Exception {
-        if(this.File_Hash == null || this.File_Hash.equals("")){
-            this.File_Hash = FileUtilService.getSH256(this.file);
-        }
+    public String getFile_Hash(){
         return File_Hash;
     }
 

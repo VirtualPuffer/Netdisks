@@ -8,6 +8,7 @@ import com.virtualpuffer.netdisk.entity.file.AbsoluteNetdiskFile;
 import java.util.LinkedList;
 
 public interface FileMap {
+    AbsoluteNetdiskFile getFileByMapID(int Map_id);
 
     AbsoluteNetdiskFile fileOnExits(int USER_ID,int Directory_Parent_ID,String fileName);
 

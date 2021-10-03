@@ -1,6 +1,21 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.virtualpuffer.netdisk.mapper.netdiskFile.FileMap">
+    <resultMap id="netdiskFile" type="com.virtualpuffer.netdisk.entity.file.AbsoluteNetdiskFile">
+        <result column="File_Map.File_Hash" property="File_Hash" javaType="java.lang.String"/>
+        <result column="File_Map.File_Destination" property="File_Destination" javaType="java.lang.String"/>
+        <result column="File_Map.File_Destination_Place" property="File_Map.File_Destination_Place" javaType="java.lang.String"/>
+        <result column="File_Map.File_Name" property="File_Name" javaType="java.lang.String"/>
+        <result column="File_Map.USER_ID" property="USER_ID" javaType="java.lang.Integer"/>
+        <result column="File_Map.Map_id" property="Map_id" javaType="java.lang.Integer"/>
+        <result column="FileHash_Map.File_Path" property="File_Path" javaType="java.lang.String"/>
+        <result column="FileHash_Map.File_Length" property="File_Length" javaType="java.lang.Integer"/>
+    </resultMap>
+
+    <select id="getFileByMapID" resultMap="netdiskFile">
+        select * from File_Map,FileHash_Map
+        where File_Map.Map_id = #{Map_id};
+    </select>
 
     <select id="fileOnExits" resultType="com.virtualpuffer.netdisk.entity.file.AbsoluteNetdiskFile">
         select * from File_Map
@@ -23,7 +38,7 @@
     </select>
 
     <insert id="buildFileMap">
-        insert into File_Map (USER_ID,File_Name,File_Destination,File_Hash,File_Destination_Place,Directory_Parent_Place) values (#{userID},#{fileName},#{destination},#{hash},#{place},#{Directory_Parent_Place});
+        insert into File_Map (USER_ID,File_Name,File_Hash,Directory_Parent_ID) values (#{userID},#{fileName},#{hash},#{Directory_Parent_Place});
     </insert>
 
     <update id="renameFile">
@@ -42,16 +57,6 @@
     <select id="getDirectoryMap" resultType="com.virtualpuffer.netdisk.entity.file.File_Map">
         select File_Destination,File_Name from File_Map where File_Destination_Place = #{destination} and USER_ID = #{userID} order by File_Name desc;
     </select>
-
-    <resultMap id="netdiskFile" type="com.virtualpuffer.netdisk.entity.file.AbsoluteNetdiskFile">
-        <result column="File_Map.File_Hash" property="File_Hash" javaType="java.lang.String"/>
-        <result column="File_Map.File_Destination" property="File_Destination" javaType="java.lang.String"/>
-        <result column="File_Map.File_Destination_Place" property="File_Map.File_Destination_Place" javaType="java.lang.String"/>
-        <result column="File_Map.File_Name" property="File_Name" javaType="java.lang.String"/>
-        <result column="File_Map.USER_ID" property="USER_ID" javaType="java.lang.Integer"/>
-        <result column="FileHash_Map.File_Path" property="File_Path" javaType="java.lang.String"/>
-        <result column="FileHash_Map.File_Length" property="File_Length" javaType="java.lang.Integer"/>
-    </resultMap>
 
     <select id="getFileMap" resultMap="netdiskFile">
         select * from File_Map,FileHash_Map

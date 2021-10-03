@@ -1,5 +1,7 @@
 package com.virtualpuffer.netdisk.service.impl.user;
 
+import com.virtualpuffer.netdisk.entity.file.AbsoluteNetdiskDirectory;
+import com.virtualpuffer.netdisk.mapper.netdiskFile.DirectoryMap;
 import com.virtualpuffer.netdisk.utils.MybatisConnect;
 import com.virtualpuffer.netdisk.data.Mail;
 import com.virtualpuffer.netdisk.entity.User;
@@ -119,7 +121,8 @@ public class UserServiceImpl extends BaseServiceImpl implements LoginService {
                 }
             }
             int userID = map.getIDbyUsername(username);
-            if(registerBuild(userID)){//创建仓库
+            int cou = session.getMapper(DirectoryMap.class).mkdir(userID,AbsoluteNetdiskDirectory.SUPER_ROOT, AbsoluteNetdiskDirectory.HEAD_NODE_ID);
+            if(cou == 1){//创建仓库
                 session.commit();
             }else {
                 throw new Error("boom");
@@ -130,19 +133,6 @@ public class UserServiceImpl extends BaseServiceImpl implements LoginService {
         }
     }
 
-    public static boolean registerBuild(int userID){
-        String path = DefaultWare + userID;
-        File on = new File(path);
-/*        try {
-            System.out.println(on.getCanonicalPath());
-        } catch (IOException e) {
-            System.out.println(on.getAbsolutePath());
-        }*/
-        if(on.exists() || on.mkdir()){
-            return true;
-        }
-        return false;
-    }
     public void sendResetMail(){
         String res = resetURL();
         sendMess(res);
