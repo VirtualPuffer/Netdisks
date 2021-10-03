@@ -6,9 +6,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.PriorityQueue;
-import java.util.Queue;
-import java.util.Random;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -46,8 +44,34 @@ public class StringUtils {
         return  obj.hashCode() ^ (obj.hashCode() >>> 16);
     }
 
-    public static String[] getFileSequence(String destination){
-        return destination.split("/");
+    public static Map<String,String> getFileNameAndDestinaiton(String destination){
+        destination = filePathDeal(destination);
+        String path = destination.substring(0,destination.lastIndexOf("/"));
+        String name = destination.substring(destination.lastIndexOf("/")+1);
+        Map<String,String> ret = new HashMap();
+        ret.put("path",path);
+        ret.put("name",name);
+        return ret;
+    }
+
+    public static ArrayList getFileSequence(String destination){
+        ArrayList<String> arrayList = new ArrayList();
+        StringBuilder stringBuilder = new StringBuilder();
+        arrayList.add(".");
+        for(Character character : destination.toCharArray()){
+            if(character=='/'){
+                if(stringBuilder.length()!=0){
+                    arrayList.add(stringBuilder.toString());
+                    stringBuilder = new StringBuilder();
+                }
+            }else {
+                stringBuilder.append(character);
+            }
+        }
+        if(stringBuilder.length()!=0){
+            arrayList.add(stringBuilder.toString());
+        }
+        return arrayList;
     };
 
     public static String filePathDeal(String s ){

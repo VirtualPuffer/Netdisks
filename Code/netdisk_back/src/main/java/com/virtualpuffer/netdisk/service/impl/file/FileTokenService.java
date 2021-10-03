@@ -1,5 +1,7 @@
 package com.virtualpuffer.netdisk.service.impl.file;
 
+import com.virtualpuffer.netdisk.entity.file.AbsoluteNetdiskDirectory;
+import com.virtualpuffer.netdisk.entity.file.AbsoluteNetdiskEntity;
 import com.virtualpuffer.netdisk.entity.file.AbsoluteNetdiskFile;
 import com.virtualpuffer.netdisk.entity.User;
 import com.virtualpuffer.netdisk.mapper.user.UserMap;
@@ -13,8 +15,8 @@ import java.util.Map;
 
 //@Async
 public class FileTokenService extends FileHashService implements ParseToken {
-    public FileTokenService(AbsoluteNetdiskFile netdiskFile, User user) throws FileNotFoundException {
-        super(netdiskFile, user);
+    public FileTokenService(AbsoluteNetdiskEntity netdiskEntity, User user) throws FileNotFoundException {
+        super(netdiskEntity, user);
     }
 
     public FileTokenService() throws FileNotFoundException {
@@ -45,11 +47,12 @@ public class FileTokenService extends FileHashService implements ParseToken {
             Map map = parseJWT(token,key);
             if(map.get("hash") == null){
                 session = MybatisConnect.getSession();
-                String path = (String) map.get("path");
+                int dir_id = (Integer) map.get("DIR_ID");
                 int userID = (Integer) map.get("userID");
+
+                AbsoluteNetdiskDirectory netdiskDirectory = AbsoluteNetdiskDirectory.getInstance(dir_id);
                 User user = session.getMapper(UserMap.class).getUserByID(userID);
-                AbsoluteNetdiskFile netdiskFile = new AbsoluteNetdiskFile(path);
-                return new FileTokenService(netdiskFile,user);
+                return new FileTokenService(netdiskDirectory,user);
             }else {
                 String hash = (String) map.get("hash");
                 String name = (String) map.get("name");

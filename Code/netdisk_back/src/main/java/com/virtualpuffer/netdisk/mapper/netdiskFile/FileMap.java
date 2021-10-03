@@ -8,17 +8,19 @@ import com.virtualpuffer.netdisk.entity.file.AbsoluteNetdiskFile;
 import java.util.LinkedList;
 
 public interface FileMap {
+
+    AbsoluteNetdiskFile fileOnExits(int USER_ID,int Directory_Parent_ID,String fileName);
+
+    int rename(int USER_ID,int Directory_Parent_ID,int Map_id,String fileName);
+
     LinkedList<String> getDir(int USER_ID,int Directory_ID);
-    /*
-    * 删除文件
-    * */
     //只删除对应路径
     int deleteFileMap(String path,int userID);
     //正则匹配前缀
     int deleteDirectoryMap(String path,int userID);
     //检查是否存在映射
     LinkedList<File_Map> invokeOnExit(String hash);
-    int buildFileMap(String destination,String fileName,String hash,int userID,String place);
+    int buildFileMap(String fileName,String hash,int userID,int Directory_Parent_Place);
     /*
     * 添加文件映射：
     * 1.检查父级路径是否存在
@@ -38,7 +40,9 @@ public interface FileMap {
      * 上传文件
      * */
 
-    AbsoluteNetdiskFile getFileMap(int userID, String destination);
+    //AbsoluteNetdiskFile getFileMap(int userID, String destination);
+
+    AbsoluteNetdiskFile getFileMap(int userID,int Parent_Directory_ID ,String fileName);
 
     File_Map getFileMapByPath(String path,int userID);
 

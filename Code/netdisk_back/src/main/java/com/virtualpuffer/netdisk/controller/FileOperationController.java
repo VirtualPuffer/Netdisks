@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -61,12 +62,14 @@ public class FileOperationController extends BaseController {
         }
         try {
             String path = destination + "/" + getFile.getOriginalFilename();
-            FileBaseService service = FileBaseService.getInstance(path, loginService.getUser());
+            FileBaseService service = FileBaseService.getInstance(destination, loginService.getUser());
+            service.setFile(new File(StringUtils.filePathDeal(path)));
             service.uploadFile(getFile.getInputStream());
             return ResponseMessage.getSuccessInstance(200,"文件上传成功",null);
         } catch (FileNotFoundException e) {
             return ResponseMessage.getExceptionInstance(404,"传输地址无效",null);
         }  catch (RuntimeException e){
+            e.printStackTrace();
             return ResponseMessage.getExceptionInstance(300,e.getMessage(),null);
         }catch (Exception e) {
             e.printStackTrace();
@@ -106,12 +109,15 @@ public class FileOperationController extends BaseController {
     public ResponseMessage mkdir(@RequestBody File_Map on, HttpServletRequest request, HttpServletResponse response){
         UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
         try {
-            FileBaseService service = FileBaseService.getInstance(on.getDestination(),loginService.getUser());
-            service.mkdir();
+            Map<String,String> map = StringUtils.getFileNameAndDestinaiton(on.getDestination());
+            FileBaseService service = FileBaseService.getInstance(map.get("path"),loginService.getUser());
+            service.mkdir(map.get("name"));
             return ResponseMessage.getSuccessInstance(200,"文件夹创建成功",null);
         } catch (FileNotFoundException e) {
+            e.printStackTrace();
             return ResponseMessage.getExceptionInstance(404,e.getMessage(),null);
         } catch (RuntimeException e){
+            e.printStackTrace();
             return ResponseMessage.getExceptionInstance(300,e.getMessage(),null);
         } catch (Exception e) {
             e.printStackTrace();
@@ -138,7 +144,7 @@ public class FileOperationController extends BaseController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "getDir",method = RequestMethod.GET)
+    @RequestMapping(value = "/getDir",method = RequestMethod.GET)
     public ResponseMessage getDir(String destination, HttpServletRequest request, HttpServletResponse response) throws IOException {
         UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
         try {
@@ -237,7 +243,7 @@ public class FileOperationController extends BaseController {
         try {
             UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
             service = FileBaseService.getInstance(destination, loginService.getUser());
-            service.rename(name);
+            service.getNetdiskEntity().rename(name);
             return ResponseMessage.getSuccessInstance(200,"重命名成功",null);
         } catch (FileNotFoundException e) {
             return ResponseMessage.getExceptionInstance(300,e.getMessage(),null);

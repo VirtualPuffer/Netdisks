@@ -1,5 +1,7 @@
 package com.virtualpuffer.netdisk.service.impl.file;
 
+import com.virtualpuffer.netdisk.entity.file.AbsoluteNetdiskDirectory;
+import com.virtualpuffer.netdisk.entity.file.AbsoluteNetdiskEntity;
 import com.virtualpuffer.netdisk.utils.MybatisConnect;
 import com.virtualpuffer.netdisk.entity.file.AbsoluteNetdiskFile;
 import com.virtualpuffer.netdisk.entity.User;
@@ -11,8 +13,8 @@ import java.io.FileNotFoundException;
 
 //@Async
 public class FileHashService extends FileBaseService {
-    public FileHashService(AbsoluteNetdiskFile netdiskFile, User user) throws FileNotFoundException {
-        super(netdiskFile, user);
+    public FileHashService(AbsoluteNetdiskEntity netdiskEntity, User user) throws FileNotFoundException {
+        super(netdiskEntity, user);
     }
     public FileHashService() throws FileNotFoundException {
     }
@@ -33,7 +35,7 @@ public class FileHashService extends FileBaseService {
         try {
             if(checkDuplicate(hash)){
                 session = MybatisConnect.getSession();
-                session.getMapper(FileMap.class).buildFileMap(dest,this.file.getName(),hash,this.user.getUSER_ID(),place);
+                session.getMapper(FileMap.class).buildFileMap(this.file.getName(),hash,this.user.getUSER_ID(),this.netdiskDirectory.getDirectory_ID());
                 session.commit();
             }else {
                 throw new RuntimeException("hash not exit,please upload the native file");

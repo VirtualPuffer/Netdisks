@@ -2,6 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.virtualpuffer.netdisk.mapper.netdiskFile.DirectoryMap">
     <!--删除文件映射,删除文件时直接匹配，目录时相对路径+'/'后正则匹配-->
+    <select id="getDirectoryByID" resultType="com.virtualpuffer.netdisk.entity.file.AbsoluteNetdiskDirectory">
+        select * from Directory_Map where Directory_ID = #{Directory_ID};
+    </select>
     <select id="getDirectory" resultType="com.virtualpuffer.netdisk.entity.file.AbsoluteNetdiskDirectory">
         select * from Directory_Map where USER_ID = #{USER_ID} and Directory_Destination = #{destination};
     </select>
@@ -19,12 +22,18 @@
     </insert>
     <!--获取文件下面的子目录-->
     <select id="getDir" resultType="java.lang.String">
-        select Directory_Name from Directory_Map where Directory_Parent_ID = #{Directory_ID};
+        select Directory_Name from Directory_Map
+        where Directory_Parent_ID = #{Directory_ID} and USER_ID = #{USER_ID};
     </select>
 
     <select id="onExists" resultType="com.virtualpuffer.netdisk.entity.file.AbsoluteNetdiskDirectory">
         select * from Directory_Map
-        where USER_ID = #{USER_ID} and Directory_Parent_ID = #{Directory_Parent_ID} and Directory_Name = #{name};
+        where USER_ID = #{USER_ID} and Directory_Parent_ID = #{Directory_Parent_ID} and Directory_Name = #{Directory_Name};
     </select>
+
+    <update id="rename">
+        update Directory_Map set Directory_Name = #{new_Directory_Name}
+        where USER_ID = #{USER_ID} and Directory_ID = #{Directory_ID};
+    </update>
 
 </mapper>

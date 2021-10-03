@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Map;
 
 import static com.virtualpuffer.netdisk.utils.StringUtils.filePathDeal;
 
@@ -27,11 +28,13 @@ import static com.virtualpuffer.netdisk.utils.StringUtils.filePathDeal;
  *
  * */
 public class AbsoluteNetdiskFile extends AbsoluteNetdiskEntity{
+    private int Map_id;
     private String File_Name;
     private String File_Path;//真实路径
     private int File_Length;
-    private String File_Destination_Place;//父级路径
+    private int Directory_Parent_ID;
     private String File_Destination;//映射路径（客户真实看到的）
+    private AbsoluteNetdiskDirectory netdiskDirectory;
     private String File_Hash;//计算SHA256
     private int userID;//拥有者ID
     private File file;
@@ -69,29 +72,42 @@ public class AbsoluteNetdiskFile extends AbsoluteNetdiskEntity{
         }
     }
 
-
+    @Deprecated
+    public static AbsoluteNetdiskFile getInstance(int USER_ID,int Directory_Parent_ID,String fileName){
+        SqlSession session = null;
+        try {
+            session = MybatisConnect.getSession();
+            AbsoluteNetdiskFile netdiskFile = session.getMapper(FileMap.class).getFileMap(USER_ID,Directory_Parent_ID,fileName);
+            return netdiskFile;
+        } finally {
+            close(session);
+        }
+    }
 
     public static AbsoluteNetdiskFile getInstance(String destination, int id) throws FileNotFoundException{
         SqlSession session = null;
         AbsoluteNetdiskFile netdiskFile = null;
-        try {
+        String file_Destination = StringUtils.filePathDeal(destination);
+        Map<String,String> map = StringUtils.getFileNameAndDestinaiton(destination);
+        String directoryPath = map.get("path");
+        String fileName = map.get("name");
+        AbsoluteNetdiskDirectory netdiskDirectory = AbsoluteNetdiskDirectory.getInstance(directoryPath,id);
+        if(netdiskDirectory == null){
+            throw new RuntimeException("上级文件不存在：" + directoryPath);
+        }else{
             try {
-                netdiskFile = checkMap(destination,id);
-                netdiskFile.setFile(new File(netdiskFile.getFile_Path()));
-            } catch (FileNotFoundException e) {
                 session = MybatisConnect.getSession();
-                User user = session.getMapper(UserMap.class).getUserByID(id);
-                String path = filePathDeal(getAbsolutePath(destination,user));
-                netdiskFile = new AbsoluteNetdiskFile(path,destination);
-            }
-            if (netdiskFile != null) {
-                return netdiskFile;
-            } else {
-                    throw new FileNotFoundException("路径构建失败2");
+                netdiskFile = session.getMapper(FileMap.class).getFileMap(id,netdiskDirectory.getDirectory_ID(),fileName);
+                if(netdiskFile == null){
+                    throw new FileNotFoundException();
+                }else {
+                    netdiskFile.setNetdiskDirectory(netdiskDirectory);
+                    netdiskFile.setFile(new File(netdiskFile.getFile_Path()));
+                    return netdiskFile;
                 }
-
-        } finally {
-            close(session);
+            } finally {
+                session.close();
+            }
         }
     }
     public static AbsoluteNetdiskFile getInstance(String hash, String name) throws FileNotFoundException{
@@ -112,21 +128,20 @@ public class AbsoluteNetdiskFile extends AbsoluteNetdiskEntity{
             close(session);
         }
     }
-
-    public static AbsoluteNetdiskFile checkMap(String destination, int id) throws FileNotFoundException{
+    public void rename(String name){
         SqlSession session = null;
-        AbsoluteNetdiskFile netdiskFile = null;
-        String file_Destination = StringUtils.filePathDeal(destination);
         try {
             session = MybatisConnect.getSession();
-            netdiskFile = session.getMapper(FileMap.class).getFileMap(id,file_Destination);
-            if(netdiskFile == null){
-                throw new FileNotFoundException();
-            }else {
-                return netdiskFile;
+            FileMap fileMap = session.getMapper(FileMap.class);
+            AbsoluteNetdiskFile file = fileMap.fileOnExits(userID,this.Directory_Parent_ID,name);
+            if(file == null){
+                fileMap.rename(this.userID,this.Directory_Parent_ID,this.Map_id,name);
+                session.commit();
+            }else{
+                throw new RuntimeException("同名文件夹已经存在");
             }
         } finally {
-            session.close();
+            close(session);
         }
     }
 
@@ -236,8 +251,12 @@ public class AbsoluteNetdiskFile extends AbsoluteNetdiskEntity{
 
     public AbsoluteNetdiskFile(){}
 
-    public String getFile_Destination_Place() {
-        return File_Destination_Place;
+    public AbsoluteNetdiskDirectory getNetdiskDirectory() {
+        return netdiskDirectory;
+    }
+
+    public void setNetdiskDirectory(AbsoluteNetdiskDirectory netdiskDirectory) {
+        this.netdiskDirectory = netdiskDirectory;
     }
 
     public File getFile() {
@@ -245,6 +264,7 @@ public class AbsoluteNetdiskFile extends AbsoluteNetdiskEntity{
     }
 
     public void setFile(File file) {
+        System.out.println("设置了："+ file);
         this.file = file;
     }
 
@@ -291,17 +311,4 @@ public class AbsoluteNetdiskFile extends AbsoluteNetdiskEntity{
         this.userID = userID;
     }
 
-    @Override
-    public String toString() {
-        return "NetdiskFile{" +
-                "File_Name='" + File_Name + '\'' +
-                ", File_Path='" + File_Path + '\'' +
-                ", File_Destination_Place='" + File_Destination_Place + '\'' +
-                ", File_Destination='" + File_Destination + '\'' +
-                ", File_Hash='" + File_Hash + '\'' +
-                ", userID=" + userID +
-                ", file=" + file +
-                ", lock=" + lock +
-                '}';
-    }
 }
