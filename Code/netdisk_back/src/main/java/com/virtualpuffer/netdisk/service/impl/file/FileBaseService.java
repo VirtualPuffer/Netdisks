@@ -162,8 +162,9 @@ public class FileBaseService extends FileUtilService {
         ArrayList<Integer> file_id = new ArrayList<>();
         ArrayList<Integer> dir_id = new ArrayList<>();
         String path = collection.getDestination();
-        if(path == null){
-            path = "/";
+        if(path == null || path == ""){
+        }else {
+            path = StringUtils.filePathDeal(path + "/");
         }
         for(String name : collection.getFiles()){
             String destination =  path + name;

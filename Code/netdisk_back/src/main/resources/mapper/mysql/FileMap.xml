@@ -14,7 +14,7 @@
 
     <select id="getChildrenFileID" resultMap="netdiskFile">
         select * from File_Map,FileHash_Map
-        where Directory_Parent_Map = #{Directory_ID} and FileHash_Map.File_Hash = File_Map.File_Hash;
+        where Directory_Parent_ID = #{Directory_ID} and FileHash_Map.File_Hash = File_Map.File_Hash;
     </select>
 
     <select id="getFileByMapID" resultMap="netdiskFile">
@@ -97,9 +97,6 @@
         select File_Name from File_Map where USER_ID = #{USER_ID} and Directory_Parent_ID = #{Directory_ID};
     </select>
 
-   <!-- <update id="updateDestination">
-        update FileHash_Map set File_Path = #{}
-    </update>-->
 
 
 

@@ -28,7 +28,7 @@ public class StraightDownloadController extends BaseController {
         try {
             FileTokenService fileService = FileTokenService.getInstanceByToken(token,key);
             response.setContentType("application/force-download");
-            response.addHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileService.getNetdiskFile().getFile_Name(), "UTF-8"));
+            response.addHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileService.getNetdiskFile().getFile_Name() + ".zip", "UTF-8"));
             int length = (int) fileService.download(response.getOutputStream());
             response.setContentLength(length);
             return null;

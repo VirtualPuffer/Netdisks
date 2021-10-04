@@ -87,7 +87,7 @@ public class AbsoluteNetdiskFile extends AbsoluteNetdiskEntity{
     public static AbsoluteNetdiskFile getInstance(String destination, int id) throws FileNotFoundException{
         SqlSession session = null;
         AbsoluteNetdiskFile netdiskFile = null;
-        String file_Destination = StringUtils.filePathDeal(destination);
+        String file_Destination = StringUtils.filePathDeal(destination + "/");
         Map<String,String> map = StringUtils.getFileNameAndDestinaiton(destination);
         String directoryPath = map.get("path");
         String fileName = map.get("name");

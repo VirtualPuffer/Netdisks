@@ -82,10 +82,8 @@ public class FileTokenService extends FileHashService implements ParseToken {
     }
 
     public long download(OutputStream outputStream) throws IOException {
-       // if (fileSet.size() > 1) {
             File file = new File(tempWare + outputStream.hashCode());
             try {
-                System.out.println("——————————————————————————————————————————1");
                 FileOutputStream fileOutputStream = new FileOutputStream(file);
                 ZipOutputStream zipStream = new ZipOutputStream(fileOutputStream);
                 compress(zipStream,fileSet,"");
@@ -97,10 +95,6 @@ public class FileTokenService extends FileHashService implements ParseToken {
             } finally {
                 file.delete();
             }
-      /*  } else {
-            Iterator iterator = fileSet.iterator();
-            if(iterator.hasNext()){}
-        }*/
     }
 
     /**
@@ -116,8 +110,8 @@ public class FileTokenService extends FileHashService implements ParseToken {
                     AbsoluteNetdiskFile file = (AbsoluteNetdiskFile)netdiskEntity;
                     String fileName = path + file.getFile_Name();
                     outputStream.putNextEntry(new ZipEntry(fileName));
+                    System.out.println(fileName);
                     FileInputStream inputStream = new FileInputStream(file.getFile_Path());
-                    System.out.println(inputStream.available() + "________________________________________");
                     copy(inputStream,outputStream);
                     close(inputStream);
                     outputStream.closeEntry();
