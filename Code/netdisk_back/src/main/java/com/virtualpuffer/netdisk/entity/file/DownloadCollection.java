@@ -1,7 +1,8 @@
 package com.virtualpuffer.netdisk.entity.file;
 
 public class DownloadCollection{
-    private String[] destination;
+    private String[] files;
+    private String destination;
     private Integer second;
     private String key;
     private boolean getRandom;
@@ -9,11 +10,19 @@ public class DownloadCollection{
     public DownloadCollection() {
     }
 
-    public String[] getDestination() {
+    public String[] getFiles() {
+        return files;
+    }
+
+    public void setFiles(String[] files) {
+        this.files = files;
+    }
+
+    public String getDestination() {
         return destination;
     }
 
-    public void setDestination(String[] destination) {
+    public void setDestination(String destination) {
         this.destination = destination;
     }
 

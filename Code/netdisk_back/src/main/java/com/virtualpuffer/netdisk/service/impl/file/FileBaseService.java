@@ -70,9 +70,9 @@ public class FileBaseService extends FileUtilService {
      * 没有处理404情况，controller级别再获取
     * */
     public FileBaseService(AbsoluteNetdiskEntity netdiskEntity, User user) throws FileNotFoundException {
-        if(netdiskEntity == null){
+    /*    if(netdiskEntity == null){
             throw new RuntimeException("服务构建失败：null");
-        }
+        }*/
         this.user = user;
         this.netdiskEntity = netdiskEntity;
         if(netdiskEntity instanceof AbsoluteNetdiskFile){
@@ -153,39 +153,20 @@ public class FileBaseService extends FileUtilService {
     }
     /**
      * 下载链接获取
-     * 是文件时给hash(防止文件位置变动)
-     * 文件夹时给path(没办法了，不然得做数据库维护映射，太难了)
+     * 全部只给map_id(移动了就没了)
      *
      * 映射型文件是系统没办法判断类型的（因为不存在）
     * */
-    public String getDownloadURL(long time,@Nullable String key,@Nullable String tokenTag) throws Exception {
-        Map<String,Object> map = new HashMap();
-        if (this.netdiskEntity instanceof AbsoluteNetdiskDirectory) {
-            AbsoluteNetdiskDirectory netdiskDirectory = (AbsoluteNetdiskDirectory)netdiskEntity;
-            map.put("DIR_ID",((AbsoluteNetdiskDirectory) this.netdiskEntity).getDirectory_ID());
-            map.put("tokenTag",tokenTag);
-            map.put("userID",this.user.getUSER_ID());
-            map.put("name",netdiskDirectory.getDirectory_Name());
-        }else {
-            AbsoluteNetdiskFile netdiskFile = (AbsoluteNetdiskFile) netdiskEntity;
-            map.put("hash",getSH256(this.file));
-            map.put("tokenTag",tokenTag);
-            map.put("userID",this.user.getUSER_ID());
-            map.put("name",netdiskFile.getFile_Name());
-        }
-        if (key == null) {
-            return  downloadAPI + createToken(time,map,user.getUsername(),key);
-        } else {
-            return  downloadAPI + "key/" + createToken(time,map,user.getUsername(),key);
-        }
-    }
-
     public static String getDownloadURL(DownloadCollection collection,User user) throws FileNotFoundException {
         Map<String,Object> map = new HashMap();
         ArrayList<Integer> file_id = new ArrayList<>();
         ArrayList<Integer> dir_id = new ArrayList<>();
-
-        for(String destination : collection.getDestination()){
+        String path = collection.getDestination();
+        if(path == null){
+            path = "/";
+        }
+        for(String name : collection.getFiles()){
+            String destination =  path + name;
             FileBaseService baseService = getInstance(destination,user);
             if (baseService.netdiskDirectory == null) {
                 AbsoluteNetdiskFile netdiskFile = baseService.getNetdiskFile();
@@ -195,8 +176,9 @@ public class FileBaseService extends FileUtilService {
                 dir_id.add(netdiskDirectory.getDirectory_ID());
             }
         }
-        map.put("file_id",file_id.toArray(new Integer[file_id.size()]));
-        map.put("dir_id",dir_id.toArray(new Integer[dir_id.size()]));
+        map.put("file_name",collection.getFiles()[0]);
+        map.put("file_id",file_id);
+        map.put("dir_id",dir_id);
         map.put("tokenTag",DOWNLOAD_TAG);
         map.put("userID",user.getUSER_ID());
         if (collection.getKey() == null) {

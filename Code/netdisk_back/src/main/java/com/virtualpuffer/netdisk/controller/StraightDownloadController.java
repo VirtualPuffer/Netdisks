@@ -26,10 +26,10 @@ public class StraightDownloadController extends BaseController {
     @RequestMapping(value = "/download/{token}")
     public ResponseMessage test(@PathVariable String token,String key, HttpServletResponse response){
         try {
-            FileBaseService fileService = FileTokenService.getInstanceByToken(token,key);
+            FileTokenService fileService = FileTokenService.getInstanceByToken(token,key);
             response.setContentType("application/force-download");
             response.addHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileService.getNetdiskFile().getFile_Name(), "UTF-8"));
-            int length = (int) fileService.downloadFile(response.getOutputStream());
+            int length = (int) fileService.download(response.getOutputStream());
             response.setContentLength(length);
             return null;
         }catch (ExpiredJwtException e){

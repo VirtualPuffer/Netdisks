@@ -36,6 +36,7 @@ public class UserController extends BaseController {
             hashMap.put("name",service.getUser().getName());//名字
             return ResponseMessage.getSuccessInstance(200,"登录成功",hashMap);
         } catch (RuntimeException e) {
+            e.printStackTrace();
             return ResponseMessage.getSuccessInstance(300,e.getMessage(),null);
         } catch (Throwable e){
                 e.printStackTrace();//打印异常情况

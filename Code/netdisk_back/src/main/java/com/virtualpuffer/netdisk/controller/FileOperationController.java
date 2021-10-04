@@ -201,15 +201,13 @@ public class FileOperationController extends BaseController {
         }
     }
     @ResponseBody
-    @RequestMapping(value = "shareFile",method = RequestMethod.GET)
+    @RequestMapping(value = "shareFile",method = RequestMethod.POST)
     public ResponseMessage shareFile(@RequestBody DownloadCollection collection, HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException {
         FileBaseService service = null;
         String key = null;
         key = collection.getKey();
         try {
             UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
-            //service = FileBaseService.getInstance(destination, loginService.getUser());
-
             int time = 900;
             if (collection.getSecond()!=null) {
                 time = collection.getSecond();

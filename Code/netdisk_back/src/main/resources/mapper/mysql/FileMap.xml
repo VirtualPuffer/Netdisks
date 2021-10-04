@@ -12,7 +12,7 @@
         <result column="FileHash_Map.File_Length" property="File_Length" javaType="java.lang.Integer"/>
     </resultMap>
 
-    <select id="getChildrenFileID" resultType="netdiskFile">
+    <select id="getChildrenFileID" resultMap="netdiskFile">
         select * from File_Map,FileHash_Map
         where Directory_Parent_Map = #{Directory_ID} and FileHash_Map.File_Hash = File_Map.File_Hash;
     </select>

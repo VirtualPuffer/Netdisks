@@ -79,37 +79,7 @@ public abstract class FileUtilService extends BaseServiceImpl {
 
     protected static void writeCopy(){}
 
-    /**
-     * 获取映射文件并放入压缩集合中
-     *
-     * */
-    protected static ZipOutputStream compress(ZipOutputStream outputStream, HashSet<AbsoluteNetdiskEntity> fileSet){
-        SqlSession session = null;
-        for (AbsoluteNetdiskEntity netdiskEntity : fileSet) {
-            try {
-                if(netdiskEntity instanceof  AbsoluteNetdiskFile){
-                    AbsoluteNetdiskFile file = (AbsoluteNetdiskFile)netdiskEntity;
-                    outputStream.putNextEntry(new ZipEntry(file.getFile_Destination()));
-                    FileInputStream inputStream = new FileInputStream(file.getFile_Path());
-                    copy(inputStream,outputStream);
-                    outputStream.closeEntry();
-                }else{
-                    session = MybatisConnect.getSession();
-                    AbsoluteNetdiskDirectory directory = (AbsoluteNetdiskDirectory)netdiskEntity;
-                    int dir_id = directory.getDirectory_ID();
-                    HashSet<AbsoluteNetdiskFile> fileHashSet = session.getMapper(FileMap.class).getChildrenFileID(dir_id);
-                    HashSet<AbsoluteNetdiskDirectory> directoryHashSet = session.getMapper(DirectoryMap.class).getChildrenDirID(dir_id);
-                    compress(outputStream,fileHashSet);
-                    compress(outputStream,directoryHashSet);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }finally {
-                session.close();
-            }
-        }
-        return outputStream;
-    }
+
     /**
      * 关闭Zip流时会把输出流也同时关闭，慎用！
      * 递归压缩方法

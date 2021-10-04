@@ -36,7 +36,7 @@
         where USER_ID = #{USER_ID} and Directory_ID = #{Directory_ID};
     </update>
 
-    <select id="getChildrenDirID" resultMap="com.virtualpuffer.netdisk.entity.file.AbsoluteNetdiskDirectory">
+    <select id="getChildrenDirID" resultType="com.virtualpuffer.netdisk.entity.file.AbsoluteNetdiskDirectory">
         select * from Directory_Map where Directory_Parent_ID = #{Directory_ID};
     </select>
 
