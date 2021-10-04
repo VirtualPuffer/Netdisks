@@ -10,6 +10,7 @@ import org.apache.ibatis.session.SqlSession;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;

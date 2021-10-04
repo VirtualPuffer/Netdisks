@@ -1,13 +1,20 @@
 package com.virtualpuffer.netdisk.service.impl.file;
 
+import com.virtualpuffer.netdisk.entity.file.AbsoluteNetdiskDirectory;
+import com.virtualpuffer.netdisk.entity.file.AbsoluteNetdiskEntity;
 import com.virtualpuffer.netdisk.entity.file.AbsoluteNetdiskFile;
+import com.virtualpuffer.netdisk.mapper.netdiskFile.DirectoryMap;
+import com.virtualpuffer.netdisk.mapper.netdiskFile.FileMap;
 import com.virtualpuffer.netdisk.service.impl.BaseServiceImpl;
+import com.virtualpuffer.netdisk.utils.MybatisConnect;
+import org.apache.ibatis.session.SqlSession;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.zip.ZipEntry;
@@ -76,20 +83,29 @@ public abstract class FileUtilService extends BaseServiceImpl {
      * 获取映射文件并放入压缩集合中
      *
      * */
-    protected static ZipOutputStream compress(File sourceFile,ZipOutputStream outputStream, LinkedList<AbsoluteNetdiskFile> list){
-        byte[] buf = new byte[BUFFER_SIZE];
-        Iterator<AbsoluteNetdiskFile> iterator = list.iterator();
-        while (iterator.hasNext()){
+    protected static ZipOutputStream compress(ZipOutputStream outputStream, HashSet<AbsoluteNetdiskEntity> fileSet){
+        SqlSession session = null;
+        for (AbsoluteNetdiskEntity netdiskEntity : fileSet) {
             try {
-                AbsoluteNetdiskFile file = iterator.next().handleInstance();
-                outputStream.putNextEntry(new ZipEntry(file.getFile_Destination()));
-                FileInputStream inputStream = new FileInputStream(file.getFile_Path());
-                int length;
-                while ((length = inputStream.read(buf)) != -1){
-                    outputStream.write(buf,0,length);
+                if(netdiskEntity instanceof  AbsoluteNetdiskFile){
+                    AbsoluteNetdiskFile file = (AbsoluteNetdiskFile)netdiskEntity;
+                    outputStream.putNextEntry(new ZipEntry(file.getFile_Destination()));
+                    FileInputStream inputStream = new FileInputStream(file.getFile_Path());
+                    copy(inputStream,outputStream);
+                    outputStream.closeEntry();
+                }else{
+                    session = MybatisConnect.getSession();
+                    AbsoluteNetdiskDirectory directory = (AbsoluteNetdiskDirectory)netdiskEntity;
+                    int dir_id = directory.getDirectory_ID();
+                    HashSet<AbsoluteNetdiskFile> fileHashSet = session.getMapper(FileMap.class).getChildrenFileID(dir_id);
+                    HashSet<AbsoluteNetdiskDirectory> directoryHashSet = session.getMapper(DirectoryMap.class).getChildrenDirID(dir_id);
+                    compress(outputStream,fileHashSet);
+                    compress(outputStream,directoryHashSet);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
+            }finally {
+                session.close();
             }
         }
         return outputStream;

@@ -5,9 +5,12 @@ package com.virtualpuffer.netdisk.mapper.netdiskFile;
 import com.virtualpuffer.netdisk.entity.file.File_Map;
 import com.virtualpuffer.netdisk.entity.file.AbsoluteNetdiskFile;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 
 public interface FileMap {
+    HashSet<AbsoluteNetdiskFile> getChildrenFileID(int Directory_ID);
+
     AbsoluteNetdiskFile getFileByMapID(int Map_id);
 
     AbsoluteNetdiskFile fileOnExits(int USER_ID,int Directory_Parent_ID,String fileName);

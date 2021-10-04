@@ -31,7 +31,6 @@ public class StraightDownloadController extends BaseController {
             response.addHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileService.getNetdiskFile().getFile_Name(), "UTF-8"));
             int length = (int) fileService.downloadFile(response.getOutputStream());
             response.setContentLength(length);
-            //return ResponseMessage.getSuccessInstance(200,"下载成功",null);
             return null;
         }catch (ExpiredJwtException e){
             return ResponseMessage.getExceptionInstance(300,"链接已失效",null);

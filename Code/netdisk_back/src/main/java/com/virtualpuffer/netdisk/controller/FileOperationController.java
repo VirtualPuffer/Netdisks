@@ -31,7 +31,7 @@ public class FileOperationController extends BaseController {
     public FileOperationController() {
     }
 
-    @ResponseBody
+/*    @ResponseBody
     @RequestMapping(value = "/downloadFile",method = RequestMethod.GET)
     public ResponseMessage get(String destination, HttpServletRequest request, HttpServletResponse response){
         UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
@@ -49,7 +49,7 @@ public class FileOperationController extends BaseController {
             e.printStackTrace();
             return ResponseMessage.getErrorInstance(500,"系统错误",null);
         }
-    }
+    }*/
 
     @ResponseBody
     @RequestMapping(value = "/uploadFile",method = RequestMethod.POST)

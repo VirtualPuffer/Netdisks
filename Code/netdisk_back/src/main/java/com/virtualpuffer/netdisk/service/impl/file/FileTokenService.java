@@ -69,4 +69,5 @@ public class FileTokenService extends FileHashService implements ParseToken {
             close(session);
         }
     }
+
 }

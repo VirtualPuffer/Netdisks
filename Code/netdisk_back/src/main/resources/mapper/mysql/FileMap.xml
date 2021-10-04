@@ -12,9 +12,14 @@
         <result column="FileHash_Map.File_Length" property="File_Length" javaType="java.lang.Integer"/>
     </resultMap>
 
+    <select id="getChildrenFileID" resultType="netdiskFile">
+        select * from File_Map,FileHash_Map
+        where Directory_Parent_Map = #{Directory_ID} and FileHash_Map.File_Hash = File_Map.File_Hash;
+    </select>
+
     <select id="getFileByMapID" resultMap="netdiskFile">
         select * from File_Map,FileHash_Map
-        where File_Map.Map_id = #{Map_id};
+        where File_Map.Map_id = #{Map_id} and FileHash_Map.File_Hash = File_Map.File_Hash;
     </select>
 
     <select id="fileOnExits" resultType="com.virtualpuffer.netdisk.entity.file.AbsoluteNetdiskFile">
@@ -55,7 +60,8 @@
     </insert>
 
     <select id="getDirectoryMap" resultType="com.virtualpuffer.netdisk.entity.file.File_Map">
-        select File_Destination,File_Name from File_Map where File_Destination_Place = #{destination} and USER_ID = #{userID} order by File_Name desc;
+        select File_Destination,File_Name from File_Map
+        where File_Destination_Place = #{destination} and USER_ID = #{userID} order by File_Name desc;
     </select>
 
     <select id="getFileMap" resultMap="netdiskFile">
