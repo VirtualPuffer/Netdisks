@@ -19,7 +19,7 @@ public interface FileMap {
 
     LinkedList<String> getDir(int USER_ID,int Directory_ID);
     //只删除对应路径
-    int deleteFileMap(String path,int userID);
+    int deleteFileMap(int Map_id,int userID);
     //正则匹配前缀
     int deleteDirectoryMap(String path,int userID);
     //检查是否存在映射

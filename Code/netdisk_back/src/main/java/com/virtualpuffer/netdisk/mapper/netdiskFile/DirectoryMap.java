@@ -6,6 +6,8 @@ import java.util.HashSet;
 import java.util.LinkedList;
 
 public interface DirectoryMap {
+    int delete(int Directory_ID,int USER_ID);
+
     AbsoluteNetdiskDirectory getDirectoryByID(int Directory_ID);
 
     AbsoluteNetdiskDirectory getDirectory(int USER_ID,String destination);
@@ -14,7 +16,7 @@ public interface DirectoryMap {
 
     LinkedList<String> getDir(int USER_ID, int Directory_ID);
 
-    LinkedList<AbsoluteNetdiskDirectory> onExists(int USER_ID,int Directory_Parent_ID,String Directory_Name);
+    AbsoluteNetdiskDirectory onExists(int USER_ID,int Directory_Parent_ID,String Directory_Name);
 
     int mkdir(int USER_ID,String name,int Directory_Parent_ID);
 

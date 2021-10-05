@@ -15,6 +15,7 @@ import org.springframework.scheduling.annotation.Async;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import java.io.*;
+import java.rmi.RemoteException;
 import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -23,9 +24,12 @@ import java.util.zip.ZipOutputStream;
 public class FileTokenService extends FileHashService implements ParseToken {
     private Map<Integer,AbsoluteNetdiskDirectory> directoryCache = new HashMap<>();
     private HashSet<AbsoluteNetdiskEntity> fileSet;
-    public FileTokenService(AbsoluteNetdiskEntity netdiskEntity, User user,HashSet set) throws FileNotFoundException {
+    private boolean singleFile = false;
+    private String packageName ;
+    public FileTokenService(AbsoluteNetdiskEntity netdiskEntity, User user,HashSet set,boolean single) throws FileNotFoundException {
         super(netdiskEntity, user);
         this.fileSet = set;
+        this.singleFile = single;
     }
 
     public FileTokenService() throws FileNotFoundException {
@@ -60,6 +64,9 @@ public class FileTokenService extends FileHashService implements ParseToken {
             session = MybatisConnect.getSession();
             Map map = parseJWT(token,key);
             int userID = (Integer) map.get("userID");
+            boolean single = (Boolean) map.get("straight");
+            String file_name = (String) map.get("file_name");
+
             ArrayList<Integer> dirCollection = (ArrayList<Integer>) map.get("dir_id");
             ArrayList<Integer> fileCollection = (ArrayList<Integer>)map.get("file_id");
             user = session.getMapper(UserMap.class).getUserByID(userID);
@@ -67,21 +74,22 @@ public class FileTokenService extends FileHashService implements ParseToken {
             for (Integer dir_id : dirCollection) {
                 netdiskDirectory = AbsoluteNetdiskDirectory.getInstance(dir_id);
                 set.add(netdiskDirectory);
-                System.out.println(netdiskDirectory);
             }
             for(Integer file_id : fileCollection){
                 netdiskFile = session.getMapper(FileMap.class).getFileByMapID(file_id);
                 set.add(netdiskFile);
-                System.out.println(netdiskFile);
             }
             AbsoluteNetdiskEntity instance = netdiskFile == null ? netdiskDirectory : netdiskFile;
-            return new FileTokenService(instance,user,set);
+            FileTokenService service = new FileTokenService(instance,user,set,single);
+            service.setPackageName(file_name);
+            return service;
         } finally {
             close(session);
         }
     }
 
     public long download(OutputStream outputStream) throws IOException {
+        if (singleFile != true) {
             File file = new File(tempWare + outputStream.hashCode());
             try {
                 FileOutputStream fileOutputStream = new FileOutputStream(file);
@@ -95,6 +103,16 @@ public class FileTokenService extends FileHashService implements ParseToken {
             } finally {
                 file.delete();
             }
+        }else {//单文件模式
+            for(AbsoluteNetdiskEntity entity : fileSet){
+                AbsoluteNetdiskFile netdiskFile = (AbsoluteNetdiskFile) entity;
+                InputStream inputStream = new FileInputStream(netdiskFile.getFile_Path());
+                int length = inputStream.available();
+                copy(inputStream,outputStream);
+                return length;
+            }
+        }
+        throw new RemoteException();
     }
 
     /**
@@ -110,7 +128,6 @@ public class FileTokenService extends FileHashService implements ParseToken {
                     AbsoluteNetdiskFile file = (AbsoluteNetdiskFile)netdiskEntity;
                     String fileName = path + file.getFile_Name();
                     outputStream.putNextEntry(new ZipEntry(fileName));
-                    System.out.println(fileName);
                     FileInputStream inputStream = new FileInputStream(file.getFile_Path());
                     copy(inputStream,outputStream);
                     close(inputStream);
@@ -122,8 +139,13 @@ public class FileTokenService extends FileHashService implements ParseToken {
                     int dir_id = directory.getDirectory_ID();
                     HashSet<AbsoluteNetdiskFile> fileHashSet = session.getMapper(FileMap.class).getChildrenFileID(dir_id);
                     HashSet<AbsoluteNetdiskDirectory> directoryHashSet = session.getMapper(DirectoryMap.class).getChildrenDirID(dir_id);
-                    compress(outputStream,fileHashSet,nextPath);
-                    compress(outputStream,directoryHashSet,nextPath);
+                    if(fileHashSet.isEmpty() && directoryHashSet.isEmpty()){
+                        outputStream.putNextEntry(new ZipEntry(nextPath));
+                        outputStream.closeEntry();
+                    }else {
+                        compress(outputStream,fileHashSet,nextPath);
+                        compress(outputStream,directoryHashSet,nextPath);
+                    }
                 }
             }catch (IOException e) {
                 e.printStackTrace();
@@ -132,5 +154,13 @@ public class FileTokenService extends FileHashService implements ParseToken {
             }
         }
         return outputStream;
+    }
+
+    public String getPackageName() {
+        return packageName;
+    }
+
+    public void setPackageName(String packageName) {
+        this.packageName = packageName;
     }
 }

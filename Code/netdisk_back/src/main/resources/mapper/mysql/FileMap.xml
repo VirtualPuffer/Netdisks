@@ -32,7 +32,7 @@
     </update>
     <!--删除文件映射,删除文件时直接匹配，目录时相对路径+'/'后正则匹配-->
     <delete id="deleteFileMap">
-        delete from File_Map where File_Destination = #{path} and USER_ID = #{userID};
+        delete from File_Map where Map_id = #{Map_id} and USER_ID = #{userID};
     </delete>
     <delete id="deleteDirectoryMap">
         delete from File_Map where File_Destination_Place = #{path} and USER_ID = #{userID};
@@ -67,7 +67,7 @@
     <select id="getFileMap" resultMap="netdiskFile">
         select * from File_Map,FileHash_Map
         where File_Map.USER_ID = #{userID} and File_Map.Directory_Parent_ID = #{Parent_Directory_ID}
-                                and FileHash_Map.File_Hash = File_Map.File_Hash and File_Name = #{fileName};
+                                and FileHash_Map.File_Hash = File_Map.File_Hash and File_Name = #{fileName} order by File_Name desc;
     </select>
 
     <select id="getFileMapByPath" resultType="com.virtualpuffer.netdisk.entity.file.File_Map">
@@ -94,7 +94,7 @@
     </select>
 
     <select id="getDir" resultType="java.lang.String">
-        select File_Name from File_Map where USER_ID = #{USER_ID} and Directory_Parent_ID = #{Directory_ID};
+        select File_Name from File_Map where USER_ID = #{USER_ID} and Directory_Parent_ID = #{Directory_ID} order by File_Name desc;
     </select>
 
 

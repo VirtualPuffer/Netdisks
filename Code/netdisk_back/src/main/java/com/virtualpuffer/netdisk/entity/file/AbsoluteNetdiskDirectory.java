@@ -12,10 +12,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.OutputStream;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
 
 import static com.virtualpuffer.netdisk.utils.StringUtils.filePathDeal;
 import static com.virtualpuffer.netdisk.utils.StringUtils.getFileSequence;
@@ -104,8 +101,9 @@ public class AbsoluteNetdiskDirectory extends AbsoluteNetdiskEntity{
         SqlSession session = null;
         try {
             session = MybatisConnect.getSession();
-            LinkedList exit = session.getMapper(DirectoryMap.class).onExists(USER_ID,Directory_ID,name);
-            if(exit.isEmpty()){
+            AbsoluteNetdiskFile file = session.getMapper(FileMap.class).fileOnExits(USER_ID,Directory_ID,name);
+            AbsoluteNetdiskDirectory directory = session.getMapper(DirectoryMap.class).onExists(USER_ID,Directory_ID,name);
+            if(directory == null && file == null){
                 session.getMapper(DirectoryMap.class).mkdir(this.USER_ID,name,this.Directory_ID);
                 session.commit();
             }else {
@@ -120,14 +118,33 @@ public class AbsoluteNetdiskDirectory extends AbsoluteNetdiskEntity{
         SqlSession session = null;
         try {
             session = MybatisConnect.getSession();
-            LinkedList exit = session.getMapper(DirectoryMap.class).onExists(USER_ID,Directory_ID,name);
-            if(exit.isEmpty()){
+            AbsoluteNetdiskDirectory exit = session.getMapper(DirectoryMap.class).onExists(USER_ID,Directory_ID,name);
+            if(exit == null){
                 session.getMapper(DirectoryMap.class).rename(this.USER_ID,this.Directory_ID,name);
                 session.commit();
             }else {
                 throw new RuntimeException("同名文件夹已经存在");
             }
         } finally {
+            close(session);
+        }
+    }
+
+    public void delete(){
+        SqlSession session = null;
+        try {
+            session = MybatisConnect.getSession();
+            HashSet<AbsoluteNetdiskDirectory> dir_set = session.getMapper(DirectoryMap.class).getChildrenDirID(this.Directory_ID);
+            HashSet<AbsoluteNetdiskFile> file_set = session.getMapper(FileMap.class).getChildrenFileID(this.Directory_ID);
+            for(AbsoluteNetdiskFile file : file_set){
+                file.delete();
+            }
+            for(AbsoluteNetdiskDirectory directory : dir_set){
+                directory.delete();
+            }
+            session.getMapper(DirectoryMap.class).delete(this.Directory_ID,this.USER_ID);
+            session.commit();
+        }finally {
             close(session);
         }
     }

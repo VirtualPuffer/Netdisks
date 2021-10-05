@@ -2,6 +2,7 @@ package com.virtualpuffer.netdisk.service.impl.file;
 
 
 import com.virtualpuffer.netdisk.entity.file.*;
+import com.virtualpuffer.netdisk.mapper.netdiskFile.DirectoryMap;
 import com.virtualpuffer.netdisk.mapper.netdiskFile.FileHashMap;
 import com.virtualpuffer.netdisk.mapper.netdiskFile.FileMap;
 import com.virtualpuffer.netdisk.mapper.user.UserMap;
@@ -129,12 +130,9 @@ public class FileBaseService extends FileUtilService {
             }
             //destination = StringUtils.filePathDeal(destination);
             try{
-                System.out.println("1_____________");
                 AbsoluteNetdiskDirectory netdiskDirectory = AbsoluteNetdiskDirectory.getInstance(destination,user.getUSER_ID());
                 return new FileBaseService(netdiskDirectory,user);
             }catch(FileNotFoundException e){
-                System.out.println("2_____________");
-                e.printStackTrace();
                 AbsoluteNetdiskFile netdiskFile = AbsoluteNetdiskFile.getInstance(destination,user.getUSER_ID());
                 netdiskFile.setFile(new File(netdiskFile.getFile_Path()));
                 return new FileBaseService(netdiskFile,user);
@@ -162,6 +160,12 @@ public class FileBaseService extends FileUtilService {
         ArrayList<Integer> file_id = new ArrayList<>();
         ArrayList<Integer> dir_id = new ArrayList<>();
         String path = collection.getDestination();
+        String file_name = "";
+        AbsoluteNetdiskFile file = null;
+        AbsoluteNetdiskDirectory directory = null;
+        if(collection.getFiles().length == 0){
+            throw new RuntimeException("未找到下载参数");
+        }
         if(path == null || path == ""){
         }else {
             path = StringUtils.filePathDeal(path + "/");
@@ -171,13 +175,23 @@ public class FileBaseService extends FileUtilService {
             FileBaseService baseService = getInstance(destination,user);
             if (baseService.netdiskDirectory == null) {
                 AbsoluteNetdiskFile netdiskFile = baseService.getNetdiskFile();
+                file = netdiskFile;
                 file_id.add(netdiskFile.getMap_id());
             }else {
                 AbsoluteNetdiskDirectory netdiskDirectory = baseService.getNetdiskDirectory();
+                directory = netdiskDirectory;
                 dir_id.add(netdiskDirectory.getDirectory_ID());
             }
         }
-        map.put("file_name",collection.getFiles()[0]);
+        if(file_id.size() == 1 && dir_id.size() == 0){
+            file_name = file.getFile_Name();
+        }else if(!dir_id.isEmpty()){
+            file_name = directory.getDirectory_Name() + "等"+ (dir_id.size() + file_id.size()) +"个文件.zip";
+        }else {
+            file_name = file.getFile_Name() + "等"+ (dir_id.size() + file_id.size()) +"个文件.zip";
+        }
+        map.put("straight",file_id.size() == 1 && dir_id.size() == 0 ? true : false);
+        map.put("file_name",file_name);
         map.put("file_id",file_id);
         map.put("dir_id",dir_id);
         map.put("tokenTag",DOWNLOAD_TAG);
@@ -306,19 +320,31 @@ public class FileBaseService extends FileUtilService {
     }
     //上面的工具类，有重复文件时在后缀前加上（1），如果已经存在就递增
     public void dumplicateParse(String hash) throws Exception {
-        AbsoluteNetdiskFile test = AbsoluteNetdiskFile.getInstance(user.getUSER_ID(),this.netdiskDirectory.getDirectory_ID(),this.file.getName());
-        //重名文件处理
-        if(this.file.exists()){
-            if(hash.equals(getSH256(this.file))){
-                throw new RuntimeException("file has been exit");
-            }else {
-                String path = this.netdiskFile.getFile_Path();
-                //重复的话加上数字
-                String destination = StringUtils.duplicateRename(this.netdiskFile.getFile_Destination());
-                this.netdiskFile = AbsoluteNetdiskFile.getInstance(destination,this.user.getUSER_ID());
+        SqlSession session = null;
+        try {
+            session = MybatisConnect.getSession();
+            AbsoluteNetdiskDirectory directory = session.getMapper(DirectoryMap.class).onExists(user.getUSER_ID(),this.netdiskDirectory.getDirectory_ID(),this.file.getName());
+            AbsoluteNetdiskFile netdiskFile = session.getMapper(FileMap.class).getFileMap(user.getUSER_ID(),this.netdiskDirectory.getDirectory_ID(),this.file.getName());
+            //重名文件处理
+            if (netdiskFile!=null) {
+                File testFile = new File(netdiskFile.getFile_Path());
+                if(testFile.exists()){
+                    if(hash.equals(getSH256(testFile))){
+                        throw new RuntimeException("file has been exit");
+                    }else {
+                        String destination = StringUtils.duplicateRename(this.file.getName());
+                        this.file = new File(destination);
+                        dumplicateParse(hash);//再来一次
+                    }
+                }
+            }else if(directory != null){
+                String destination = StringUtils.duplicateRename(this.file.getName());
+                this.file = new File(destination);
+                dumplicateParse(hash);//再来一次
             }
+        } finally {
+            close(session);
         }
-        return;
     }
 
     /**
@@ -327,48 +353,7 @@ public class FileBaseService extends FileUtilService {
      * 映射表不存在，检查
      * */
     public void deleteFileMap(){
-        SqlSession session = null;
-        int count = 0;
-        try {
-            session = MybatisConnect.getSession();
-            FileMap fileMap = session.getMapper(FileMap.class);
-            if(file.isDirectory()){
-                count += fileMap.deleteDirectoryMap(StringUtils.filePathDeal(netdiskFile.getFile_Destination() + "/"),this.user.getUSER_ID());
-            }else {
-                count += fileMap.deleteFileMap(netdiskFile.getFile_Destination(),user.getUSER_ID());
-            }
-            if(file.exists()){
-                delete(file);
-            }
-                if(count > 0){
-                session.commit();
-                return ;
-            }
-
-            return ;
-        } finally {
-            close(session);
-        }
-    }
-
-    /**
-     * 是文件则后序遍历删除，否则直接删除
-     * */
-    private static void delete(File on){
-        if(on.getParentFile().equals(new File(duplicateFileWare))){
-            return;//别删仓库的
-        }
-        if(on.isDirectory()){
-            File[] get = on.listFiles();
-            if(get.length!=0){
-                for(File a : get){
-                    delete(a);
-                }
-            }
-            on.delete();
-        }else {
-            on.delete();
-        }
+       this.netdiskEntity.delete();
     }
 
     public long count() throws RuntimeException {

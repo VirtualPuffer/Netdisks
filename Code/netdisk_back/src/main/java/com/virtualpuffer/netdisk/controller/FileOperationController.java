@@ -31,26 +31,6 @@ public class FileOperationController extends BaseController {
     public FileOperationController() {
     }
 
-/*    @ResponseBody
-    @RequestMapping(value = "/downloadFile",method = RequestMethod.GET)
-    public ResponseMessage get(String destination, HttpServletRequest request, HttpServletResponse response){
-        UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
-        try {
-            FileBaseService service = FileBaseService.getInstance(destination, loginService.getUser());
-            int length = (int)service.downloadFile(response.getOutputStream());
-            response.addHeader("Content-Disposition", "attachment; filename=" + URLEncoder.encode(service.getNetdiskFile().getFile_Name(), "UTF-8"));
-            response.setContentLength(length);
-            return ResponseMessage.getSuccessInstance(200,"传输成功",null);
-        } catch (FileNotFoundException e) {
-            return ResponseMessage.getExceptionInstance(404,"文件未找到",null);
-        }  catch (RuntimeException e){
-            return ResponseMessage.getExceptionInstance(300,e.getMessage(),null);
-        }catch (Exception e) {
-            e.printStackTrace();
-            return ResponseMessage.getErrorInstance(500,"系统错误",null);
-        }
-    }*/
-
     @ResponseBody
     @RequestMapping(value = "/uploadFile",method = RequestMethod.POST)
     public ResponseMessage upload(String destination,MultipartFile getFile, HttpServletRequest request, HttpServletResponse response){
@@ -140,6 +120,7 @@ public class FileOperationController extends BaseController {
         } catch (IOException e){
             return ResponseMessage.getErrorInstance(500,"系统错误",null);
         } catch (RuntimeException e){
+            e.printStackTrace();
             return ResponseMessage.getExceptionInstance(300,e.getMessage(),null);
         }
     }

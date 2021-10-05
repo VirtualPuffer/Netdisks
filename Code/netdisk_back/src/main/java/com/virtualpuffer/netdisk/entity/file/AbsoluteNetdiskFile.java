@@ -29,6 +29,7 @@ import static com.virtualpuffer.netdisk.utils.StringUtils.filePathDeal;
  * */
 public class AbsoluteNetdiskFile extends AbsoluteNetdiskEntity{
     private int Map_id;
+    private int USER_ID;
     private String File_Name;
     private String File_Path;//真实路径
     private int File_Length;
@@ -36,7 +37,6 @@ public class AbsoluteNetdiskFile extends AbsoluteNetdiskEntity{
     private String File_Destination;//映射路径（客户真实看到的）
     private AbsoluteNetdiskDirectory netdiskDirectory;
     private String File_Hash;//计算SHA256
-    private int userID;//拥有者ID
     private File file;
     private boolean lock = false;
 
@@ -72,7 +72,6 @@ public class AbsoluteNetdiskFile extends AbsoluteNetdiskEntity{
         }
     }
 
-    @Deprecated
     public static AbsoluteNetdiskFile getInstance(int USER_ID,int Directory_Parent_ID,String fileName){
         SqlSession session = null;
         try {
@@ -91,6 +90,8 @@ public class AbsoluteNetdiskFile extends AbsoluteNetdiskEntity{
         Map<String,String> map = StringUtils.getFileNameAndDestinaiton(destination);
         String directoryPath = map.get("path");
         String fileName = map.get("name");
+        System.out.println(directoryPath);
+        System.out.println(fileName);
         AbsoluteNetdiskDirectory netdiskDirectory = AbsoluteNetdiskDirectory.getInstance(directoryPath,id);
             try {
                 session = MybatisConnect.getSession();
@@ -100,6 +101,7 @@ public class AbsoluteNetdiskFile extends AbsoluteNetdiskEntity{
                 }else {
                     netdiskFile.setNetdiskDirectory(netdiskDirectory);
                     netdiskFile.setFile(new File(netdiskFile.getFile_Path()));
+                    netdiskFile.setUSER_ID(id);
                     return netdiskFile;
                 }
             } finally {
@@ -130,12 +132,24 @@ public class AbsoluteNetdiskFile extends AbsoluteNetdiskEntity{
         try {
             session = MybatisConnect.getSession();
             FileMap fileMap = session.getMapper(FileMap.class);
-            AbsoluteNetdiskFile file = fileMap.fileOnExits(userID,this.Directory_Parent_ID,name);
+            AbsoluteNetdiskFile file = fileMap.fileOnExits(USER_ID,this.Directory_Parent_ID,name);
             if(file == null){
-                fileMap.rename(this.userID,this.Directory_Parent_ID,this.Map_id,name);
+                fileMap.rename(this.USER_ID,this.Directory_Parent_ID,this.Map_id,name);
                 session.commit();
             }else{
                 throw new RuntimeException("同名文件夹已经存在");
+            }
+        } finally {
+            close(session);
+        }
+    }
+    public void delete(){
+        SqlSession session = null;
+        try{
+            session = MybatisConnect.getSession();
+            int count = session.getMapper(FileMap.class).deleteFileMap(this.Map_id,this.USER_ID);
+            if(count == 1){
+                session.commit();
             }
         } finally {
             close(session);
@@ -305,12 +319,11 @@ public class AbsoluteNetdiskFile extends AbsoluteNetdiskEntity{
         File_Hash = file_Hash;
     }
 
-    public int getUserID() {
-        return userID;
+    public int getUSER_ID() {
+        return USER_ID;
     }
 
-    public void setUserID(int userID) {
-        this.userID = userID;
+    public void setUSER_ID(Integer USER_ID) {
+        this.USER_ID = USER_ID;
     }
-
 }

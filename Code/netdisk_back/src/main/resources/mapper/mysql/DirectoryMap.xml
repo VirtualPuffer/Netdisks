@@ -23,7 +23,7 @@
     <!--获取文件下面的子目录-->
     <select id="getDir" resultType="java.lang.String">
         select Directory_Name from Directory_Map
-        where Directory_Parent_ID = #{Directory_ID} and USER_ID = #{USER_ID};
+        where Directory_Parent_ID = #{Directory_ID} and USER_ID = #{USER_ID} order by Directory_Name desc;
     </select>
 
     <select id="onExists" resultType="com.virtualpuffer.netdisk.entity.file.AbsoluteNetdiskDirectory">
@@ -39,5 +39,9 @@
     <select id="getChildrenDirID" resultType="com.virtualpuffer.netdisk.entity.file.AbsoluteNetdiskDirectory">
         select * from Directory_Map where Directory_Parent_ID = #{Directory_ID};
     </select>
+
+    <delete id="delete">
+        delete from Directory_Map where Directory_ID = #{Directory_ID} and USER_ID = #{USER_ID};
+    </delete>
 
 </mapper>

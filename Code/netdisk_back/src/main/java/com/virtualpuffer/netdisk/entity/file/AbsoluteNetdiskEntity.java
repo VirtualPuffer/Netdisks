@@ -11,4 +11,6 @@ public abstract class AbsoluteNetdiskEntity extends BaseEntity implements Serial
     public static final String duplicateFileWare = Message.getMess("duplicateFileWare");
 
     public abstract void rename(String name);
+
+    public abstract void delete();
 }
