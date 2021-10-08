@@ -2,6 +2,7 @@ package com.virtualpuffer.netdisk.entity.file;
 
 import com.virtualpuffer.netdisk.entity.BaseEntity;
 import com.virtualpuffer.netdisk.utils.Message;
+import org.apache.ibatis.session.SqlSession;
 
 import java.io.Serializable;
 
@@ -12,5 +13,5 @@ public abstract class AbsoluteNetdiskEntity extends BaseEntity implements Serial
 
     public abstract void rename(String name);
 
-    public abstract void delete();
+    public abstract void delete(SqlSession session);
 }

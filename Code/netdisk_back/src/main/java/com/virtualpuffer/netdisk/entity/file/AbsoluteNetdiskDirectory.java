@@ -130,22 +130,29 @@ public class AbsoluteNetdiskDirectory extends AbsoluteNetdiskEntity{
         }
     }
 
-    public void delete(){
-        SqlSession session = null;
+    public void delete(SqlSession session){
+        boolean tag = false;
         try {
-            session = MybatisConnect.getSession();
+            if(session == null){
+                session = MybatisConnect.getSession();
+                tag = true;
+            }else {
+                tag = false;
+            }
             HashSet<AbsoluteNetdiskDirectory> dir_set = session.getMapper(DirectoryMap.class).getChildrenDirID(this.Directory_ID);
             HashSet<AbsoluteNetdiskFile> file_set = session.getMapper(FileMap.class).getChildrenFileID(this.Directory_ID);
             for(AbsoluteNetdiskFile file : file_set){
-                file.delete();
+                file.delete(session);
             }
             for(AbsoluteNetdiskDirectory directory : dir_set){
-                directory.delete();
+                directory.delete(session);
             }
             session.getMapper(DirectoryMap.class).delete(this.Directory_ID,this.USER_ID);
             session.commit();
         }finally {
-            close(session);
+            if(tag){
+                close(session);
+            }
         }
     }
 

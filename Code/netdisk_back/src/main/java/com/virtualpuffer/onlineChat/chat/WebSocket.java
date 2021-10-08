@@ -3,9 +3,12 @@ package com.virtualpuffer.onlineChat.chat;
 import com.alibaba.fastjson.JSON;
 import com.virtualpuffer.netdisk.entity.ChatResponseMessage;
 import com.virtualpuffer.netdisk.entity.User;
+import com.virtualpuffer.netdisk.mapper.netdiskFile.ChatMap;
 import com.virtualpuffer.netdisk.service.impl.user.UserServiceImpl;
 import com.virtualpuffer.netdisk.service.impl.user.UserTokenService;
 import com.virtualpuffer.netdisk.utils.Log;
+import com.virtualpuffer.netdisk.utils.MybatisConnect;
+import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Component;
 
 import javax.websocket.*;
@@ -95,6 +98,9 @@ public class WebSocket {
     }
 
     public void messageCache(String message){
+        SqlSession session = null;
+        session = MybatisConnect.getSession();
+        session.getMapper(ChatMap.class)
         if(messageList.size() < 10){
             messageList.addLast(message);
         }else {

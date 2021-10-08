@@ -90,8 +90,10 @@ public class StringUtils {
             }
             else if(s.charAt(index) == '/' && (s.charAt(index+1) == '.' && (s.charAt(index+2)) == '.')){
                 index = index + 3;
-                System.out.println(sb.toString());
-                sb.delete(sb.substring(0, sb.lastIndexOf("/")).length(),sb.length());
+                try {
+                    sb.delete(sb.substring(0, sb.lastIndexOf("/")).length(),sb.length());
+                } catch (StringIndexOutOfBoundsException e) {
+                }
             }
             else if(s.charAt(index) == '/' && (s.charAt(index+1) == '.')){
                 index = index + 2;

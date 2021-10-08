@@ -143,16 +143,23 @@ public class AbsoluteNetdiskFile extends AbsoluteNetdiskEntity{
             close(session);
         }
     }
-    public void delete(){
-        SqlSession session = null;
+    public void delete(SqlSession session){
+        boolean tag = false;
         try{
-            session = MybatisConnect.getSession();
+            if(session == null){
+                session = MybatisConnect.getSession();
+                tag = true;
+            }else {
+                tag = false;
+            }
             int count = session.getMapper(FileMap.class).deleteFileMap(this.Map_id,this.USER_ID);
             if(count == 1){
                 session.commit();
             }
         } finally {
-            close(session);
+            if(tag){
+                close(session);
+            }
         }
     }
 

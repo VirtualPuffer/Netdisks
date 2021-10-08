@@ -7,6 +7,7 @@ public class ChatResponseMessage {
     private String user;
     private String content;
     private String target;
+    private int Chat_ID;
 
     public ChatResponseMessage() {
     }

@@ -353,7 +353,7 @@ public class FileBaseService extends FileUtilService {
      * 映射表不存在，检查
      * */
     public void deleteFileMap(){
-       this.netdiskEntity.delete();
+       this.netdiskEntity.delete(null);
     }
 
     public long count() throws RuntimeException {

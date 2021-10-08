@@ -31,5 +31,7 @@
 
         <mapper resource="mapper/mysql/UserMap.xml"></mapper>
         <mapper resource="mapper/mysql/LoginVerifyMap.xml"></mapper>
+
+        <mapper resource="mapper/mysql/ChatMap.xml"></mapper>
     </mappers>
 </configuration>
