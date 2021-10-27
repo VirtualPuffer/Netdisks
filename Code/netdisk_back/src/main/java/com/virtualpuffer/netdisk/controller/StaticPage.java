@@ -18,8 +18,12 @@ import java.util.ArrayList;
 public class StaticPage {
     public static final String path = "/usr/local/MyTomcat/dist/img";
     @RequestMapping(value = {"/","/main/*","/authpage/*","/main","/authpage","/WSchat","/WSchat/*","/WSchat","/WSchat/*"})
-    public ModelAndView getPage(HttpServletRequest request, HttpServletResponse response){
-        return new ModelAndView("/index.html");
+    public Object getPage(HttpServletRequest request, HttpServletResponse response){
+        if(JudgeDeviceType.isMobileDevice(request)){
+            return "随便返回的网页";
+        }else {
+            return new ModelAndView("/index.html");
+        }
     }
     @RequestMapping(value = {"/{path}}"})
     public Object ret(@PathVariable String path){
