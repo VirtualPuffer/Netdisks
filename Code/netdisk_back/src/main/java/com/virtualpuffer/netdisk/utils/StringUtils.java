@@ -88,7 +88,7 @@ public class StringUtils {
             if(s.charAt(index) == '/' && (s.charAt(index+1) == '/')){
                 index = index + 1;
             }
-            else if(s.charAt(index) == '/' && (s.charAt(index+1) == '.' && (s.charAt(index+2)) == '.')){
+            else if(s.length() > index + 2 && s.charAt(index) == '/' && (s.charAt(index+1) == '.' && (s.charAt(index+2)) == '.')){
                 index = index + 3;
                 try {
                     sb.delete(sb.substring(0, sb.lastIndexOf("/")).length(),sb.length());

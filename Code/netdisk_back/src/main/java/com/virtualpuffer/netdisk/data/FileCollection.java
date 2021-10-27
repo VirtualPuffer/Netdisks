@@ -9,6 +9,10 @@ public class FileCollection{
     private LinkedList<String> files;
     private int code;
     private String msg;
+
+    public FileCollection() {
+    }
+
     /**
      * @param file 搜索起始路径
      * @param name 目标名字

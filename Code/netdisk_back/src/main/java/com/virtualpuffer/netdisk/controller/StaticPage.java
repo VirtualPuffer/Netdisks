@@ -17,12 +17,13 @@ import java.util.ArrayList;
 @RestController
 public class StaticPage {
     public static final String path = "/usr/local/MyTomcat/dist/img";
-    @RequestMapping(value = {"/main/*","/authpage/*","/main","/authpage","/WSchat","/WSchat/*","/WSchat","/WSchat/*"})
+    @RequestMapping(value = {"/","/main/*","/authpage/*","/main","/authpage","/WSchat","/WSchat/*","/WSchat","/WSchat/*"})
     public ModelAndView getPage(HttpServletRequest request, HttpServletResponse response){
         return new ModelAndView("/index.html");
     }
     @RequestMapping(value = {"/{path}}"})
     public Object ret(@PathVariable String path){
+        System.out.println("asdads");
         return path;
     }
 }

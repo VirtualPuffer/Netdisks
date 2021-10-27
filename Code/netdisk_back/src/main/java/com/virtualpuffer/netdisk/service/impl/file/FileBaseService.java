@@ -47,6 +47,7 @@ import java.util.zip.ZipOutputStream;
 public class FileBaseService extends FileUtilService {
     protected User user;
     protected File file;
+    private Map<Integer,AbsoluteNetdiskDirectory> directoryMap;
     protected AbsoluteNetdiskEntity netdiskEntity;
     protected AbsoluteNetdiskFile netdiskFile;
     protected AbsoluteNetdiskDirectory netdiskDirectory;
@@ -394,28 +395,62 @@ public class FileBaseService extends FileUtilService {
             throw  new RuntimeException("缺少参数：name");
         }
         try {
-            session = MybatisConnect.getSession();
-            FileCollection collection = FileCollection.getInstance(this.file,name,getAbsolutePath("/"),type);
-            LinkedList fileList = collection.getFile();
-            LinkedList dirList = collection.getDir();
-           LinkedList<AbsoluteNetdiskFile> list = session.getMapper(FileMap.class).searchFile(name, user.getUSER_ID());
-            if(!list.isEmpty()){
-                for(AbsoluteNetdiskFile fileMap : list){
-                    fileList.add(fileMap.getFile_Destination());
+           session = MybatisConnect.getSession();
+           FileCollection collection = new FileCollection();
+           LinkedList<AbsoluteNetdiskFile> fileList = session.getMapper(FileMap.class).searchFile(name, user.getUSER_ID());
+           LinkedList<AbsoluteNetdiskDirectory> dirList = session.getMapper(DirectoryMap.class).searchDir(name, user.getUSER_ID());
+
+           LinkedList<String> file = new LinkedList<>();
+           LinkedList<String> dir = new LinkedList<>();
+
+           this.directoryMap = session.getMapper(DirectoryMap.class).getDirMap(this.user.getUSER_ID());
+            if(!fileList.isEmpty()){
+                for(AbsoluteNetdiskFile fileMap : fileList) {
+                    AbsoluteNetdiskDirectory directoryParent = directoryMap.get(fileMap.getDirectory_Parent_ID());
+                    String file_path = buildAbstractPath(fileMap);
+                    file.add(file_path);
                 }
             }
-            if(fileList.isEmpty()&&dirList.isEmpty()){
+            if(!dirList.isEmpty()){
+                for(AbsoluteNetdiskDirectory directory : dirList){
+                    dir.add(buildAbstractPath(directory));
+                }
+            }
+            if(file.isEmpty()&&dir.isEmpty()){
                 collection.setMsg("没有找到匹配的文件");
                 collection.setCode(300);
             }else {
                 collection.setMsg("已找到匹配的文件");
                 collection.setCode(200);
             }
+            collection.setFiles(file);
+            collection.setDir(dir);
             return collection;
         } finally {
             close(session);
         }
     }
+
+    public String buildAbstractPath(AbsoluteNetdiskFile netdiskFile){
+        AbsoluteNetdiskDirectory directoryParent = directoryMap.get(netdiskFile.getDirectory_Parent_ID());
+        String dir_path = buildAbstractPath(directoryParent);
+        String path = (netdiskFile == null) ? dir_path : (dir_path + "/" + netdiskFile.getFile_Name());
+        return StringUtils.filePathDeal(path);
+    }
+
+    public String buildAbstractPath(AbsoluteNetdiskDirectory netdiskDirectory){
+        LinkedList<String> pathList = new LinkedList<>();
+        StringBuffer buffer = new StringBuffer();
+        while (netdiskDirectory.getDirectory_Parent_ID() != -1){
+            netdiskDirectory = directoryMap.get(netdiskDirectory.getDirectory_Parent_ID());
+            pathList.addFirst(netdiskDirectory.getDirectory_Name());
+        }
+        for(String path : pathList){
+            buffer.append("/").append(path);
+        }
+        return buffer.toString();
+    }
+
     public void mkdir(String name) throws RuntimeException{
         if(this.netdiskEntity instanceof AbsoluteNetdiskDirectory){
             AbsoluteNetdiskDirectory directory = (AbsoluteNetdiskDirectory) this.netdiskEntity;

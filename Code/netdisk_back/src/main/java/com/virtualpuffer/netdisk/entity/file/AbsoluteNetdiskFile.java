@@ -286,6 +286,14 @@ public class AbsoluteNetdiskFile extends AbsoluteNetdiskEntity{
         this.file = file;
     }
 
+    public int getDirectory_Parent_ID() {
+        return Directory_Parent_ID;
+    }
+
+    public void setDirectory_Parent_ID(int directory_Parent_ID) {
+        Directory_Parent_ID = directory_Parent_ID;
+    }
+
     public String getFile_Name() {
         return File_Name;
     }

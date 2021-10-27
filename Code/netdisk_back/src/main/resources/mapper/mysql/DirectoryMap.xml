@@ -16,6 +16,15 @@
           and Directory_Name = #{childrenDirectoryName};
     </select>
 
+    <select id="getDirMap" resultType="com.virtualpuffer.netdisk.entity.file.AbsoluteNetdiskDirectory">
+        select * from Directory_Map where USER_ID = #{USER_ID};
+    </select>
+
+    <select id="searchDir" resultType="com.virtualpuffer.netdisk.entity.file.AbsoluteNetdiskDirectory">
+        select * from Directory_Map
+        where  USER_ID = #{USER_ID} and Directory_Name like "%"#{name}"%";
+    </select>
+
     <insert id="mkdir">
         insert into Directory_Map (USER_ID,Directory_Name,Directory_Parent_ID)
             values (#{USER_ID},#{name},#{Directory_Parent_ID});

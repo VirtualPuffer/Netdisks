@@ -3,9 +3,9 @@
         "http://mybatis.org/dtd/mybatis-3-config.dtd">
 
 <configuration>
-    <settings>
+   <!-- <settings>
         <setting name="logImpl" value="STDOUT_LOGGING"/>
-    </settings>
+    </settings>-->
     <environments default="mysql">
         <environment id="mysql">
             <transactionManager type="JDBC"></transactionManager>
@@ -17,6 +17,8 @@
                 <property name="poolMaximumActiveConnections" value="100"></property>
                 <property name="poolMaximumIdleConnections" value="15"></property>
                 <property name="poolTimeToWait" value="20000"></property>
+                <property name="poolPingQuery" value="SELECT NOW()" />
+                <property name="poolPingEnabled" value="true" />
             </dataSource>
         </environment>
     </environments>

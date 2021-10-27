@@ -1,9 +1,12 @@
 package com.virtualpuffer.netdisk.mapper.netdiskFile;
 
 import com.virtualpuffer.netdisk.entity.file.AbsoluteNetdiskDirectory;
+import org.apache.ibatis.annotations.MapKey;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Map;
 
 public interface DirectoryMap {
     int delete(int Directory_ID,int USER_ID);
@@ -23,4 +26,9 @@ public interface DirectoryMap {
     int rename(int USER_ID,int Directory_ID,String new_Directory_Name);
 
     HashSet<AbsoluteNetdiskDirectory> getChildrenDirID(int Dirctory_ID);
+
+    LinkedList<AbsoluteNetdiskDirectory> searchDir(String name,int USER_ID);
+
+    @MapKey("Directory_ID")
+    HashMap<Integer,AbsoluteNetdiskDirectory> getDirMap(int USER_ID);
 }

@@ -15,6 +15,7 @@ import javax.websocket.*;
 import javax.websocket.server.HandshakeRequest;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -100,7 +101,8 @@ public class WebSocket {
     public void messageCache(String message){
         SqlSession session = null;
         session = MybatisConnect.getSession();
-        session.getMapper(ChatMap.class)
+        session.getMapper(ChatMap.class).sendMessage(new Timestamp(System.currentTimeMillis()),service.getUser().getUSER_ID(),message,-1);
+        session.commit();
         if(messageList.size() < 10){
             messageList.addLast(message);
         }else {

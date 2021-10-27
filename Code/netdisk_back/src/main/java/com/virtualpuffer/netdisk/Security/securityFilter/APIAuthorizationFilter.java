@@ -38,9 +38,6 @@ public class APIAuthorizationFilter extends BaseFilter{
         UserServiceImpl service;
         try {
             String token = request.getHeader("Authorization");
-            if(request.getParameter("virtual")!=null){
-                token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjMiLCJwYXNzd29yZCI6IjEyMyIsInRva2VuVGFnIjoibG9naW4iLCJpcCI6bnVsbCwiZXhwIjoxNjMxNDYyODY0LCJ1c2VySUQiOjEsImlhdCI6MTYzMDg1ODA2NCwianRpIjoiMjU2NmU1M2YtYzFiMC00YzIyLTkxNWQtM2ZiYWI0NDQ1MTA5IiwidXNlcm5hbWUiOiIxMjMifQ.t5UB-9LOqGzhmdtdtPE5yNT1_LBVgMqU4HD1lUgPN6w";
-            }
             if((service = tokenMap.get(token)) == null){
                 String ip = (String) request.getAttribute("ip");
                 service = UserTokenService.getInstanceByToken(token,ip);
