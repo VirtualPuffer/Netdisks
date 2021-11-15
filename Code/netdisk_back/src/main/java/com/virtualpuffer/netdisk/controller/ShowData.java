@@ -1,5 +1,8 @@
 package com.virtualpuffer.netdisk.controller;
 
+import com.virtualpuffer.netdisk.entity.BaseEntity;
+import com.virtualpuffer.netdisk.service.impl.BaseServiceImpl;
+import com.virtualpuffer.netdisk.service.impl.file.FileUtilService;
 import com.virtualpuffer.netdisk.utils.JDBCOBJ;
 import com.virtualpuffer.netdisk.utils.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +13,10 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -40,6 +47,23 @@ public class ShowData {
     @RequestMapping("/getImg")
     public Object get(){
         return new ModelAndView("/img/bg.f90510bb.png");
+    }
+
+    @RequestMapping(value = "/video")
+    public static void getVideo(HttpServletResponse response) throws IOException {
+        InputStream inputStream = new FileInputStream("/usr/local/MyTomcat/static/meeting_03.mp4");
+        OutputStream outputStream = response.getOutputStream();
+        copy(inputStream,outputStream);
+        return;
+    }
+
+    protected static void copy(InputStream inputStream,OutputStream outputStream)throws IOException{
+        byte[] buffer = new byte[1024];
+        int length = 0;
+        while ((length = inputStream.read(buffer)) != -1) {
+            outputStream.write(buffer, 0, length);
+
+        }
     }
 
     @ResponseBody

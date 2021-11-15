@@ -23,6 +23,7 @@ import java.util.zip.ZipOutputStream;
 //@Async
 public class FileTokenService extends FileHashService implements ParseToken {
     private Map<Integer,AbsoluteNetdiskDirectory> directoryCache = new HashMap<>();
+    private Map tokenMessageMap;
     private HashSet<AbsoluteNetdiskEntity> fileSet;
     private boolean singleFile = false;
     private String packageName ;
@@ -55,6 +56,7 @@ public class FileTokenService extends FileHashService implements ParseToken {
      * 文件夹没办法给hash，只能给路径，被删了就没办法了
      * */
     public static FileTokenService getInstanceByToken(String token, String key) throws FileNotFoundException {
+        Map map = null;
         SqlSession session = null;
         AbsoluteNetdiskDirectory netdiskDirectory = null;
         AbsoluteNetdiskFile netdiskFile = null;
@@ -62,7 +64,7 @@ public class FileTokenService extends FileHashService implements ParseToken {
         HashSet<AbsoluteNetdiskEntity> set = new HashSet<>();
         try {
             session = MybatisConnect.getSession();
-            Map map = parseJWT(token,key);
+            map = parseJWT(token,key);
             int userID = (Integer) map.get("userID");
             boolean single = (Boolean) map.get("straight");
             String file_name = (String) map.get("file_name");
@@ -81,6 +83,7 @@ public class FileTokenService extends FileHashService implements ParseToken {
             }
             AbsoluteNetdiskEntity instance = netdiskFile == null ? netdiskDirectory : netdiskFile;
             FileTokenService service = new FileTokenService(instance,user,set,single);
+            service.tokenMessageMap = map;
             service.setPackageName(file_name);
             return service;
         } finally {
@@ -154,6 +157,10 @@ public class FileTokenService extends FileHashService implements ParseToken {
             }
         }
         return outputStream;
+    }
+
+    public Map getTokenMessageMap() {
+        return tokenMessageMap;
     }
 
     public String getPackageName() {

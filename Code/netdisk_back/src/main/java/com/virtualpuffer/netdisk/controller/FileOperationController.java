@@ -4,6 +4,7 @@ package com.virtualpuffer.netdisk.controller;
 import com.virtualpuffer.netdisk.controller.base.BaseController;
 import com.virtualpuffer.netdisk.data.FileCollection;
 import com.virtualpuffer.netdisk.data.ResponseMessage;
+import com.virtualpuffer.netdisk.entity.file.AbsoluteNetdiskDirectory;
 import com.virtualpuffer.netdisk.entity.file.DownloadCollection;
 import com.virtualpuffer.netdisk.entity.file.File_Map;
 import com.virtualpuffer.netdisk.service.impl.file.FileBaseService;
@@ -182,8 +183,8 @@ public class FileOperationController extends BaseController {
         }
     }
     @ResponseBody
-    @RequestMapping(value = "shareFile",method = RequestMethod.POST)
-    public ResponseMessage shareFile(@RequestBody DownloadCollection collection, HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException {
+    @RequestMapping(value = "preview",method = RequestMethod.POST)
+    public ResponseMessage preview(@RequestBody DownloadCollection collection, HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException {
         FileBaseService service = null;
         String key = null;
         key = collection.getKey();
@@ -202,6 +203,67 @@ public class FileOperationController extends BaseController {
             String date = getTime(System.currentTimeMillis() + time * 1000);
             HashMap hashMap = new HashMap();
             hashMap.put("downloadURL",url);//token
+            //  hashMap.put("destination",destination);//名字
+            hashMap.put("efficient time",date);
+            hashMap.put("key",key);
+            return ResponseMessage.getSuccessInstance(200,"链接获取成功",hashMap);
+        } catch (RuntimeException e){
+            e.printStackTrace();
+            return ResponseMessage.getExceptionInstance(300,e.getMessage(),null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseMessage.getErrorInstance(500,"系统错误",null);
+        }
+    }
+    @ResponseBody
+    @RequestMapping(value = "preview")
+    public ResponseMessage preview(String destination, HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException {
+        FileBaseService service = null;
+
+        try {
+            UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
+            service = FileBaseService.getInstance(destination,loginService.getUser());
+            if(service.getNetdiskEntity() instanceof AbsoluteNetdiskDirectory){
+                throw  new RuntimeException("你来教我怎么预览文件夹");
+            }
+            service.downloadFile(response.getOutputStream());
+            response.addHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(service.getNetdiskFile().getFile_Name(), "UTF-8"));
+            return ResponseMessage.getSuccessInstance(200,"传输成功",null);
+        } catch (IOException e){
+            e.printStackTrace();
+            return ResponseMessage.getExceptionInstance(300,e.getMessage(),null);
+        }catch (RuntimeException e){
+            e.printStackTrace();
+            return ResponseMessage.getExceptionInstance(300,e.getMessage(),null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseMessage.getErrorInstance(500,"系统错误",null);
+        }
+    }
+    @ResponseBody
+    @RequestMapping(value = "shareFile",method = RequestMethod.POST)
+    public ResponseMessage shareFile(@RequestBody DownloadCollection collection, HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException {
+        FileBaseService service = null;
+        String key = null;
+        key = collection.getKey();
+        try {
+            UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
+            int time = 900;
+            if (collection.getSecond()!=null) {
+                time = collection.getSecond();
+            }
+            if (key == null && collection.isGetRandom()) {
+                key = StringUtils.ranStr(6);//随机生成提取码
+            }
+            if(collection.isPreview() == null){
+                collection.setPreview(false);
+            }
+            collection.setSecond(time);
+            //String url = service.getDownloadURL(time,key, FileBaseService.DOWNLOAD_TAG);
+            String url = FileBaseService.getDownloadURL(collection, loginService.getUser());
+            String date = getTime(System.currentTimeMillis() + time * 1000);
+            HashMap hashMap = new HashMap();
+            hashMap.put("downloadURL",url);//token
           //  hashMap.put("destination",destination);//名字
             hashMap.put("efficient time",date);
             hashMap.put("key",key);
@@ -210,10 +272,7 @@ public class FileOperationController extends BaseController {
             e.printStackTrace();
             return ResponseMessage.getExceptionInstance(300,e.getMessage(),null);
         } catch (Exception e) {
-            System.out.println(getTime() + "   ->   未捕获异常: ");
-            System.out.println("_______________________________>");
             e.printStackTrace();
-            System.out.println("<_______________________________");
             return ResponseMessage.getErrorInstance(500,"系统错误",null);
         }
     }

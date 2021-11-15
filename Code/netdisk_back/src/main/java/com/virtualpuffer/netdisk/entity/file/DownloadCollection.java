@@ -1,6 +1,7 @@
 package com.virtualpuffer.netdisk.entity.file;
 
 public class DownloadCollection{
+    private Boolean preview = false;
     private String[] files;
     private String destination;
     private Integer second;
@@ -8,6 +9,14 @@ public class DownloadCollection{
     private boolean getRandom;
 
     public DownloadCollection() {
+    }
+
+    public Boolean isPreview() {
+        return preview;
+    }
+
+    public void setPreview(boolean preview) {
+        this.preview = preview;
     }
 
     public String[] getFiles() {
