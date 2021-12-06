@@ -1,4 +1,4 @@
-package com.virtualpuffer.onlineChat.chat;
+package com.virtualpuffer.onlineChat.SSL;
 
 import com.virtualpuffer.netdisk.service.impl.BaseServiceImpl;
 
@@ -9,7 +9,6 @@ import java.io.PrintStream;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
-import java.util.LinkedList;
 
 /**
  * 该类为多线程类，用于服务端

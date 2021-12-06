@@ -1,11 +1,12 @@
-package com.virtualpuffer.onlineChat.chat;
+package com.virtualpuffer.onlineChat.SSL;
+
+import com.virtualpuffer.onlineChat.chat.ServerThread;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.Socket;
-import java.net.SocketTimeoutException;
 
 public class Client {
     private static int tag = 0;
@@ -38,6 +39,7 @@ public class Client {
         }
     }
 }
+
 class Out extends Thread{
     Socket client;
     Thread mainThread;

@@ -20,6 +20,7 @@ import static com.virtualpuffer.netdisk.service.messageService.SendMail.sendEmai
 @SpringBootApplication(exclude = {SecurityAutoConfiguration.class},scanBasePackages = {"com.virtualpuffer.*"})//核心包
 public class NetdiskApplication {
     public static void main(String[] args) throws Exception {
+        System.out.println(System.currentTimeMillis());
         //Class.forName("com.virtualpuffer.netdisk.utils.DemoFactory");
         SpringApplication.run(NetdiskApplication.class, args);
         Thread c = new Thread(new SendMail("zhongyale797@163.com","zhongyale797@163.com","YAWIOJZRTINOIUFG",SendMail.M163_HOST));
