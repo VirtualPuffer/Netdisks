@@ -20,11 +20,29 @@ public class SendMail extends BaseServiceImpl implements Runnable{
     private Session session;
     private Transport transport;
     private boolean runnable = true;
-    private static volatile SendMail sendMail;
+    //private static volatile SendMail sendMail;
+    private static boolean load = false;
     private static LinkedList<Mail> list = new LinkedList<>();
     public static final String QQ_HOST = "smtp.qq.com";
     public static final String M163_HOST = "smtp.163.com";
 
+    public static void build(SendMail sendMail){
+        Thread thread = new Thread(sendMail);
+        thread.start();
+    }
+
+    public static void load(){
+        build(new SendMail("zhongyale797@163.com","zhongyale797@163.com","YAWIOJZRTINOIUFG",SendMail.M163_HOST));
+        build(new SendMail("547798198@qq.com","547798198@qq.com","qykmsmflodptbeea",SendMail.QQ_HOST));
+        build(new SendMail("1415751897@qq.com","1415751897@qq.com","erthemzwgmbngcbh",SendMail.QQ_HOST));
+    }
+
+    public static void sendEmail(Mail get){
+        if(!load){
+            load();
+        }
+        list.add(get);
+    }
 
     public SendMail(String from,String recipient,String password,String host){
         this.from  =from;
@@ -50,10 +68,6 @@ public class SendMail extends BaseServiceImpl implements Runnable{
                 return new PasswordAuthentication(recipient,password);
             }
         });
-    }
-
-    public static void sendEmail(Mail get){
-        list.add(get);
     }
 
     public PortMessage buildMessage(Mail mail) throws MessagingException {

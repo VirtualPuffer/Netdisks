@@ -20,16 +20,6 @@ import static com.virtualpuffer.netdisk.service.messageService.SendMail.sendEmai
 @SpringBootApplication(exclude = {SecurityAutoConfiguration.class},scanBasePackages = {"com.virtualpuffer.*"})//核心包
 public class NetdiskApplication {
     public static void main(String[] args) throws Exception {
-        System.out.println(System.currentTimeMillis());
-        //Class.forName("com.virtualpuffer.netdisk.utils.DemoFactory");
         SpringApplication.run(NetdiskApplication.class, args);
-        Thread c = new Thread(new SendMail("zhongyale797@163.com","zhongyale797@163.com","YAWIOJZRTINOIUFG",SendMail.M163_HOST));
-        Thread get = new Thread(new SendMail("547798198@qq.com","547798198@qq.com","qykmsmflodptbeea",SendMail.QQ_HOST));
-        Thread r = new Thread(new SendMail("1415751897@qq.com","1415751897@qq.com","erthemzwgmbngcbh",SendMail.QQ_HOST));
-        c.start();
-        get.start();
-        r.start();
-        Thread a = new Server();
-        a.start();
     }
 }
