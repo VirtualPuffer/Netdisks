@@ -1,6 +1,9 @@
 package com.virtualpuffer.netdisk.utils;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import java.io.BufferedWriter;
@@ -12,21 +15,8 @@ import java.util.Date;
 
 @Component
 public class Log {
-    private static final Log logWriter = new Log();
-    private FileOutputStream outputStream;
-    private FileWriter writer;
-    private BufferedWriter writlog;
 
     private Log() {
-        try {
-            this.outputStream = new FileOutputStream(Message.getMess("logLocate"));
-            this.writer = new FileWriter(Message.getMess("logLocate"),true);
-            this.writlog = new BufferedWriter(writer);
-        } catch (IOException e) {
-        }
-    }
-    public static Log getLog(){
-        return logWriter;
     }
 
     /*
@@ -56,24 +46,30 @@ public class Log {
         }
         return ret.toString();
     }
-    /*日志写入*/
-    private void writeLog(String str){
-        try {
-            writlog.write(str + "\n");
-            writlog.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    public void systemLog(String message){
-        getLog().writeLog(getTime()+ " : " + message);
+
+    public String getCaller(){
+        StackTraceElement[] stack = Thread.currentThread().getStackTrace();
+        return stack[3].getClassName() + "." + stack[3].getMethodName();
     }
 
-    public void msgLog(String msg){
-        systemLog("Message : " + msg);
+    public void debugLog(String msg){
+        Logger log = LogManager.getLogger(getCaller());
+        log.debug(msg);
     }
+
+    public void warnLog(String msg){
+        Logger log = LogManager.getLogger(getCaller());
+        log.warn(msg);
+    }
+
+    public void systemLog(String msg){
+        Logger log = LogManager.getLogger(getCaller());
+        log.info(msg);
+    }
+
     public void errorLog(String msg){
-        systemLog("Error : " + msg);
+        Logger log = LogManager.getLogger(getCaller());
+        log.error(msg);
     }
 
 }

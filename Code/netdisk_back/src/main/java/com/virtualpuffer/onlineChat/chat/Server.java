@@ -1,6 +1,7 @@
 package com.virtualpuffer.onlineChat.chat;
 
 import com.virtualpuffer.netdisk.startup.NetdiskConfigure;
+import com.virtualpuffer.netdisk.utils.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
@@ -15,6 +16,10 @@ import java.net.Socket;
 
 @Component
 public class Server extends Thread {
+
+    @Autowired
+    Log log;
+
     private Thread thread;
 
     @Value("${spring.socket.port}")
@@ -22,6 +27,7 @@ public class Server extends Thread {
 
     @Autowired
     public void start(){
+        log.systemLog("端口监听启动");
         this.thread = new Thread(this);
         this.thread.start();
         //System.out.println("端口"+ socketPort +"监听启动");

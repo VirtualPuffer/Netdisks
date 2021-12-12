@@ -3,8 +3,6 @@ package com.virtualpuffer.netdisk.utils;
 import java.lang.reflect.Constructor;
 import java.util.LinkedList;
 
-import static com.virtualpuffer.netdisk.service.impl.BaseServiceImpl.errorLog;
-
 
 /*
 * 必须实现Runnable接口
@@ -24,7 +22,6 @@ private DemoFactory(){
 }
 
 public static DemoFactory getDemoFactory(){
-    errorLog.systemLog("线程工厂启动");
     if(demoFactory == null){//1
         synchronized (DemoFactory.class){//2
             if(demoFactory == null){//3

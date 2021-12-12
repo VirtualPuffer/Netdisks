@@ -1,6 +1,7 @@
 package com.virtualpuffer.onlineChat.chat;
 
 import com.virtualpuffer.netdisk.service.impl.BaseServiceImpl;
+import com.virtualpuffer.netdisk.utils.Log;
 
 import java.io.BufferedReader;
 import java.io.IOException;

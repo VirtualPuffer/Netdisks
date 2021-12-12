@@ -375,7 +375,7 @@ public class FileBaseService extends FileUtilService {
                 zos.finish();
                 zos.flush();
             } catch (Exception e) {
-                errorLog.errorLog(e.getMessage());
+                log.errorLog(e.getMessage());
                 throw new RuntimeException("zip error from ZipUtils", e);
             } finally {
                 close(zos);

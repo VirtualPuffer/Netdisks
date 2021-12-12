@@ -45,6 +45,7 @@ public class SendMail extends BaseServiceImpl implements Runnable{
     }
 
     public SendMail(String from,String recipient,String password,String host){
+
         this.from  =from;
         this.recipient = recipient;
         this.password = password;
@@ -95,12 +96,12 @@ public class SendMail extends BaseServiceImpl implements Runnable{
                     }
                     Thread.sleep(1000);
                 } catch (Exception e) {
-                    errorLog.errorLog(e.getMessage());
+                    log.errorLog(e.getMessage());
                 }
             }
             transport.close();
         }catch (Exception e){
-            errorLog.errorLog(e.getMessage());
+            log.errorLog(e.getMessage());
             e.printStackTrace();
         }
     }
@@ -114,10 +115,10 @@ public class SendMail extends BaseServiceImpl implements Runnable{
             } catch (NoSuchProviderException e) {
                 Thread.sleep(10000);
                 System.out.println("fail getting connect");
-                errorLog.systemLog(e.getMessage());
+                log.systemLog(e.getMessage());
             } catch (MessagingException e) {
                 Thread.sleep(10000);
-                errorLog.systemLog(e.getMessage());
+                log.systemLog(e.getMessage());
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
