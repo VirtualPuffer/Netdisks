@@ -21,10 +21,10 @@ public abstract class BaseServiceImpl {
     protected static final String properties = "getMess.properties";
     protected static final String ChineseProperties = "ChineseMess.properties";
     public static final String secretKey = "c7fp2dh6msk0";
-    @Autowired
-    public Log log;
+    public static final Log errorLog = Log.getLog();
     private static Properties get;
     private static Properties property;
+
     @Autowired
     protected RedisUtil redisUtil;
 
@@ -54,8 +54,17 @@ public abstract class BaseServiceImpl {
         }
     }
 
-    public BaseServiceImpl(){
+    /**
+     * 文件、文件流复制
+     * */
+    protected static void copy(InputStream inputStream,OutputStream outputStream)throws IOException{
+        byte[] buffer = new byte[BUFFER_SIZE];
+        int length = 0;
+        while ((length = inputStream.read(buffer)) != -1) {
+            outputStream.write(buffer, 0, length);
+        }
     }
+
 
     protected static void close(Closeable cos){
         try {
