@@ -9,9 +9,7 @@ import org.springframework.boot.web.servlet.ServletComponentScan;
 @ServletComponentScan
 @SpringBootApplication(exclude = {SecurityAutoConfiguration.class},scanBasePackages = {"com.virtualpuffer.*"})//核心包
 public class NetdiskApplication {
-
     public static void main(String[] args) throws Exception {
-
         SpringApplication.run(NetdiskApplication.class, args);
     }
 }
