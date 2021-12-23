@@ -25,6 +25,8 @@ public class Server extends Thread {
     @Value("${spring.socket.port}")
     private int socketPort;
 
+    private ServerSocket serverSocket;
+
     @Autowired
     public void start(){
         log.systemLog("端口监听启动");
@@ -36,14 +38,19 @@ public class Server extends Thread {
     @Override
     public void run(){
         try {
-            ServerSocket serverSocket = new ServerSocket(socketPort);
+            log.systemLog("端口监听：" + socketPort);
+            serverSocket = new ServerSocket(socketPort);
             Socket socket = null;
             while (true){
                 socket = serverSocket.accept();
                 new Thread(new ServerThread(socket)).start();
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            try {
+                serverSocket.close();
+            } catch (Exception ioException) {
+            }
+            log.errorLog("后台端口异常：" + e.getMessage());
         }
     }
 }

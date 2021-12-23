@@ -2,6 +2,7 @@ package com.virtualpuffer.onlineChat.chat;
 
 import com.virtualpuffer.netdisk.service.impl.BaseServiceImpl;
 import com.virtualpuffer.netdisk.utils.Log;
+import com.virtualpuffer.netdisk.utils.StringUtils;
 
 import java.io.*;
 import java.net.Socket;
@@ -25,6 +26,8 @@ public class ServerThread extends BaseServiceImpl implements Runnable{
     public ServerThread(Socket client){
         this.client = client;
     }
+
+    public void localCMD(String command,File workPath){}
 
     @Override
     public void run() {
@@ -67,9 +70,11 @@ public class ServerThread extends BaseServiceImpl implements Runnable{
             out.println("欢迎回来，连接已建立，通信地址：" + socket.getRemoteSocketAddress());
             boolean flag = true;
             while (flag && !socket.isClosed()) {
-                    Runtime.getRuntime().exec("");
+                String currentPath = "/bin/sh";
                 try {
+                    str = "";
                     str = buf.readLine();
+                   // systemStream.println(str);
                 } catch (SocketTimeoutException e){
                     if(connectTag < 3){
                         out.println(ServerThread.CONNECTTEST_REQUEST);
@@ -79,7 +84,6 @@ public class ServerThread extends BaseServiceImpl implements Runnable{
                         return;
                     }
                 }
-
                 if (DISCONNECT_REQUEST.equals(str) && client.equals(socket)) {
                     out.println(DISCONNECT_RESPONSE);
                     return;
@@ -87,10 +91,28 @@ public class ServerThread extends BaseServiceImpl implements Runnable{
                     out.println(CONNECTTEST_RESPONSE);
                 }else if(CONNECTTEST_RESPONSE.equals(str)){
                     connectTag = 0;
+                }else if(str.startsWith("$cd")){
+                    String path = str.substring(4);
+                    String absolutePath = StringUtils.filePathDeal(path);
+                    File x = new File(absolutePath);
+                    if(x.exists()){
+                        currentPath = absolutePath;
+                        out.println("路径已经切换至："+ currentPath);
+                    }else{
+                        String relativePath = currentPath + "/" + StringUtils.filePathDeal(path);
+                        File relative = new File(relativePath);
+                        if(relative.exists()){
+                            currentPath = relativePath;
+                            out.println("路径已经切换至："+ currentPath);
+                        }else {
+                            out.println("路径："+ path +"不存在");
+                        }
+                    }
                 }else if(str.startsWith("$")){
                     try{
-                        InputStream inputStream = Runtime.getRuntime().exec(str.substring(1)).getInputStream();
-                        //
+                        String[] cmd = { currentPath, "-c", str.substring(1) };
+                        //String[] command = str.substring(1).split("777777");
+                        InputStream inputStream = Runtime.getRuntime().exec(cmd).getInputStream();
                         copy(inputStream,out);
                     }catch (Exception e){
                         out.println(e.getMessage());
@@ -98,7 +120,7 @@ public class ServerThread extends BaseServiceImpl implements Runnable{
                 }
             }
         } catch (IOException ioException) {
-            ioException.printStackTrace();
+            log.errorLog(ioException.getMessage());
         } catch (Exception exception){
         }finally {
             System.setOut(systemStream);
