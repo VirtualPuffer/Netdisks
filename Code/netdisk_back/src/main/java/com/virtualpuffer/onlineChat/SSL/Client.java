@@ -14,13 +14,14 @@ public class Client {
         Thread nowThread = Thread.currentThread();
         Socket client = null;
         try {
-            client = new Socket("47.96.253.99", 10004);
+            client = new Socket("127.0.0.1", 10004);
         } catch (IOException e) {
             if (tag < 3) {
                 Thread.sleep(1000);
                 System.out.println("连接失败，尝试重连");
                 tag++;
                 main(args);
+                return;
             }else {
                 System.out.println("连接失败，程序结束");
                 System.exit(0);

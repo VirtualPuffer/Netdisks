@@ -31,7 +31,7 @@ import java.util.Map;
 @WebFilter(urlPatterns = "/api/*",filterName = "xapiControlFilter")
 public class APIAuthorizationFilter extends BaseFilter{
     private Map<String,UserServiceImpl> tokenMap = new HashMap();
-
+    private static boolean clearance = true;
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
@@ -44,7 +44,7 @@ public class APIAuthorizationFilter extends BaseFilter{
             }
             request.setAttribute("AuthService",service);
             //token是否为登录token以及token有没有过期
-            if(service.getTokenTag().equals(UserServiceImpl.LOGIN_TAG) && !UserServiceImpl.TOKEN_EXPIRE.equals(redisUtil.get(token))){
+            if(service.getTokenTag().equals(UserServiceImpl.LOGIN_TAG) && !UserServiceImpl.TOKEN_EXPIRE.equals(redisUtil.get(token)) && clearance){
                 filterChain.doFilter(request,response);
                 return;
             }

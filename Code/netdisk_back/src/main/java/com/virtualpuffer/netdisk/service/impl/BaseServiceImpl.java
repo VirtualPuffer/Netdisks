@@ -122,10 +122,13 @@ public abstract class BaseServiceImpl {
         }
         return builder.compact();
     }
-    //token解码
+    /**
+     * 可以不传key,默认空密钥
+     *
+     *
+     * */
     public static Claims parseJWT(String token,String key) {
         Claims claims = null;
-
         if (key == null) {
             claims = Jwts.parser()
                     .setSigningKey(secretKey)

@@ -1,6 +1,11 @@
 
 server:
   port: 80
+  ssl:
+    key-store: classpath:virtualpuffer.top.jks
+    key-store-password: 123333
+    key-store-type: JKS
+    enabled: false
   servlet:
     context-path: /Netdisk
 
