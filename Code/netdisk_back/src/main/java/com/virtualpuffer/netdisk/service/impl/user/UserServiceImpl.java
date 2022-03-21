@@ -39,6 +39,7 @@ public class UserServiceImpl extends BaseServiceImpl implements LoginService {
     //redis状态标识
     public static final String TOKEN_ACTIVE = "active";
     public static final String TOKEN_EXPIRE = "expire";
+    public static final String TOKEN_EXTEND_VALID = "valid";
     //token作用标识
     public static final String LOGIN_TAG = "login";
     public static final String RESET_TAG = "reset";

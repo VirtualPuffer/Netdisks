@@ -90,8 +90,6 @@ public class RedisUtil {
     /**
      * 83
      * 普通缓存获取
-     * 84
-     *
      * @param key 键
      *            85
      * @return 值
@@ -120,6 +118,9 @@ public class RedisUtil {
             return false;
         }
     }
+    /**
+     * time单位是秒
+     * */
     public boolean set(String key, Object value, long time) {
         try {
             if (time > 0) {

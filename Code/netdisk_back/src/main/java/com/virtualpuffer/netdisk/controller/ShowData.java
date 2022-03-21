@@ -76,7 +76,6 @@ public class ShowData {
         }
         return builder.toString();
     }
-
     @RequestMapping("/sendto")
     public void send(String on,HttpServletRequest request){
         System.out.println(request.getRemotePort());

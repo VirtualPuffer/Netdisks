@@ -53,11 +53,3 @@ public class MybatisConnect {
     }
 
 }
-class Clean implements Runnable{
-    @Override
-    public void run() {
-        while (true){
-
-        }
-    }
-}

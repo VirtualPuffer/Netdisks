@@ -25,9 +25,8 @@ public class StaticPage {
             return new ModelAndView("/index.html");
         }
     }
-    @RequestMapping(value = {"/{path}}"})
+    @RequestMapping(value = {"/{path}"})
     public Object ret(@PathVariable String path){
-        System.out.println("asdads");
         return path;
     }
 }

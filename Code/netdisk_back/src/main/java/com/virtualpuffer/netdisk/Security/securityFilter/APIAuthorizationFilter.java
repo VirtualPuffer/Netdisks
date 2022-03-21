@@ -45,8 +45,13 @@ public class APIAuthorizationFilter extends BaseFilter{
             request.setAttribute("AuthService",service);
             //token是否为登录token以及token有没有过期
             if(service.getTokenTag().equals(UserServiceImpl.LOGIN_TAG) && !UserServiceImpl.TOKEN_EXPIRE.equals(redisUtil.get(token)) && clearance){
+                redisUtil.set(token,UserServiceImpl.TOKEN_ACTIVE,900);
                 filterChain.doFilter(request,response);
                 return;
+            }
+            if(redisUtil.get(token) == UserServiceImpl.TOKEN_ACTIVE){//延长有效期
+                redisUtil.set(token,UserServiceImpl.TOKEN_ACTIVE,900);
+                filterChain.doFilter(request,response);
             }
             throw new RuntimeException();
         } catch (Exception e) {
