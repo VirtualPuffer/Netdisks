@@ -52,6 +52,7 @@ public class APIAuthorizationFilter extends BaseFilter{
             if(redisUtil.get(token) == UserServiceImpl.TOKEN_ACTIVE){//延长有效期
                 redisUtil.set(token,UserServiceImpl.TOKEN_ACTIVE,900);
                 filterChain.doFilter(request,response);
+                return;
             }
             throw new RuntimeException();
         } catch (Exception e) {
