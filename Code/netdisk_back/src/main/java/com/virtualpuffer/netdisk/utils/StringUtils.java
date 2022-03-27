@@ -88,22 +88,24 @@ public class StringUtils {
             if(s.charAt(index) == '/' && (s.charAt(index+1) == '/')){
                 index = index + 1;
             }
-            else if(s.length() > index + 2 && s.charAt(index) == '/' && (s.charAt(index+1) == '.' && (s.charAt(index+2)) == '.')){
+            else if(s.length() > index + 2 && s.charAt(index) == '/' && (s.charAt(index+1) == '.' && (s.charAt(index+2)) == '.'
+            &&(index+3 >= s.length() || s.charAt(index+3) == '/'))){
                 index = index + 3;
                 try {
                     sb.delete(sb.substring(0, sb.lastIndexOf("/")).length(),sb.length());
                 } catch (StringIndexOutOfBoundsException e) {
                 }
             }
-            else if(s.charAt(index) == '/' && (s.charAt(index+1) == '.')){
+            else if(s.charAt(index) == '/' && (s.charAt(index+1) == '.') && (index+2 >= s.length() || s.charAt(index+2) == '/')){
                 index = index + 2;
             }else {
                 sb.append(s.charAt(index));
                 index ++;
             }
         }
-        sb.append(s.charAt(index++));
-      /*  sb.append(s.charAt(index++));*/
+        if(s.length() > index){
+            sb.append(s.charAt(index++));
+        }
         return sb.toString();
     }
 
