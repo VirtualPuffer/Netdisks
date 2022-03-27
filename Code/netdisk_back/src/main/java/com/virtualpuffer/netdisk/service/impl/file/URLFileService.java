@@ -61,8 +61,6 @@ public class URLFileService extends FileUtilService {
 
     public static void downloadFromURL(String url) throws IOException {
         URL realUrl = new URL(url);
-        System.out.println("下载Url: " + url);
-        System.out.println(realUrl);
         HttpURLConnection connection = (HttpURLConnection)realUrl.openConnection();
         connection.setRequestProperty("accept", "*/*");
         connection.setRequestProperty("connection", "Keep-Alive");

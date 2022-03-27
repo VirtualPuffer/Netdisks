@@ -183,39 +183,6 @@ public class FileOperationController extends BaseController {
         }
     }
     @ResponseBody
-    @RequestMapping(value = "preview",method = RequestMethod.POST)
-    public ResponseMessage preview(@RequestBody DownloadCollection collection, HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException {
-        FileBaseService service = null;
-        String key = null;
-        key = collection.getKey();
-        try {
-            UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
-            int time = 900;
-            if (collection.getSecond()!=null) {
-                time = collection.getSecond();
-            }
-            if (key == null && collection.isGetRandom()) {
-                key = StringUtils.ranStr(6);//随机生成提取码
-            }
-            collection.setSecond(time);
-            //String url = service.getDownloadURL(time,key, FileBaseService.DOWNLOAD_TAG);
-            String url = FileBaseService.getDownloadURL(collection, loginService.getUser());
-            String date = getTime(System.currentTimeMillis() + time * 1000);
-            HashMap hashMap = new HashMap();
-            hashMap.put("downloadURL",url);//token
-            //  hashMap.put("destination",destination);//名字
-            hashMap.put("efficient time",date);
-            hashMap.put("key",key);
-            return ResponseMessage.getSuccessInstance(200,"链接获取成功",hashMap);
-        } catch (RuntimeException e){
-            e.printStackTrace();
-            return ResponseMessage.getExceptionInstance(300,e.getMessage(),null);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseMessage.getErrorInstance(500,"系统错误",null);
-        }
-    }
-    @ResponseBody
     @RequestMapping(value = "preview")
     public ResponseMessage preview(String destination, HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException {
         FileBaseService service = null;
