@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Map;
 
-@WebFilter(urlPatterns = "/dsa*",filterName = "amessageFilter")
+@WebFilter(urlPatterns = "/*",filterName = "amessageFilter")
 public class IPFilter extends BaseFilter{
 
     public static final int IPAccessLimit = 5000;

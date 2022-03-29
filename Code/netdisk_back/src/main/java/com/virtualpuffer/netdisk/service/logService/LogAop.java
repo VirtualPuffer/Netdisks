@@ -19,7 +19,8 @@ import java.util.Arrays;
 @Component
 public class LogAop {
     public static volatile int tag = 0;
-    @Pointcut("execution(* com.virtualpuffer.netdisk.controller.*.*(..))")
+    //@Pointcut("execution(* com.virtualpuffer.netdisk.controller.*.*(..))")
+    @Pointcut("execution(* com.virtualpuffer.netdisk.Security.securityFilter.APIAuthorizationFilter.*(..))")
     public void logCut(){}
 
     @Before("logCut()")
@@ -32,11 +33,13 @@ public class LogAop {
             System.out.println("----------------------  [" + tag++ + "]  ----------------------");
             Signature signature = joinPoint.getSignature();
             System.out.println("操作ip:   " + request.getAttribute("ip"));
+            System.out.println("访问路径:  " + request.getServletPath());
             System.out.println("当前时间：  " + Log.getTime());
             System.out.println("返回目标方法的签名：" + signature);
-            System.out.println("代理方法：" + signature.getName());
+            //System.out.println("代理方法：" + signature.getName());
             Object[] args = joinPoint.getArgs();
             System.out.println("参数信息：" + Arrays.asList(args));
+            System.out.println();
         } catch (Exception exception) {
         }
 
