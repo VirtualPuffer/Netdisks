@@ -238,7 +238,9 @@ public class FileOperationController extends BaseController {
         } catch (RuntimeException e){
             e.printStackTrace();
             return ResponseMessage.getExceptionInstance(300,e.getMessage(),null);
-        } catch (Exception e) {
+        } catch (FileNotFoundException e){
+            return ResponseMessage.getExceptionInstance(404,"没有找到目标：  " + e.getMessage(),null);
+        }catch (Exception e) {
             e.printStackTrace();
             return ResponseMessage.getErrorInstance(500,"系统错误",null);
         }

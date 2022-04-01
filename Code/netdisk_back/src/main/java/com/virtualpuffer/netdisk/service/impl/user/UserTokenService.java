@@ -10,6 +10,7 @@ import com.virtualpuffer.netdisk.utils.RedisUtil;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.scheduling.annotation.Async;
 
+import java.net.SocketTimeoutException;
 import java.util.Map;
 
 /**
@@ -38,8 +39,9 @@ public class UserTokenService extends UserServiceImpl implements ParseToken {
                 //throw new RuntimeException("");
                 //System.out.println("ip校验异常");
             }
-
-            if (user != null && !TOKEN_EXPIRE.equals(redisUtil.get(token))) {
+            String redis = null;
+            redis = (String) redisUtil.getString(token);
+            if (user != null && !TOKEN_EXPIRE.equals(redis)) {
                 UserTokenService service = new UserTokenService(user);
                 service.setTokenTag((String) map.get("tokenTag"));
                 return service;
