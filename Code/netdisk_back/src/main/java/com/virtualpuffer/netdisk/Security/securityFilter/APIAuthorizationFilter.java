@@ -7,6 +7,7 @@ import com.virtualpuffer.netdisk.service.impl.user.UserServiceImpl;
 import com.virtualpuffer.netdisk.service.impl.user.UserTokenService;
 import com.virtualpuffer.netdisk.utils.Log;
 import com.virtualpuffer.netdisk.utils.RedisUtil;
+import io.jsonwebtoken.MalformedJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -35,10 +36,12 @@ public class APIAuthorizationFilter extends BaseFilter{
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
-        UserServiceImpl service;
+        UserServiceImpl service = null;
         try {
             String token = request.getHeader("Authorization");
-            if((service = tokenMap.get(token)) == null){
+            if(token == null || "".equals(token)){
+                throw new RuntimeException();
+            }else if((service = tokenMap.get(token)) == null){
                 String ip = (String) request.getAttribute("ip");
                 service = UserTokenService.getInstanceByToken(token,ip);
             }
@@ -48,15 +51,17 @@ public class APIAuthorizationFilter extends BaseFilter{
                 redisUtil.set(token,UserServiceImpl.TOKEN_ACTIVE,900);
                 filterChain.doFilter(request,response);
                 return;
-            }
-            if(redisUtil.get(token) == UserServiceImpl.TOKEN_ACTIVE){//延长有效期
+            }else if(redisUtil.get(token) == UserServiceImpl.TOKEN_ACTIVE){//延长有效期
                 redisUtil.set(token,UserServiceImpl.TOKEN_ACTIVE,900);
                 filterChain.doFilter(request,response);
                 return;
+            }else{
+                throw new RuntimeException();
             }
-            throw new RuntimeException();
         } catch (Exception e) {
-            e.printStackTrace();
+            if(!(e instanceof MalformedJwtException)){
+                e.printStackTrace();//jwt空的时候不必显示
+            }
             ResponseMessage responseMessage =
                     ResponseMessage.getExceptionInstance
                             (1000,"权限校验失败，请重新登录",null);
