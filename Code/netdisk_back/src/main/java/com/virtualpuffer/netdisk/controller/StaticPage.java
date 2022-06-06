@@ -25,7 +25,7 @@ public class StaticPage {
             return new ModelAndView("/index.html");
         }
     }
-    @RequestMapping(value = {"/{path}"})
+    @RequestMapping(value = {"/1/{path}"})
     public Object ret(@PathVariable String path){
         return path;
     }

@@ -17,41 +17,43 @@ import java.util.Map;
 
 @WebFilter(urlPatterns = "/*",filterName = "amessageFilter")
 public class IPFilter extends BaseFilter{
-
-    public static final int IPAccessLimit = 5000;
+    public static boolean ipFilter = false;
+    public static final int IPAccessLimit = 50;
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
+
         HttpServletResponse response = (HttpServletResponse) servletResponse;
         String ip = null;
 
         //添加ip
-        if (request.getHeader("x-forwarded-for") == null) {
+        if (request.getHeader("x-forwarded-for")==null || request.getHeader("x-forwarded-for").equals(null)) {
             ip = request.getRemoteAddr();
         }else {
             ip = request.getHeader("x-forwarded-for");
         }
         request.setAttribute("ip",ip);
-        Integer numberOfAccess = (Integer) redisUtil.get(ip);
-
 
         if(request.getParameter("virtual")!=null){
             filterChain.doFilter(request,response);
             return;
         }
-
-        if(numberOfAccess!=null && numberOfAccess > IPAccessLimit){
-            //频率过高，拒绝服务
-            ResponseMessage responseMessage =
-                    ResponseMessage.getExceptionInstance
-                            (403,"访问过于频繁，请稍后再次请求",null);
-            buildMessage(response,responseMessage);
-            return;
-        }else if(null == numberOfAccess){
-            redisUtil.set(ip,0,1000);
-        }else {
-            redisUtil.increase(ip);
+        if(ipFilter){
+            Integer numberOfAccess = (Integer) redisUtil.get(ip);
+            if(numberOfAccess!=null && numberOfAccess > IPAccessLimit){
+                //频率过高，拒绝服务
+                ResponseMessage responseMessage =
+                        ResponseMessage.getExceptionInstance
+                                (403,"访问过于频繁，请稍后再次请求",null);
+                buildMessage(response,responseMessage);
+                response.setStatus(403);
+                return;
+            }else if(null == numberOfAccess){
+                redisUtil.set(ip,0,1000);
+            }else {
+                redisUtil.increase(ip);
+            }
         }
         filterChain.doFilter(request,response);
     }

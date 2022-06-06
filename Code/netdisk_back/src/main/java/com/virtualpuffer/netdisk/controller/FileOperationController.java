@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.file.NoSuchFileException;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 @RestController
@@ -175,10 +176,6 @@ public class FileOperationController extends BaseController {
             e.printStackTrace();
             return ResponseMessage.getExceptionInstance(300,e.getMessage(),null);
         } catch (Exception e) {
-            System.out.println(getTime() + "   ->   未捕获异常: ");
-            System.out.println("_______________________________>");
-            e.printStackTrace();
-            System.out.println("<_______________________________");
             return ResponseMessage.getErrorInstance(500,"系统错误",null);
         }
     }

@@ -1,5 +1,6 @@
 package com.virtualpuffer.netdisk;
 
+import com.virtualpuffer.netdisk.utils.MybatisConnect;
 import org.apache.catalina.Context;
 import org.apache.catalina.connector.Connector;
 import org.apache.tomcat.util.descriptor.web.SecurityCollection;
@@ -16,9 +17,10 @@ import org.springframework.context.annotation.Bean;
 @SpringBootApplication(exclude = {SecurityAutoConfiguration.class},scanBasePackages = {"com.virtualpuffer.*"})//核心包
 public class NetdiskApplication {
     public static void main(String[] args) throws Exception {
+        //System.out.println(MybatisConnect.getSession());
         SpringApplication.run(NetdiskApplication.class, args);
     }
-    //@Bean
+  /*  //@Bean
     public TomcatServletWebServerFactory servletContainer() {
         TomcatServletWebServerFactory tomcat = new TomcatServletWebServerFactory(){
             @Override
@@ -43,5 +45,5 @@ public class NetdiskApplication {
         connector.setSecure(false);
         connector.setRedirectPort(443);
         return connector;
-    }
+    }*/
 }

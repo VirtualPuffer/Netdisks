@@ -8,6 +8,7 @@ import java.io.*;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 
 /**
@@ -23,10 +24,10 @@ public class ServerThread extends BaseServiceImpl implements Runnable{
     public static final String CONNECTTEST_RESPONSE = "pong";
     public static final String DISCONNECT_REQUEST = "bye";
     public static final String DISCONNECT_RESPONSE = "byebye111";
+    public static final String PASSWORD = getMess("sslpassword");
     public ServerThread(Socket client){
         this.client = client;
     }
-
     public void localCMD(String command,File workPath){}
 
     @Override
@@ -50,31 +51,30 @@ public class ServerThread extends BaseServiceImpl implements Runnable{
         try {
             out = new PrintStream(socket.getOutputStream());
             BufferedReader buf = new BufferedReader(new InputStreamReader(client.getInputStream()));
-            out.println("password: ");
             while (permit) {
+                out.print("password: ");
                 String get = buf.readLine();
-                if ("123456".equals(get)) {
+                if (PASSWORD.equals(get)) {
                     permit = false;
                 } else if (tryTime > 2) {
                     return;
                 } else if (CONNECTTEST_REQUEST.equals(get)) {
                     out.println(CONNECTTEST_RESPONSE);
                 } else{
-                tryTime++;
-                out.println("please try again");
-                out.println("password: ");
+                    tryTime++;
+                    out.println("please try again");
             }
         }
             System.setOut(out);
             socket.setSoTimeout(10000);
             out.println("欢迎回来，连接已建立，通信地址：" + socket.getRemoteSocketAddress());
             boolean flag = true;
+            Process currentProcess = null;
+            String currentPath = "/bin/sh";
             while (flag && !socket.isClosed()) {
-                String currentPath = "/bin/sh";
                 try {
                     str = "";
                     str = buf.readLine();
-                   // systemStream.println(str);
                 } catch (SocketTimeoutException e){
                     if(connectTag < 3){
                         out.println(ServerThread.CONNECTTEST_REQUEST);
@@ -91,14 +91,16 @@ public class ServerThread extends BaseServiceImpl implements Runnable{
                     out.println(CONNECTTEST_RESPONSE);
                 }else if(CONNECTTEST_RESPONSE.equals(str)){
                     connectTag = 0;
-                }else if(str.startsWith("$cd")){
-                    String path = str.substring(4);
+                }else if(str.startsWith("cd")){
+                    String path = str.substring(2).trim();
                     String absolutePath = StringUtils.filePathDeal(path);
                     File x = new File(absolutePath);
                     if(x.exists()){
+                        System.out.println(absolutePath + " t");
                         currentPath = absolutePath;
                         out.println("路径已经切换至："+ currentPath);
                     }else{
+                        System.out.println(absolutePath+" f");
                         String relativePath = currentPath + "/" + StringUtils.filePathDeal(path);
                         File relative = new File(relativePath);
                         if(relative.exists()){
@@ -107,14 +109,33 @@ public class ServerThread extends BaseServiceImpl implements Runnable{
                         }else {
                             out.println("路径："+ path +"不存在");
                         }
+
                     }
-                }else if(str.startsWith("$")){
-                    try{
-                        String[] cmd = { currentPath, "-c", str.substring(1) };
-                        InputStream inputStream = Runtime.getRuntime().exec(cmd).getInputStream();
-                        copy(inputStream,out);
-                    }catch (Exception e){
-                        out.println(e.getMessage());
+                }else if(str.equals(PASSWORD)){
+                    if(currentProcess!=null &&currentProcess.isAlive()){
+                        currentProcess.destroy();
+                        currentProcess = null;
+                    }
+                }else if(str!=null && !str.equals("")){
+                    if(currentProcess!=null&&!currentProcess.isAlive()){
+                        currentProcess.destroy();
+                        currentProcess = null;
+                    }
+                    if(currentProcess!=null){
+                        if(currentProcess.isAlive()){
+                            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(str.toString().getBytes(StandardCharsets.UTF_8));
+                            copy(byteArrayInputStream,currentProcess.getOutputStream());
+                        }
+                    }else {
+                        try{
+                            String[] cmd = { currentPath, "-c", str.trim() };
+                            Process process = Runtime.getRuntime().exec(cmd);
+                            process.getOutputStream();
+                            currentProcess = process;
+                            copy(process.getInputStream(),out);
+                        }catch (Exception e){
+                            out.println(e.getMessage());
+                        }
                     }
                 }
             }

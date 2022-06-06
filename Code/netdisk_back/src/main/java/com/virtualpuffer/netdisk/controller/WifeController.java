@@ -3,11 +3,13 @@ package com.virtualpuffer.netdisk.controller;
 import com.virtualpuffer.netdisk.data.ResponseMessage;
 import com.virtualpuffer.netdisk.service.impl.file.URLFileService;
 import com.virtualpuffer.netdisk.utils.StringUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
@@ -55,20 +57,38 @@ public class WifeController {
     }
     @ResponseBody
     @RequestMapping("/getPC")
-    public ModelAndView getpc(){
+    public ModelAndView getpc(HttpServletResponse response){
+        response.setHeader("Cache-Control","max-age=999999999");
         File f = new File("/usr/local/MyTomcat/wife/PC");
         File[] r = f.listFiles();
         Random getRan = new Random();
         int index = getRan.nextInt(r.length);
-        return new ModelAndView("/PC/" + r[index].getName());
+        ModelAndView view = new ModelAndView("/PC/" + r[index].getName());
+        //view.setStatus(HttpStatus.NOT_MODIFIED);
+        return view;
+    }
+    @ResponseBody
+    @RequestMapping("/getPF")
+    public ModelAndView getp(HttpServletResponse response){
+        //response.setHeader("Cache-Control","max-age=999999999");
+        File f = new File("/usr/local/MyTomcat/wife/PC");
+        File[] r = f.listFiles();
+        Random getRan = new Random();
+        int index = getRan.nextInt(r.length);
+        ModelAndView view = new ModelAndView("/PC/" + r[index].getName());
+        //view.setStatus(HttpStatus.NOT_MODIFIED);
+        return view;
     }
     @ResponseBody
     @RequestMapping("/getPE")
-    public ModelAndView getPE(){
+    public ModelAndView getPE(HttpServletResponse response){
+        response.setHeader("Cache-Control","max-age=999999999");
         File f = new File("/usr/local/MyTomcat/wife/PE");
         File[] r = f.listFiles();
         Random getRan = new Random();
         int index = getRan.nextInt(r.length);
-        return new ModelAndView("/PE/" + r[index].getName());
+        ModelAndView view = new ModelAndView("/PE/" + r[index].getName());
+        //view.setStatus(HttpStatus.NOT_MODIFIED);
+        return view;
     }
 }

