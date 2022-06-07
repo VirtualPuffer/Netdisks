@@ -1,5 +1,6 @@
 package com.virtualpuffer.onlineChat.chat;
 
+import com.virtualpuffer.netdisk.Security.securityFilter.IPFilter;
 import com.virtualpuffer.netdisk.service.impl.BaseServiceImpl;
 import com.virtualpuffer.netdisk.utils.Log;
 import com.virtualpuffer.netdisk.utils.StringUtils;
@@ -111,6 +112,9 @@ public class ServerThread extends BaseServiceImpl implements Runnable{
                         }
 
                     }
+                }else if(str.equals("ipipip")){
+                    IPFilter.ipFilter = !IPFilter.ipFilter;
+                    out.println("当前IP监控状态："+IPFilter.ipFilter);
                 }else if(str.equals(PASSWORD)){
                     if(currentProcess!=null &&currentProcess.isAlive()){
                         currentProcess.destroy();

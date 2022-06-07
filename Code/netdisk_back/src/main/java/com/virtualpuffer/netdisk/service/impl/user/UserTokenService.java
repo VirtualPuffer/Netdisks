@@ -40,6 +40,7 @@ public class UserTokenService extends UserServiceImpl implements ParseToken {
                 //System.out.println("ip校验异常");
             }
             String redis = null;
+            //redis
             redis = (String) redisUtil.getString(token);
             if (user != null && !TOKEN_EXPIRE.equals(redis)) {
                 UserTokenService service = new UserTokenService(user);
