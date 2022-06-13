@@ -36,7 +36,7 @@ public class NetdiskApplication {
         tomcat.addAdditionalTomcatConnectors(httpConnector());
         return tomcat;
     }
-    //@Bean
+    @Bean
     public Connector httpConnector() {
         Connector connector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
         connector.setScheme("http");

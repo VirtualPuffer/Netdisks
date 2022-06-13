@@ -26,10 +26,23 @@
 
 
     <properties>
-        <java.version>1.8</java.version>
+        <java.version>1.15</java.version>
     </properties>
 
     <dependencies>
+        <!--二维码库-->
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>javase</artifactId>
+            <version>3.2.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>core</artifactId>
+            <version>3.3.3</version>
+        </dependency>
+
+
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>

@@ -101,6 +101,7 @@ public class FileTokenService extends FileHashService implements ParseToken {
                 zipStream.finish();
                 long length = file.length();
                 FileInputStream inputStream = new FileInputStream(file);
+                //inputStream.available();
                 copy(inputStream,outputStream);
                 return length;
             } finally {

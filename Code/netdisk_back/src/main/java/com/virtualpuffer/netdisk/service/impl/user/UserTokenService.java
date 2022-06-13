@@ -7,6 +7,8 @@ import com.virtualpuffer.netdisk.entity.User;
 import com.virtualpuffer.netdisk.mapper.user.UserMap;
 import com.virtualpuffer.netdisk.service.ParseToken;
 import com.virtualpuffer.netdisk.utils.RedisUtil;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.scheduling.annotation.Async;
 
@@ -33,7 +35,12 @@ public class UserTokenService extends UserServiceImpl implements ParseToken {
         SqlSession session = null;
         try {
             session = MybatisConnect.getSession();
-            Map map = parseJWT(token,null);
+            Map map = null;
+            try {
+                map = parseJWT(token,null);
+            } catch (ExpiredJwtException e) {
+                //Claims ce.getClaims();
+            }
             User user = session.getMapper(UserMap.class).userLogin((String)map.get("username"),(String)map.get("password"));
             if((String)map.get("ip") != ip){
                 //throw new RuntimeException("");
