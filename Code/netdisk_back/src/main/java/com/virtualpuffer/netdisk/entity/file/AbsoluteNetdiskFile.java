@@ -29,7 +29,6 @@ import static com.virtualpuffer.netdisk.utils.StringUtils.filePathDeal;
  * */
 public class AbsoluteNetdiskFile extends AbsoluteNetdiskEntity{
     private int Map_id;
-    private int USER_ID;
     private String File_Name;
     private String File_Path;//真实路径
     private int File_Length;

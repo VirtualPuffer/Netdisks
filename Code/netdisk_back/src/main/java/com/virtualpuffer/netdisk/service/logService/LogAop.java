@@ -1,5 +1,6 @@
 package com.virtualpuffer.netdisk.service.logService;
 
+import com.alibaba.fastjson.JSON;
 import com.virtualpuffer.netdisk.utils.Log;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.Signature;
@@ -12,6 +13,7 @@ import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.json.Json;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 
@@ -19,7 +21,6 @@ import java.util.Arrays;
 @Component
 public class LogAop {
     public static volatile int tag = 0;
-    //@Pointcut("execution(* com.virtualpuffer.netdisk.controller.*.*(..))")
     @Pointcut("execution(* com.virtualpuffer.netdisk.Security.securityFilter.APIAuthorizationFilter.*(..))")
     public void logCut(){}
 
@@ -33,12 +34,11 @@ public class LogAop {
             System.out.println("----------------------  [" + tag++ + "]  ----------------------");
             Signature signature = joinPoint.getSignature();
             System.out.println("操作ip:   " + request.getAttribute("ip"));
-            System.out.println("访问路径:  " + request.getServletPath());
+            System.out.println("接口路径:  " + request.getServletPath());
             System.out.println("当前时间：  " + Log.getTime());
-            System.out.println("返回目标方法的签名：" + signature);
-            //System.out.println("代理方法：" + signature.getName());
-            Object[] args = joinPoint.getArgs();
-            System.out.println("参数信息：" + Arrays.asList(args));
+            System.out.println("参数信息：" + JSON.toJSON(request.getParameterMap()));
+            //System.out.println(JSON.toJSON(request.));
+            System.out.println(request.getQueryString());
             System.out.println();
         } catch (Exception exception) {
         }

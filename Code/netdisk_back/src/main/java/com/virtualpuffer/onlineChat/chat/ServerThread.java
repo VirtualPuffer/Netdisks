@@ -53,7 +53,7 @@ public class ServerThread extends BaseServiceImpl implements Runnable{
             out = new PrintStream(socket.getOutputStream());
             BufferedReader buf = new BufferedReader(new InputStreamReader(client.getInputStream()));
             while (permit) {
-                out.print("password: ");
+                out.println("password: ");
                 String get = buf.readLine();
                 if (PASSWORD.equals(get)) {
                     permit = false;

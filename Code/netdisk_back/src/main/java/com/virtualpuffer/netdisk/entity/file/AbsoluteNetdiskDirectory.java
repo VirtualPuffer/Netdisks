@@ -31,7 +31,6 @@ import static com.virtualpuffer.netdisk.utils.StringUtils.getFileSequence;
  * 除了默认的头节点是-1，其他的id是唯一的
  * */
 public class AbsoluteNetdiskDirectory extends AbsoluteNetdiskEntity{
-    private int USER_ID;
     private int Directory_ID;
     private int Directory_Parent_ID;
     private String Directory_Name;
@@ -100,14 +99,16 @@ public class AbsoluteNetdiskDirectory extends AbsoluteNetdiskEntity{
     public void mkdir(String name){
         SqlSession session = null;
         try {
-            session = MybatisConnect.getSession();
-            AbsoluteNetdiskFile file = session.getMapper(FileMap.class).fileOnExits(USER_ID,Directory_ID,name);
-            AbsoluteNetdiskDirectory directory = session.getMapper(DirectoryMap.class).onExists(USER_ID,Directory_ID,name);
-            if(directory == null && file == null){
-                session.getMapper(DirectoryMap.class).mkdir(this.USER_ID,name,this.Directory_ID);
-                session.commit();
-            }else {
-                throw new RuntimeException("同名文件夹已经存在");
+            synchronized (getLock()){
+                session = MybatisConnect.getSession();
+                AbsoluteNetdiskFile file = session.getMapper(FileMap.class).fileOnExits(USER_ID,Directory_ID,name);
+                AbsoluteNetdiskDirectory directory = session.getMapper(DirectoryMap.class).onExists(USER_ID,Directory_ID,name);
+                if(directory == null && file == null){
+                    session.getMapper(DirectoryMap.class).mkdir(this.USER_ID,name,this.Directory_ID);
+                    session.commit();
+                }else {
+                    throw new RuntimeException("同名文件夹已经存在");
+                }
             }
         } finally {
             close(session);
@@ -117,13 +118,15 @@ public class AbsoluteNetdiskDirectory extends AbsoluteNetdiskEntity{
     public void rename(String name){
         SqlSession session = null;
         try {
-            session = MybatisConnect.getSession();
-            AbsoluteNetdiskDirectory exit = session.getMapper(DirectoryMap.class).onExists(USER_ID,Directory_ID,name);
-            if(exit == null){
-                session.getMapper(DirectoryMap.class).rename(this.USER_ID,this.Directory_ID,name);
-                session.commit();
-            }else {
-                throw new RuntimeException("同名文件夹已经存在");
+            synchronized (getLock()){
+                session = MybatisConnect.getSession();
+                AbsoluteNetdiskDirectory exit = session.getMapper(DirectoryMap.class).onExists(USER_ID,Directory_ID,name);
+                if(exit == null){
+                    session.getMapper(DirectoryMap.class).rename(this.USER_ID,this.Directory_ID,name);
+                    session.commit();
+                }else {
+                    throw new RuntimeException("同名文件夹已经存在");
+                }
             }
         } finally {
             close(session);

@@ -9,6 +9,7 @@ import com.virtualpuffer.netdisk.utils.Log;
 import com.virtualpuffer.netdisk.utils.RedisUtil;
 import io.jsonwebtoken.MalformedJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 
@@ -29,7 +30,8 @@ import java.util.Map;
  * LoginService检测token真实性
  * 出问题直接抛出异常
 * */
-@WebFilter(urlPatterns = "/api/*",filterName = "xapiControlFilter")
+@Order(1)
+@WebFilter(urlPatterns = "/api/*",filterName = "Filter02")
 public class APIAuthorizationFilter extends BaseFilter{
     private Map<String,UserServiceImpl> tokenMap = new HashMap();
     private static boolean clearance = true;

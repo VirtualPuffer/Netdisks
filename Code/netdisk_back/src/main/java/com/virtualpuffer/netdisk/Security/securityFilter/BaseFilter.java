@@ -60,7 +60,6 @@ public abstract class BaseFilter implements Filter{
         response.getWriter().write(JSON.toJSONString(responseMessage));
     }
     protected static String getMess(String source) {
-
         return get.getProperty(source);
     }
 

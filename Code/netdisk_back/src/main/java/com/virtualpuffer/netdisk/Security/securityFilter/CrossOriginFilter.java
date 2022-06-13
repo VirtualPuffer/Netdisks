@@ -8,7 +8,7 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-@WebFilter(urlPatterns = "/*",filterName = "aaapiControlFilter")
+@WebFilter(urlPatterns = "/*",filterName = "Filter03")
 public class CrossOriginFilter extends BaseFilter{
 
     @Override

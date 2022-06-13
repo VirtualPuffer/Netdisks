@@ -15,10 +15,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Map;
 
-@WebFilter(urlPatterns = "/*",filterName = "aAFilter")
+@Order(0)
+@WebFilter(urlPatterns = "/*",filterName = "Filter0")
 public class IPFilter extends BaseFilter{
     public static boolean ipFilter = false;
-    public static final int IPAccessLimit = 50;
+    public static final int IPAccessLimit = Integer.parseInt(getMess("IPAccessLimit"));
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
@@ -34,7 +35,6 @@ public class IPFilter extends BaseFilter{
             ip = request.getHeader("x-forwarded-for");
         }
         request.setAttribute("ip",ip);
-
         if(request.getParameter("virtual")!=null){
             filterChain.doFilter(request,response);
             return;
