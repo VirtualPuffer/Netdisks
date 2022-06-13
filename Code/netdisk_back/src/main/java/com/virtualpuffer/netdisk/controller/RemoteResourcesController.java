@@ -40,4 +40,16 @@ public class RemoteResourcesController {
             return ResponseMessage.getErrorInstance(500,"下载失败",null);
         }
     }
+
+    @ResponseBody
+    @RequestMapping(value = "/resource/{path}")
+    public void getRemoteResource(HttpServletRequest request,HttpServletResponse response,@PathVariable String path) throws Exception {
+        try {
+            //String path = StringUtils.filePathDeal(request.getServletPath().substring("/resource".length()));
+            FileBaseService service = FileBaseService.getInstance(path,5);
+            service.downloadFile(response.getOutputStream());
+        } catch (FileNotFoundException e) {
+            response.setStatus(404);
+        }
+    }
 }
