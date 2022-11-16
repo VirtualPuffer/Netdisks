@@ -25,11 +25,24 @@ import java.util.concurrent.CopyOnWriteArraySet;
 @Component
 @ServerEndpoint(value = "/webSocket",configurator = HttpSessionConfigurator.class)
 public class WebSocket {
+
     private Session session;
     public UserServiceImpl service;
     private static CopyOnWriteArraySet<WebSocket> webSocketSet=new CopyOnWriteArraySet<>();
     private static LinkedList<String> messageList = new LinkedList<>();
     private static HashMap<Integer,WebSocket> hashMap = new HashMap<>();
+
+    static {
+        SqlSession session = null;
+        try {
+            session = MybatisConnect.getSession();
+            for(ChatResponseMessage responseMessage: session.getMapper(ChatMap.class).getLastMessage(10)){
+                messageList.addFirst(responseMessage.getContent());
+            }
+        } finally {
+            session.close();
+        }
+    }
     @OnOpen
     public void onOpen(Session session, EndpointConfig config){
         this.session=session;

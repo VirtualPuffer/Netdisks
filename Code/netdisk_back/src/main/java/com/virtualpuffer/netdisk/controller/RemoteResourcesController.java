@@ -1,7 +1,9 @@
 package com.virtualpuffer.netdisk.controller;
 
 import com.virtualpuffer.netdisk.data.ResponseMessage;
+import com.virtualpuffer.netdisk.service.impl.file.FileBaseService;
 import com.virtualpuffer.netdisk.service.impl.file.FileTokenService;
+import com.virtualpuffer.netdisk.utils.StringUtils;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import org.springframework.stereotype.Controller;
@@ -10,14 +12,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.FileNotFoundException;
 import java.net.URLEncoder;
 
 @Controller
 @RestController
 @RequestMapping(value = "/resource")
 public class RemoteResourcesController {
-
+    public static final String remoteCookie = "REMOTE_AU";
     public void getResource(){}
 
     @ResponseBody
@@ -27,9 +32,9 @@ public class RemoteResourcesController {
             FileTokenService fileService = FileTokenService.getInstanceByToken(token,key);
             String fileName = fileService.getPackageName();
             response.setContentType("application/force-download");
-            response.addHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, "UTF-8"));
+            response.addHeader("Content-Disposition", "atetOutputStream());\n" +
+                    "            response.setContentLength(length);tachment;filename=" + URLEncoder.encode(fileName, "UTF-8"));
             int length = (int) fileService.download(response.getOutputStream());
-            response.setContentLength(length);
             return null;
         }catch (ExpiredJwtException e){
             return ResponseMessage.getExceptionInstance(300,"链接已失效",null);
@@ -42,11 +47,17 @@ public class RemoteResourcesController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/resource/{path}")
-    public void getRemoteResource(HttpServletRequest request,HttpServletResponse response,@PathVariable String path) throws Exception {
+    @RequestMapping(value = "/static/**")
+    public void getRemoteResource(HttpServletRequest request, HttpServletResponse response) throws Exception {
         try {
-            //String path = StringUtils.filePathDeal(request.getServletPath().substring("/resource".length()));
+            for(Cookie cookie:request.getCookies()){
+                cookie.getName().equals(remoteCookie);
+            }
+            String path = StringUtils.filePathDeal(request.getServletPath().substring("/resource/static".length()));
             FileBaseService service = FileBaseService.getInstance(path,5);
+            if(path.endsWith("html")){
+                response.setHeader("Content-Type","text/html;charset=utf-8");
+            }
             service.downloadFile(response.getOutputStream());
         } catch (FileNotFoundException e) {
             response.setStatus(404);

@@ -34,6 +34,8 @@ public class UserController extends BaseController {
             HashMap hashMap = new HashMap();
             hashMap.put("token",service.getUser().getToken(UserServiceImpl.LOGIN_TAG));//token
             hashMap.put("name",service.getUser().getName());//名字
+            Cookie cookie = new Cookie(RemoteResourcesController.remoteCookie,"arrf");
+            response.addCookie(cookie);
             return ResponseMessage.getSuccessInstance(200,"登录成功",hashMap);
         } catch (RuntimeException e) {
             e.printStackTrace();
@@ -72,7 +74,6 @@ public class UserController extends BaseController {
     public ResponseMessage doLogout(HttpServletRequest request , HttpServletResponse response){
         try {
             String token = request.getHeader("Authorization");
-            System.out.println(token + "?????????");
             UserTokenService.userLogout(token);
             return ResponseMessage.getSuccessInstance(200,"退出成功",null);
         } catch (RuntimeException e) {

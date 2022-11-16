@@ -22,6 +22,7 @@ public class StaticPage {
         if(JudgeDeviceType.isMobileDevice(request)){
             return "随便返回的网页";
         }else {
+            System.out.println("fuck:  "+request.getServletPath());
             return new ModelAndView("/index.html");
         }
     }
