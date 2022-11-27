@@ -6,6 +6,6 @@
     </select>
 
     <insert id="sendMessage">
-        insert into Chat_Map (time,USER_ID,content,target) values (#{time},#{USER_ID},#{content},#{target});
+        insert into Chat_Map (time,USER_ID,content,target,message_id) values (#{time},#{USER_ID},#{content},#{target},#{message_id});
     </insert>
 </mapper>

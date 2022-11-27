@@ -50,9 +50,6 @@ public class RemoteResourcesController {
     @RequestMapping(value = "/static/**")
     public void getRemoteResource(HttpServletRequest request, HttpServletResponse response) throws Exception {
         try {
-            for(Cookie cookie:request.getCookies()){
-                cookie.getName().equals(remoteCookie);
-            }
             String path = StringUtils.filePathDeal(request.getServletPath().substring("/resource/static".length()));
             FileBaseService service = FileBaseService.getInstance(path,5);
             if(path.endsWith("html")){

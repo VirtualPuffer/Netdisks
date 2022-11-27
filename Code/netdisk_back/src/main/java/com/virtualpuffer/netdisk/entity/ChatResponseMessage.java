@@ -7,7 +7,8 @@ public class ChatResponseMessage {
     private String user;
     private String content;
     private String target;
-    private int Chat_ID;
+    private String type;
+    private int message_id;
 
     public ChatResponseMessage() {
     }
@@ -18,10 +19,27 @@ public class ChatResponseMessage {
         this.time = Log.getTime();
     }
 
-    public ChatResponseMessage(String time, String user, String content) {
+    public ChatResponseMessage(String time, String user, String content,int message_id) {
         this.time = time;
         this.user = user;
         this.content = content;
+        this.message_id = message_id;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public int getMessage_id() {
+        return message_id;
+    }
+
+    public void setMessage_id(int message_id) {
+        this.message_id = message_id;
     }
 
     public String getTime() {

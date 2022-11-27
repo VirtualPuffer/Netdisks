@@ -28,6 +28,32 @@ public abstract class FileUtilService extends BaseServiceImpl {
 
     public abstract void uploadFile(InputStream input) throws Exception;
 
+    public static InputStream getStringInputStream(String s) {
+        if (s != null && !s.equals("")) {
+            try {
+                ByteArrayInputStream stringInputStream = new ByteArrayInputStream(s.getBytes());
+                return stringInputStream;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    public static Reader getStringReader(String s) {
+        if (s != null && !s.equals("")) {
+            try {
+                StringReader stringReader = new StringReader(s);
+                return stringReader;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+    public static String getSH256(String string)throws Exception{
+        return getSH256(getStringInputStream(string));
+    }
     /**
      * 源文件获取hash值
      * 把文件转化为输入流
