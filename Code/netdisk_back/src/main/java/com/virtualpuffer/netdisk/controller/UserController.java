@@ -3,6 +3,7 @@ package com.virtualpuffer.netdisk.controller;
 import com.virtualpuffer.netdisk.controller.base.BaseController;
 import com.virtualpuffer.netdisk.data.ResponseMessage;
 import com.virtualpuffer.netdisk.entity.User;
+import com.virtualpuffer.netdisk.service.impl.file.FileBaseService;
 import com.virtualpuffer.netdisk.service.impl.user.UserServiceImpl;
 import com.virtualpuffer.netdisk.service.impl.user.UserTokenService;
 import com.virtualpuffer.netdisk.utils.RedisUtil;
@@ -61,6 +62,8 @@ public class UserController extends BaseController {
     public ResponseMessage doRegister(@RequestBody User user, HttpServletRequest request , HttpServletResponse response){
         try {
             UserServiceImpl.registerUser(user);
+            FileBaseService.getInstance("",UserServiceImpl.getInstance(user,request).getUser(),4)
+                    .mkdir(FileOperationController.head_destination,4);
             return ResponseMessage.getSuccessInstance(200,"注册成功",null);
         } catch (RuntimeException e) {
             return ResponseMessage.getExceptionInstance(300,e.getMessage(),null);

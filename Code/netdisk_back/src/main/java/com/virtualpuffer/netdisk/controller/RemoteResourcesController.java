@@ -51,7 +51,7 @@ public class RemoteResourcesController {
     public void getRemoteResource(HttpServletRequest request, HttpServletResponse response) throws Exception {
         try {
             String path = StringUtils.filePathDeal(request.getServletPath().substring("/resource/static".length()));
-            FileBaseService service = FileBaseService.getInstance(path,5);
+            FileBaseService service = FileBaseService.getInstance(path,5,3);
             if(path.endsWith("html")){
                 response.setHeader("Content-Type","text/html;charset=utf-8");
             }

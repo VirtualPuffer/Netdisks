@@ -40,12 +40,18 @@ public class AbsoluteNetdiskDirectory extends AbsoluteNetdiskEntity{
     LinkedList<AbsoluteNetdiskFile> fileList;
     public static final int HEAD_NODE_ID = -1;
     public static final String SUPER_ROOT = ".";
+    public static final int default_priviledge = 3;//默认文件权限等级
+    /**
+     * 用户默认权限等级为3，不可以访问更高等级的文件
+     * 4以及以上的等级为系统文件（头像等）
+     *
+     * */
 
     public AbsoluteNetdiskDirectory(){
 
     }
 
-    public static AbsoluteNetdiskDirectory getInstance(String destination, int id) throws FileNotFoundException {
+    public static AbsoluteNetdiskDirectory getInstance(String destination, int id,int priviledge) throws FileNotFoundException {
         SqlSession session = null;
         AbsoluteNetdiskDirectory netdiskDirectory = null;
         try {
@@ -53,7 +59,7 @@ public class AbsoluteNetdiskDirectory extends AbsoluteNetdiskEntity{
             ArrayList<String> fileSequence = getFileSequence(destination);
             int parentID = HEAD_NODE_ID;//头节点位置
             for(String file : fileSequence){
-                netdiskDirectory = session.getMapper(DirectoryMap.class).getChildrenDirectory(id,parentID,file);
+                netdiskDirectory = session.getMapper(DirectoryMap.class).getChildrenDirectory(id,parentID,file,priviledge);
                 if(netdiskDirectory == null){
                     throw new FileNotFoundException("文件夹不存在: 问题路径->  " + file);
                 }else {
@@ -83,13 +89,13 @@ public class AbsoluteNetdiskDirectory extends AbsoluteNetdiskEntity{
         }
     }
 
-    public Map getDir(){
+    public Map<String,LinkedList<String>> getDir(int priviledge){
         SqlSession session = null;
-        Map ret = new HashMap();
+        Map<String,LinkedList<String>> ret = new HashMap();
         try {
             session = MybatisConnect.getSession();
-            LinkedList dirList = session.getMapper(DirectoryMap.class).getDir(this.USER_ID,Directory_ID);
-            LinkedList fileList = session.getMapper(FileMap.class).getDir(this.USER_ID,this.Directory_ID);
+            LinkedList<String> dirList = session.getMapper(DirectoryMap.class).getDir(this.USER_ID,Directory_ID,priviledge);
+            LinkedList<String> fileList = session.getMapper(FileMap.class).getDir(this.USER_ID,this.Directory_ID);
             ret.put("file",fileList);
             ret.put("dir",dirList);
             return ret;
@@ -98,7 +104,7 @@ public class AbsoluteNetdiskDirectory extends AbsoluteNetdiskEntity{
         }
     }
 
-    public void mkdir(String name){
+    public void mkdir(String name,int dir_priviledge){
         SqlSession session = null;
         try {
             synchronized (getLock()){
@@ -106,7 +112,7 @@ public class AbsoluteNetdiskDirectory extends AbsoluteNetdiskEntity{
                 AbsoluteNetdiskFile file = session.getMapper(FileMap.class).fileOnExits(USER_ID,Directory_ID,name);
                 AbsoluteNetdiskDirectory directory = session.getMapper(DirectoryMap.class).onExists(USER_ID,Directory_ID,name);
                 if(directory == null && file == null){
-                    session.getMapper(DirectoryMap.class).mkdir(this.USER_ID,name,this.Directory_ID);
+                    session.getMapper(DirectoryMap.class).mkdir(this.USER_ID,name,this.Directory_ID,dir_priviledge);
                     session.commit();
                 }else {
                     throw new RuntimeException("同名文件夹已经存在");

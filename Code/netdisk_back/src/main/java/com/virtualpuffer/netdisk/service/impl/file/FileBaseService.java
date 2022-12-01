@@ -93,7 +93,7 @@ public class FileBaseService extends FileUtilService {
         AbsoluteNetdiskFile netdiskFile = new AbsoluteNetdiskFile(path);
         return new FileBaseService(netdiskFile,user);
     }
-    public static FileBaseService getInstance(String destination, int userID) throws FileNotFoundException{
+    public static FileBaseService getInstance(String destination, int userID,int priviledge) throws FileNotFoundException{
         SqlSession session = null;
         try {
             session = MybatisConnect.getSession();
@@ -106,7 +106,7 @@ public class FileBaseService extends FileUtilService {
             }
             destination = StringUtils.filePathDeal(destination);
             User user = session.getMapper(UserMap.class).getUserByID(userID);
-            return getInstance(destination,user);
+            return getInstance(destination,user,priviledge);
         } finally {
             close(session);
         }
@@ -117,7 +117,7 @@ public class FileBaseService extends FileUtilService {
      * 请求方式是destination = ./
      * userid是用户id
     * */
-    public static FileBaseService getInstance(String destination, User user) throws FileNotFoundException{
+    public static FileBaseService getInstance(String destination, User user,int priviledge) throws FileNotFoundException{
         SqlSession session = null;
         try {
             session = MybatisConnect.getSession();
@@ -130,10 +130,10 @@ public class FileBaseService extends FileUtilService {
             }
             //destination = StringUtils.filePathDeal(destination);
             try{
-                AbsoluteNetdiskDirectory netdiskDirectory = AbsoluteNetdiskDirectory.getInstance(destination,user.getUSER_ID());
+                AbsoluteNetdiskDirectory netdiskDirectory = AbsoluteNetdiskDirectory.getInstance(destination,user.getUSER_ID(),priviledge);
                 return new FileBaseService(netdiskDirectory,user);
             }catch(FileNotFoundException e){
-                AbsoluteNetdiskFile netdiskFile = AbsoluteNetdiskFile.getInstance(destination,user.getUSER_ID());
+                AbsoluteNetdiskFile netdiskFile = AbsoluteNetdiskFile.getInstance(destination,user.getUSER_ID(),priviledge);
                 netdiskFile.setFile(new File(netdiskFile.getFile_Path()));
                 return new FileBaseService(netdiskFile,user);
             }
@@ -155,7 +155,7 @@ public class FileBaseService extends FileUtilService {
      *
      * 映射型文件是系统没办法判断类型的（因为不存在）
     * */
-    public static String getDownloadURL(DownloadCollection collection,User user) throws FileNotFoundException {
+    public static String getDownloadURL(DownloadCollection collection,User user,int priviledge) throws FileNotFoundException {
         Map<String,Object> map = new HashMap();
         ArrayList<Integer> file_id = new ArrayList<>();
         ArrayList<Integer> dir_id = new ArrayList<>();
@@ -172,7 +172,7 @@ public class FileBaseService extends FileUtilService {
         }
         for(String name : collection.getFiles()){
             String destination =  path + name;
-            FileBaseService baseService = getInstance(destination,user);
+            FileBaseService baseService = getInstance(destination,user,priviledge);
             if (baseService.netdiskDirectory == null) {
                 AbsoluteNetdiskFile netdiskFile = baseService.getNetdiskFile();
                 file = netdiskFile;
@@ -206,9 +206,9 @@ public class FileBaseService extends FileUtilService {
     /**
      * 获取路径下文件
      * */
-    public Map getDirectory() throws NoSuchFileException {
+    public Map<String,LinkedList<String>> getDirectory(int priviledge) throws NoSuchFileException {
         if(this.netdiskEntity instanceof AbsoluteNetdiskDirectory){
-            return ((AbsoluteNetdiskDirectory) this.netdiskEntity).getDir();
+            return ((AbsoluteNetdiskDirectory) this.netdiskEntity).getDir(priviledge);
         }else{
             throw new RuntimeException("目标不是文件夹");
         }
@@ -450,13 +450,13 @@ public class FileBaseService extends FileUtilService {
         return buffer.toString();
     }
 
-    public void mkdir(String name) throws RuntimeException{
+    public void mkdir(String name,int priviledge) throws RuntimeException{
         if(name == null || "".equals(name)){
             throw new RuntimeException("文件夹名字不能为空");
         }
         if(this.netdiskEntity instanceof AbsoluteNetdiskDirectory){
             AbsoluteNetdiskDirectory directory = (AbsoluteNetdiskDirectory) this.netdiskEntity;
-            directory.mkdir(name);
+            directory.mkdir(name,priviledge);
         }else {
             throw new RuntimeException("目标不是文件夹");
         }
@@ -514,7 +514,7 @@ public class FileBaseService extends FileUtilService {
                 } else {
                     service = serviceMap.get(dirPath);
                     if(service == null){
-                        service = FileBaseService.getInstance(dirPath,this.user);
+                        service = FileBaseService.getInstance(dirPath,this.user,AbsoluteNetdiskDirectory.default_priviledge);
                         serviceMap.put(destDirPath,service);
                     }
                     String fileName = entry.getName().substring(entry.getName().lastIndexOf("/")+1);

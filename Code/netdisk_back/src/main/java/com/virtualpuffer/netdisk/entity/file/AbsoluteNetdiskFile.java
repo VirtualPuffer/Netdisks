@@ -82,14 +82,14 @@ public class AbsoluteNetdiskFile extends AbsoluteNetdiskEntity{
         }
     }
 
-    public static AbsoluteNetdiskFile getInstance(String destination, int id) throws FileNotFoundException{
+    public static AbsoluteNetdiskFile getInstance(String destination, int id,int priviledge) throws FileNotFoundException{
         SqlSession session = null;
         AbsoluteNetdiskFile netdiskFile = null;
         String file_Destination = StringUtils.filePathDeal(destination + "/");
         Map<String,String> map = StringUtils.getFileNameAndDestinaiton(destination);
         String directoryPath = map.get("path");
         String fileName = map.get("name");
-        AbsoluteNetdiskDirectory netdiskDirectory = AbsoluteNetdiskDirectory.getInstance(directoryPath,id);
+        AbsoluteNetdiskDirectory netdiskDirectory = AbsoluteNetdiskDirectory.getInstance(directoryPath,id,priviledge);
             try {
                 session = MybatisConnect.getSession();
                 netdiskFile = session.getMapper(FileMap.class).getFileMap(id,netdiskDirectory.getDirectory_ID(),fileName);

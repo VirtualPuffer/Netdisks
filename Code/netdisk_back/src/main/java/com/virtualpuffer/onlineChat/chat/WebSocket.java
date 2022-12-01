@@ -3,11 +3,13 @@ package com.virtualpuffer.onlineChat.chat;
 import com.alibaba.fastjson.JSON;
 import com.virtualpuffer.netdisk.entity.ChatResponseMessage;
 import com.virtualpuffer.netdisk.entity.User;
+import com.virtualpuffer.netdisk.entity.file.AbsoluteNetdiskDirectory;
 import com.virtualpuffer.netdisk.mapper.netdiskFile.ChatMap;
 import com.virtualpuffer.netdisk.service.impl.file.FileBaseService;
 import com.virtualpuffer.netdisk.service.impl.file.FileUtilService;
 import com.virtualpuffer.netdisk.service.impl.user.UserServiceImpl;
 import com.virtualpuffer.netdisk.service.impl.user.UserTokenService;
+import com.virtualpuffer.netdisk.startup.GetHttpInfosConfigurator;
 import com.virtualpuffer.netdisk.startup.NetdiskContextWare;
 import com.virtualpuffer.netdisk.utils.Log;
 import com.virtualpuffer.netdisk.utils.MybatisConnect;
@@ -26,7 +28,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
-@ServerEndpoint(value = "/webSocket",configurator = HttpSessionConfigurator.class)
+@ServerEndpoint(value = "/webSocket",configurator = GetHttpInfosConfigurator.class)
 public class WebSocket {
 
     private Session session;
@@ -69,6 +71,9 @@ public class WebSocket {
         }
         this.session=session;
         HandshakeRequest request = (HandshakeRequest)config.getUserProperties().get("request");
+        for(String s : config.getUserProperties().keySet()){
+            System.out.println(s + " " + config.getUserProperties().get(s));
+        }
         String token =  request.getHeaders().get("Sec-WebSocket-Protocol").get(0);
         this.service = UserTokenService.getInstanceByToken(token,"");
         if(service == null){
@@ -98,6 +103,7 @@ public class WebSocket {
     @OnClose
     public void onClose(){
         try {
+            Connect_Map.remove(this);
             webSocketSet.remove(this);
             this.session.close();
             String name = service.getUser().getName();
@@ -136,7 +142,7 @@ public class WebSocket {
             String SHA = FileUtilService.getSH256(messageContent);
             String path = "image/" + SHA;
             try {
-                FileBaseService service = FileBaseService.getInstance("image",5);
+                FileBaseService service = FileBaseService.getInstance("image",5, AbsoluteNetdiskDirectory.default_priviledge);
                 service.setFile(new File(StringUtils.filePathDeal(path)));
                 service.uploadFile(FileUtilService.getStringInputStream(messageContent));
             } catch (Exception e) {

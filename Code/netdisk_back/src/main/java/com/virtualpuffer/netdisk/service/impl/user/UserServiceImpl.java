@@ -122,7 +122,7 @@ public class UserServiceImpl extends BaseServiceImpl implements LoginService {
                 }
             }
             int userID = map.getIDbyUsername(username);
-            int cou = session.getMapper(DirectoryMap.class).mkdir(userID,AbsoluteNetdiskDirectory.SUPER_ROOT, AbsoluteNetdiskDirectory.HEAD_NODE_ID);
+            int cou = session.getMapper(DirectoryMap.class).mkdir(userID,AbsoluteNetdiskDirectory.SUPER_ROOT, AbsoluteNetdiskDirectory.HEAD_NODE_ID,AbsoluteNetdiskDirectory.default_priviledge);
             if(cou == 1){//创建仓库
                 session.commit();
             }else {

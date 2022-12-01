@@ -13,7 +13,8 @@
         select * from Directory_Map
         where USER_ID = #{USER_ID}
           and Directory_Parent_ID = #{Directory_Parent_ID}
-          and Directory_Name = #{childrenDirectoryName};
+          and Directory_Name = #{childrenDirectoryName}
+          and priviledge <![CDATA[<= ]]> #{priviledge};
     </select>
 
     <select id="getDirMap" resultType="com.virtualpuffer.netdisk.entity.file.AbsoluteNetdiskDirectory">
@@ -26,13 +27,13 @@
     </select>
 
     <insert id="mkdir">
-        insert into Directory_Map (USER_ID,Directory_Name,Directory_Parent_ID)
-            values (#{USER_ID},#{name},#{Directory_Parent_ID});
+        insert into Directory_Map (USER_ID,Directory_Name,Directory_Parent_ID,priviledge)
+            values (#{USER_ID},#{name},#{Directory_Parent_ID},#{priviledge});
     </insert>
     <!--获取文件下面的子目录-->
     <select id="getDir" resultType="java.lang.String">
         select Directory_Name from Directory_Map
-        where Directory_Parent_ID = #{Directory_ID} and USER_ID = #{USER_ID} order by Directory_Name desc;
+        where Directory_Parent_ID = #{Directory_ID} and USER_ID = #{USER_ID} and priviledge <![CDATA[<= ]]> #{priviledge} order by Directory_Name desc;
     </select>
 
     <select id="onExists" resultType="com.virtualpuffer.netdisk.entity.file.AbsoluteNetdiskDirectory">

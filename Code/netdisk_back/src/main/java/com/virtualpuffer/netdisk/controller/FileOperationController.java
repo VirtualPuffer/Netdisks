@@ -7,6 +7,7 @@ import com.virtualpuffer.netdisk.data.ResponseMessage;
 import com.virtualpuffer.netdisk.entity.file.AbsoluteNetdiskDirectory;
 import com.virtualpuffer.netdisk.entity.file.DownloadCollection;
 import com.virtualpuffer.netdisk.entity.file.File_Map;
+import com.virtualpuffer.netdisk.mapper.netdiskFile.DirectoryMap;
 import com.virtualpuffer.netdisk.service.impl.file.FileBaseService;
 import com.virtualpuffer.netdisk.service.impl.file.FileHashService;
 import com.virtualpuffer.netdisk.service.impl.file.FileTokenService;
@@ -30,27 +31,51 @@ import java.util.Map;
 @RestController
 @RequestMapping(value = "/api")
 public class FileOperationController extends BaseController {
+
+    public static final String head_destination = "iiiimmmmmmaaaaaggggggeeeee";
     public FileOperationController() {
     }
 
     @ResponseBody
     @RequestMapping(value = "/uploadHead",method = RequestMethod.POST)
-    public ResponseMessage uploadHead(String destination,MultipartFile getFile, HttpServletRequest request, HttpServletResponse response){
+    public ResponseMessage uploadHead(MultipartFile getFile, HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException {
         UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
-        if(destination == null || destination.equals("")){
-            destination = "";
-        }
+        String destination = head_destination;
         if(getFile == null){
             return ResponseMessage.getExceptionInstance(404,"未找到上传的文件流",null);
         }
         try {
-            String path = destination + "/" + getFile.getOriginalFilename();
-            FileBaseService service = FileBaseService.getInstance(destination, loginService.getUser());
+            try {
+                FileBaseService.getInstance("",loginService.getUser(),4).mkdir(destination,4);
+            } catch (Exception e) {}
+            String path = destination + "/head.jpg";
+            FileBaseService service = FileBaseService.getInstance(StringUtils.filePathDeal(destination), loginService.getUser(),4);
             service.setFile(new File(StringUtils.filePathDeal(path)));
             service.uploadFile(getFile.getInputStream());
-            return ResponseMessage.getSuccessInstance(200,"文件上传成功",null);
+            return ResponseMessage.getSuccessInstance(200,"头像上传成功",null);
         } catch (FileNotFoundException e) {
             return ResponseMessage.getExceptionInstance(404,"传输地址无效",null);
+        }  catch (RuntimeException e){
+            e.printStackTrace();
+            return ResponseMessage.getExceptionInstance(300,e.getMessage(),null);
+        }catch (Exception e) {
+            e.printStackTrace();
+            return ResponseMessage.getErrorInstance(500,"系统错误",null);
+        }
+    }
+    @ResponseBody
+    @RequestMapping(value = "/getHead",method = RequestMethod.GET)
+    public ResponseMessage getHead(HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException {
+        UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
+        System.out.println("??????_____");
+        try {
+            String fileName = FileBaseService.getInstance(head_destination,loginService.getUser(),4).getDirectory(4).get("file").getFirst();
+            String destination = StringUtils.filePathDeal(head_destination + "/"+fileName);
+            FileBaseService service = FileBaseService.getInstance(destination,loginService.getUser(),4);
+            service.downloadFile(response.getOutputStream());
+            return ResponseMessage.getSuccessInstance(200,"头像获取成功",null);
+        } catch (FileNotFoundException e) {
+            return ResponseMessage.getExceptionInstance(404,"头像未上传",null);
         }  catch (RuntimeException e){
             e.printStackTrace();
             return ResponseMessage.getExceptionInstance(300,e.getMessage(),null);
@@ -72,7 +97,7 @@ public class FileOperationController extends BaseController {
         }
         try {
             String path = destination + "/" + getFile.getOriginalFilename();
-            FileBaseService service = FileBaseService.getInstance(destination, loginService.getUser());
+            FileBaseService service = FileBaseService.getInstance(destination, loginService.getUser(),AbsoluteNetdiskDirectory.default_priviledge);
             service.setFile(new File(StringUtils.filePathDeal(path)));
             service.uploadFile(getFile.getInputStream());
             return ResponseMessage.getSuccessInstance(200,"文件上传成功",null);
@@ -120,8 +145,8 @@ public class FileOperationController extends BaseController {
         UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
         try {
             Map<String,String> map = StringUtils.getFileNameAndDestinaiton(on.getDestination());
-            FileBaseService service = FileBaseService.getInstance(map.get("path"),loginService.getUser());
-            service.mkdir(map.get("name"));
+            FileBaseService service = FileBaseService.getInstance(map.get("path"),loginService.getUser(),4);//用高权限去看重复，防止冲突
+            service.mkdir(map.get("name"), AbsoluteNetdiskDirectory.default_priviledge);
             return ResponseMessage.getSuccessInstance(200,"文件夹创建成功",null);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -141,7 +166,7 @@ public class FileOperationController extends BaseController {
     public ResponseMessage delete(String destination, HttpServletRequest request, HttpServletResponse response) throws IOException {
         UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
         try {
-            FileBaseService service = FileBaseService.getInstance(destination, loginService.getUser().getUSER_ID());
+            FileBaseService service = FileBaseService.getInstance(destination, loginService.getUser().getUSER_ID(),AbsoluteNetdiskDirectory.default_priviledge);
             service.deleteFileMap();
             return ResponseMessage.getSuccessInstance(200,"文件删除成功",null);
         } catch (FileNotFoundException e) {
@@ -159,8 +184,8 @@ public class FileOperationController extends BaseController {
     public ResponseMessage getDir(String destination, HttpServletRequest request, HttpServletResponse response) throws IOException {
         UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
         try {
-            FileBaseService service = FileBaseService.getInstance(destination, loginService.getUser());
-            Map map = service.getDirectory();
+            FileBaseService service = FileBaseService.getInstance(destination, loginService.getUser(),AbsoluteNetdiskDirectory.default_priviledge);
+            Map map = service.getDirectory(AbsoluteNetdiskDirectory.default_priviledge);//常规权限文件
             return ResponseMessage.getSuccessInstance(200,"路径获取成功",map);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -188,7 +213,7 @@ public class FileOperationController extends BaseController {
         }
         try {
             UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
-            service = FileBaseService.getInstance(destination, loginService.getUser());
+            service = FileBaseService.getInstance(destination, loginService.getUser(),AbsoluteNetdiskDirectory.default_priviledge);
             FileCollection collection = service.searchFile(name,type);
             HashMap map = new HashMap();
             map.put("directory",collection.getDir());
@@ -213,7 +238,7 @@ public class FileOperationController extends BaseController {
 
         try {
             UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
-            service = FileBaseService.getInstance(destination,loginService.getUser());
+            service = FileBaseService.getInstance(destination,loginService.getUser(),AbsoluteNetdiskDirectory.default_priviledge);
             if(service.getNetdiskEntity() instanceof AbsoluteNetdiskDirectory){
                 throw  new RuntimeException("你来教我怎么预览文件夹");
             }
@@ -251,7 +276,7 @@ public class FileOperationController extends BaseController {
             }
             collection.setSecond(time);
             //String url = service.getDownloadURL(time,key, FileBaseService.DOWNLOAD_TAG);
-            String url = FileBaseService.getDownloadURL(collection, loginService.getUser());
+            String url = FileBaseService.getDownloadURL(collection, loginService.getUser(),AbsoluteNetdiskDirectory.default_priviledge);
             String date = getTime(System.currentTimeMillis() + time * 1000);
             HashMap hashMap = new HashMap();
             hashMap.put("downloadURL",url);//token
@@ -275,7 +300,7 @@ public class FileOperationController extends BaseController {
         FileBaseService service = null;
         try {
             UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
-            service = FileBaseService.getInstance(destination, loginService.getUser());
+            service = FileBaseService.getInstance(destination, loginService.getUser(),AbsoluteNetdiskDirectory.default_priviledge);
             service.getNetdiskEntity().rename(name);
             return ResponseMessage.getSuccessInstance(200,"重命名成功",null);
         } catch (FileNotFoundException e) {
@@ -297,7 +322,7 @@ public class FileOperationController extends BaseController {
         FileBaseService service = null;
         try {
             UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
-            service = FileBaseService.getInstance(destination, loginService.getUser());
+            service = FileBaseService.getInstance(destination, loginService.getUser(),AbsoluteNetdiskDirectory.default_priviledge);
             service.compression();
             return ResponseMessage.getSuccessInstance(200,"文件压缩成功",null);
         } catch (FileNotFoundException e) {
@@ -313,7 +338,7 @@ public class FileOperationController extends BaseController {
         FileBaseService service = null;
         try {
             UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
-            service = FileBaseService.getInstance(destination, loginService.getUser());
+            service = FileBaseService.getInstance(destination, loginService.getUser(),4);
             service.deCompress();
             return ResponseMessage.getSuccessInstance(200,"文件解压成功",null);
         } catch (FileNotFoundException e) {
