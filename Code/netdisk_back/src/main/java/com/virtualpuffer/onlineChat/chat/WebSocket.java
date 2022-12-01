@@ -32,17 +32,20 @@ public class WebSocket {
     private Session session;
     public UserServiceImpl service;
     public static boolean singleThread = true;
+    public static final boolean Single_Connect = true;
     private static CopyOnWriteArraySet<WebSocket> webSocketSet=new CopyOnWriteArraySet<>();
     private static LinkedList<String> messageList = new LinkedList<>();
     private static HashMap<Integer,WebSocket> hashMap = new HashMap<>();
-
-   public static AtomicInteger message_id = null;//消息id类
+    public static AtomicInteger message_id = null;//消息id类
+    public static HashMap<WebSocket,Integer> Connect_Map = new HashMap<>();//心跳记录，停跳直接切断连接
+    public static int disconnect_time = 3;//停跳次数
+    public static final String PONG = "pongroccorrocccorpong";//响应包
 
     static {
         SqlSession session = null;
         try {
             session = MybatisConnect.getSession();
-            LinkedList<ChatResponseMessage> list = session.getMapper(ChatMap.class).getLastMessage(10);
+            LinkedList<ChatResponseMessage> list = session.getMapper(ChatMap.class).getLastMessage(100);
             try {
                 message_id = new AtomicInteger(list.getFirst().getMessage_id());
             }catch (NoSuchElementException e){
@@ -66,28 +69,50 @@ public class WebSocket {
         }
         this.session=session;
         HandshakeRequest request = (HandshakeRequest)config.getUserProperties().get("request");
-        try {
-            String token =  request.getHeaders().get("Sec-WebSocket-Protocol").get(0);
-            UserTokenService tokenService = UserTokenService.getInstanceByToken(token,"");
-            this.service = tokenService;
-            int id = tokenService.getUser().getUSER_ID();
-            hashMap.put(id,this);
-            printMessage(this);
-            systemMessage(tokenService.getUser().getName()+" 进入了聊天室");
-        } catch (Exception e) {
-            systemMessage("匿名用户 进入了聊天室");
+        String token =  request.getHeaders().get("Sec-WebSocket-Protocol").get(0);
+        this.service = UserTokenService.getInstanceByToken(token,"");
+        if(service == null){
+            onClose();
+            throw new RuntimeException("没登录进你妈聊天室");
         }
+        if(Single_Connect){
+            single_connect();//单连接限制
+        }
+        Connect_Map.put(this,0);
+        printMessage(this);
+        systemMessage(this.service.getUser().getName()+" 进入了聊天室");
         webSocketSet.add(this);
     }
+
+    public void single_connect() throws Exception {
+        try {
+            int id = this.service.getUser().getUSER_ID();
+            try {
+                if(hashMap.containsKey(id)){
+                    hashMap.get(id).onClose();
+                }
+            }catch (Exception e){}
+            hashMap.put(id,this);
+        }catch (Exception z){}
+    }
     @OnClose
-    public void onClose()throws Exception{
-        webSocketSet.remove(this);
-        String name = service.getUser().getName();
-        systemMessage("   " + name + "  断开连接");
+    public void onClose(){
+        try {
+            webSocketSet.remove(this);
+            this.session.close();
+            String name = service.getUser().getName();
+            systemMessage("   " + name + "  断开连接");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
     @OnMessage
     public void onMessage(String message)throws Exception{
-        broadCastMessage(message);
+        if(PONG.equals(message)){
+            Connect_Map.put(this,0);
+        }else {
+            broadCastMessage(message);
+        }
     }
 
     public void privateMessage(String message,String target){
@@ -170,6 +195,20 @@ public class WebSocket {
             socket.session.getBasicRemote().sendText(iterator.next());
         }
     }
+
+    public static void connectCheck(){
+        for(WebSocket socket : Connect_Map.keySet()){
+            int time = Connect_Map.get(socket);
+            if(time <= disconnect_time){
+                Connect_Map.put(socket,time+1);
+            }else {
+                try {
+                    socket.onClose();
+                    Connect_Map.remove(socket);
+                }catch (Exception e){}
+            }
+        }
+    }
 }
 
 class ConnectMaintain extends Thread{
@@ -179,7 +218,9 @@ class ConnectMaintain extends Thread{
             if(webSocket!=null){
                 try {
                     webSocket.pingMessage("ping");
-                    sleep(20000);
+                    sleep(10000);
+                    WebSocket.connectCheck();
+                    sleep(10000);
                 } catch (InterruptedException e) {
                 } catch (Exception e) {
                     throw new RuntimeException(e);

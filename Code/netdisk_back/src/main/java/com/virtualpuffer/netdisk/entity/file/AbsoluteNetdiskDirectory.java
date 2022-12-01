@@ -31,6 +31,8 @@ import static com.virtualpuffer.netdisk.utils.StringUtils.getFileSequence;
  * 除了默认的头节点是-1，其他的id是唯一的
  * */
 public class AbsoluteNetdiskDirectory extends AbsoluteNetdiskEntity{
+
+    private int priviledge;
     private int Directory_ID;
     private int Directory_Parent_ID;
     private String Directory_Name;
@@ -189,5 +191,13 @@ public class AbsoluteNetdiskDirectory extends AbsoluteNetdiskEntity{
 
     public void setDestination(String destination) {
         this.destination = destination;
+    }
+
+    public int getPriviledge() {
+        return priviledge;
+    }
+
+    public void setPriviledge(int priviledge) {
+        this.priviledge = priviledge;
     }
 }

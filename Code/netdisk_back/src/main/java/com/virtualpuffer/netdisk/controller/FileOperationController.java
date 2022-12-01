@@ -34,6 +34,33 @@ public class FileOperationController extends BaseController {
     }
 
     @ResponseBody
+    @RequestMapping(value = "/uploadHead",method = RequestMethod.POST)
+    public ResponseMessage uploadHead(String destination,MultipartFile getFile, HttpServletRequest request, HttpServletResponse response){
+        UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
+        if(destination == null || destination.equals("")){
+            destination = "";
+        }
+        if(getFile == null){
+            return ResponseMessage.getExceptionInstance(404,"未找到上传的文件流",null);
+        }
+        try {
+            String path = destination + "/" + getFile.getOriginalFilename();
+            FileBaseService service = FileBaseService.getInstance(destination, loginService.getUser());
+            service.setFile(new File(StringUtils.filePathDeal(path)));
+            service.uploadFile(getFile.getInputStream());
+            return ResponseMessage.getSuccessInstance(200,"文件上传成功",null);
+        } catch (FileNotFoundException e) {
+            return ResponseMessage.getExceptionInstance(404,"传输地址无效",null);
+        }  catch (RuntimeException e){
+            e.printStackTrace();
+            return ResponseMessage.getExceptionInstance(300,e.getMessage(),null);
+        }catch (Exception e) {
+            e.printStackTrace();
+            return ResponseMessage.getErrorInstance(500,"系统错误",null);
+        }
+    }
+
+    @ResponseBody
     @RequestMapping(value = "/uploadFile",method = RequestMethod.POST)
     public ResponseMessage upload(String destination,MultipartFile getFile, HttpServletRequest request, HttpServletResponse response){
         UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");

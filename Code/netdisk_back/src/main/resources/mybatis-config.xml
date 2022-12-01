@@ -3,9 +3,9 @@
         "http://mybatis.org/dtd/mybatis-3-config.dtd">
 
 <configuration>
-    <settings>
+    <!--<settings>
         <setting name="logImpl" value="STDOUT_LOGGING"/>
-    </settings>
+    </settings>-->
     <environments default="mysql">
         <environment id="mysql">
             <transactionManager type="JDBC"></transactionManager>

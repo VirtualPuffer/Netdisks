@@ -89,8 +89,6 @@ public class AbsoluteNetdiskFile extends AbsoluteNetdiskEntity{
         Map<String,String> map = StringUtils.getFileNameAndDestinaiton(destination);
         String directoryPath = map.get("path");
         String fileName = map.get("name");
-        System.out.println(directoryPath);
-        System.out.println(fileName);
         AbsoluteNetdiskDirectory netdiskDirectory = AbsoluteNetdiskDirectory.getInstance(directoryPath,id);
             try {
                 session = MybatisConnect.getSession();
@@ -281,7 +279,6 @@ public class AbsoluteNetdiskFile extends AbsoluteNetdiskEntity{
     }
 
     public void setFile(File file) {
-        System.out.println("设置了："+ file);
         this.file = file;
     }
 

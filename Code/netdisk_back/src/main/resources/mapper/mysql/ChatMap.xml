@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.virtualpuffer.netdisk.mapper.netdiskFile.ChatMap">
     <select id="getLastMessage" resultType="com.virtualpuffer.netdisk.entity.ChatResponseMessage">
-        select * from Chat_Map where target = -1 order by chat_ID desc limit 10;
+        select * from Chat_Map where target = -1 order by chat_ID desc limit #{number};
     </select>
 
     <insert id="sendMessage">

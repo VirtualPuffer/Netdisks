@@ -45,7 +45,6 @@ public class APIAuthorizationFilter extends BaseFilter{
         try {
             String token = request.getHeader("Authorization");
             for(Cookie cookie : request.getCookies()){
-                System.out.println("nanako".equals(cookie.getName())+" "+ "President%20of%20Republic%20of%20China%20Taiwan".equals(cookie.getValue()));
                 if("nanako".equals(cookie.getName()) && "President%20of%20Republic%20of%20China%20Taiwan".equals(cookie.getValue())){
                     accessLimit = false;
                 }
