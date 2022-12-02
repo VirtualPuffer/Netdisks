@@ -37,9 +37,7 @@ public class LogAop {
             System.out.println("接口路径:  " + request.getServletPath());
             System.out.println("当前时间：  " + Log.getTime());
             System.out.println("参数信息：" + JSON.toJSON(request.getParameterMap()));
-            //System.out.println(JSON.toJSON(request.));
             System.out.println(request.getQueryString());
-            System.out.println();
         } catch (Exception exception) {
         }
 
