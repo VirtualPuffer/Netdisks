@@ -4,6 +4,7 @@ package com.virtualpuffer.netdisk.controller;
 import com.virtualpuffer.netdisk.controller.base.BaseController;
 import com.virtualpuffer.netdisk.data.FileCollection;
 import com.virtualpuffer.netdisk.data.ResponseMessage;
+import com.virtualpuffer.netdisk.entity.User;
 import com.virtualpuffer.netdisk.entity.file.AbsoluteNetdiskDirectory;
 import com.virtualpuffer.netdisk.entity.file.DownloadCollection;
 import com.virtualpuffer.netdisk.entity.file.File_Map;
@@ -48,7 +49,7 @@ public class FileOperationController extends BaseController {
             try {
                 FileBaseService.getInstance("",loginService.getUser(),4).mkdir(destination,4);
             } catch (Exception e) {}
-            String path = destination + "/head.jpg";
+            String path = destination + "/head(1).jpg";
             FileBaseService service = FileBaseService.getInstance(StringUtils.filePathDeal(destination), loginService.getUser(),4);
             service.setFile(new File(StringUtils.filePathDeal(path)));
             service.uploadFile(getFile.getInputStream());
@@ -65,20 +66,25 @@ public class FileOperationController extends BaseController {
     }
     @ResponseBody
     @RequestMapping(value = "/getHead",method = RequestMethod.GET)
-    public ResponseMessage getHead(HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException {
-        UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");
-        System.out.println("??????_____");
+    public ResponseMessage getHead(int USER_ID,HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException {
+        User user = new User(USER_ID);
         try {
-            String fileName = FileBaseService.getInstance(head_destination,loginService.getUser(),4).getDirectory(4).get("file").getFirst();
-            String destination = StringUtils.filePathDeal(head_destination + "/"+fileName);
-            FileBaseService service = FileBaseService.getInstance(destination,loginService.getUser(),4);
-            service.downloadFile(response.getOutputStream());
-            return ResponseMessage.getSuccessInstance(200,"头像获取成功",null);
+            String fileName = FileBaseService.getInstance(head_destination,user,4).getDirectory(4).get("file").getFirst();
+            DownloadCollection collection = new DownloadCollection();
+            collection.setDestination(head_destination);
+            String[] arr = new String[1];
+            arr[0] = fileName;
+            collection.setFiles(arr);
+            collection.setPreview(false);
+            collection.setSecond(1000000000);
+            String url = FileBaseService.getDownloadURL(collection, user,4);
+            Map hashMap = new HashMap();
+            hashMap.put("downloadURL",url);
+            return ResponseMessage.getSuccessInstance(200,"头像获取成功",hashMap);
         } catch (FileNotFoundException e) {
             return ResponseMessage.getExceptionInstance(404,"头像未上传",null);
         }  catch (RuntimeException e){
-            e.printStackTrace();
-            return ResponseMessage.getExceptionInstance(300,e.getMessage(),null);
+            return ResponseMessage.getExceptionInstance(404,"头像未上传",null);
         }catch (Exception e) {
             e.printStackTrace();
             return ResponseMessage.getErrorInstance(500,"系统错误",null);

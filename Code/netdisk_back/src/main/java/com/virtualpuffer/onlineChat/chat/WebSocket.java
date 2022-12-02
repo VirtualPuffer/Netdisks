@@ -1,9 +1,11 @@
 package com.virtualpuffer.onlineChat.chat;
 
 import com.alibaba.fastjson.JSON;
+import com.virtualpuffer.netdisk.controller.FileOperationController;
 import com.virtualpuffer.netdisk.entity.ChatResponseMessage;
 import com.virtualpuffer.netdisk.entity.User;
 import com.virtualpuffer.netdisk.entity.file.AbsoluteNetdiskDirectory;
+import com.virtualpuffer.netdisk.entity.file.DownloadCollection;
 import com.virtualpuffer.netdisk.mapper.netdiskFile.ChatMap;
 import com.virtualpuffer.netdisk.service.impl.file.FileBaseService;
 import com.virtualpuffer.netdisk.service.impl.file.FileUtilService;
@@ -22,10 +24,14 @@ import javax.websocket.*;
 import javax.websocket.server.HandshakeRequest;
 import javax.websocket.server.ServerEndpoint;
 import java.io.*;
+import java.nio.Buffer;
+import java.nio.file.NoSuchFileException;
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static com.virtualpuffer.netdisk.controller.FileOperationController.head_destination;
 
 @Component
 @ServerEndpoint(value = "/webSocket",configurator = GetHttpInfosConfigurator.class)
@@ -43,6 +49,8 @@ public class WebSocket {
     public static int disconnect_time = 3;//停跳次数
     public static final String PONG = "pongroccorrocccorpong";//响应包
 
+    public static Set<String> keywords = new HashSet<>();
+
     static {
         SqlSession session = null;
         try {
@@ -53,15 +61,25 @@ public class WebSocket {
             }catch (NoSuchElementException e){
                 message_id = new AtomicInteger(0);
             }
-            for(ChatResponseMessage responseMessage: list){
+            for(ChatResponseMessage responseMessage : list){
                 messageList.addFirst(responseMessage.getContent());
             }
         } finally {
             session.close();
         }
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader("/usr/local/MyTomcat/keywords.txt"));
+            String s = null;
+            while ((s = reader.readLine()) != null){
+                keywords.add(s);
+            }
+        } catch (Exception e) {
+        }
     }
     public WebSocket(){
     }
+
+
     @OnOpen
     public void onOpen(Session session, EndpointConfig config)throws Exception{
         if(singleThread){
@@ -71,9 +89,6 @@ public class WebSocket {
         }
         this.session=session;
         HandshakeRequest request = (HandshakeRequest)config.getUserProperties().get("request");
-        for(String s : config.getUserProperties().keySet()){
-            System.out.println(s + " " + config.getUserProperties().get(s));
-        }
         String token =  request.getHeaders().get("Sec-WebSocket-Protocol").get(0);
         this.service = UserTokenService.getInstanceByToken(token,"");
         if(service == null){
@@ -89,7 +104,7 @@ public class WebSocket {
         webSocketSet.add(this);
     }
 
-    public void single_connect() throws Exception {
+    public void single_connect(){
         try {
             int id = this.service.getUser().getUSER_ID();
             try {
@@ -120,6 +135,13 @@ public class WebSocket {
             broadCastMessage(message);
         }
     }
+    public String x(int length){
+        StringBuffer buffer = new StringBuffer();
+        for(int i = 0;i<length;i++){
+            buffer.append("*");
+        }
+        return buffer.toString();
+    }
 
     public void privateMessage(String message,String target){
 
@@ -148,17 +170,16 @@ public class WebSocket {
             } catch (Exception e) {
             }
             messageContent = "rochttp://47.96.253.99/Netdisk/resource/static/image/" + SHA;
+        }else {
+            for(String s : keywords){
+                messageContent = messageContent.replace(s,x(s.length()));
+            }
         }
         String message = null;
         ChatResponseMessage responseMessage = null;
         int current_id = isCache ? message_id.incrementAndGet() : 0;//线程安全获取ID
-        try {
-            String name = service.getUser().getName();
-            responseMessage = new ChatResponseMessage(Log.getTime(),name,messageContent,current_id);
-        } catch (NullPointerException e) {
-            responseMessage = new ChatResponseMessage(Log.getTime(),"匿名用户",messageContent,current_id);
-        }
-        responseMessage.setType(type);
+        String name = service.getUser().getName();
+        responseMessage = new ChatResponseMessage(Log.getTime(),name,messageContent,current_id,this.service.getUser().getUSER_ID(),type);
         message = JSON.toJSONString(responseMessage);
         if (isCache) {
             messageCache(message,current_id);
@@ -171,6 +192,19 @@ public class WebSocket {
         }
     }
 
+    public String getHead(User user) throws FileNotFoundException, NoSuchFileException {
+        String fileName = FileBaseService.getInstance(head_destination,user,4).getDirectory(4).get("file").getFirst();
+        DownloadCollection collection = new DownloadCollection();
+        collection.setDestination(head_destination);
+        String[] arr = new String[1];
+        arr[0] = fileName;
+        collection.setFiles(arr);
+        collection.setPreview(false);
+        collection.setSecond(1000000);
+        String url = FileBaseService.getDownloadURL(collection, user,4);
+        return url;
+    }
+
     public void sendMessage(String message,WebSocket socket) throws IOException {
         socket.session.getBasicRemote().sendText(message);
     }
@@ -179,13 +213,9 @@ public class WebSocket {
         SqlSession session = null;
         try{
             session = MybatisConnect.getSession();
-            try {
-                session.getMapper(ChatMap.class).sendMessage(new Timestamp(System.currentTimeMillis()),service.getUser().getUSER_ID(),message,-1,message_id);
-            }catch (NullPointerException e){
-                session.getMapper(ChatMap.class).sendMessage(new Timestamp(System.currentTimeMillis()),11,message,-1,message_id);
-            }
+            session.getMapper(ChatMap.class).sendMessage(new Timestamp(System.currentTimeMillis()),service.getUser().getUSER_ID(),message,-1,message_id);
             session.commit();
-            if(messageList.size() < 10){
+            if(messageList.size() < 100){
                 messageList.addLast(message);
             }else {
                 messageList.addLast(message);
@@ -214,6 +244,32 @@ public class WebSocket {
                 }catch (Exception e){}
             }
         }
+    }
+}
+
+class messageContent{
+    String content;
+    String url;
+
+    public messageContent(String content, String url) {
+        this.content = content;
+        this.url = url;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 }
 
