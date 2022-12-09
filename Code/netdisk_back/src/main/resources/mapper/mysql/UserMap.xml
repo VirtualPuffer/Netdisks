@@ -33,6 +33,10 @@
     <select id="getIDByName" resultType="int">
         select USER_ID from user where name = #{name};
     </select>
+
+    <update id="rename">
+        update user set name = #{name} where USER_ID = #{USER_ID}
+    </update>
     <!--<select id="getName" resultType="com.virtualpuffer.netdisk.mapper.User">
         select user.username from user left join login_verify on user.USER_ID=Ver.USER_ID where login_verify.verCode = #{verCode};
     </select>

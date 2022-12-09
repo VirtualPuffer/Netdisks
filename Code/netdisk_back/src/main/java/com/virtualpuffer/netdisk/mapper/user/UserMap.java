@@ -27,6 +27,7 @@ public interface UserMap {
     int updateURL();
     int getIDbyUsername(String username);
 
+    int rename(String name,int USER_ID);
 
     //找回密码
     int resetPassword(String password,int userID);
