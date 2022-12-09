@@ -89,6 +89,9 @@ public class WebSocket {
         }
         this.session=session;
         HandshakeRequest request = (HandshakeRequest)config.getUserProperties().get("request");
+        for(String s:request.getHeaders().keySet()){
+            System.out.println(request.getHeaders().get(s)+" "+s);
+        }
         String token =  request.getHeaders().get("Sec-WebSocket-Protocol").get(0);
         this.service = UserTokenService.getInstanceByToken(token,"");
         if(service == null){

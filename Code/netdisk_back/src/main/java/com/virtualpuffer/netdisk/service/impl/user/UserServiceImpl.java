@@ -134,6 +134,25 @@ public class UserServiceImpl extends BaseServiceImpl implements LoginService {
         }
     }
 
+    public void rename(String name){
+        SqlSession session = null;
+        try {
+            if("".equals(name) || name == null){
+                throw new RuntimeException("名字呢");
+            }
+            session = MybatisConnect.getSession();
+            int cou = session.getMapper(UserMap.class).rename(name,user.getUSER_ID());
+            if(cou == 1){
+                session.commit();
+            }else {
+                throw new Error("重命名失败");
+            }
+        }finally {
+            close(session);
+        }
+
+    }
+
     public void sendResetMail(){
         String res = resetURL();
         sendMess(res);

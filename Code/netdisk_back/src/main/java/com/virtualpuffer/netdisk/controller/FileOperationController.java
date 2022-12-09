@@ -18,6 +18,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
@@ -35,6 +36,22 @@ public class FileOperationController extends BaseController {
 
     public static final String head_destination = "iiiimmmmmmaaaaaggggggeeeee";
     public FileOperationController() {
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/user/rename",method = RequestMethod.POST)
+    public ResponseMessage doLogin(@RequestBody User user, HttpServletRequest request , HttpServletResponse response){
+        try {
+            UserServiceImpl service = (UserServiceImpl) request.getAttribute("AuthService");
+            service.rename(user.getName());
+            return ResponseMessage.getSuccessInstance(200,"重命名成功",null);
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            return ResponseMessage.getSuccessInstance(300,e.getMessage(),null);
+        } catch (Throwable e){
+            e.printStackTrace();//打印异常情况
+            return ResponseMessage.getErrorInstance(500,"系统错误",null);
+        }
     }
 
     @ResponseBody
