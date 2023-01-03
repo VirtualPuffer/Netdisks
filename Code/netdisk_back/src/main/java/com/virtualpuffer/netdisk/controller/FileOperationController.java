@@ -55,6 +55,31 @@ public class FileOperationController extends BaseController {
     }
 
     @ResponseBody
+    @RequestMapping(value = "/user/getUserData",method = RequestMethod.GET)
+    public ResponseMessage doLogin(@Nullable int USER_ID, HttpServletRequest request , HttpServletResponse response){
+        try {
+            UserServiceImpl service = (UserServiceImpl) request.getAttribute("AuthService");
+            if(USER_ID == 0){
+                USER_ID = service.getUser().getUSER_ID();
+            }
+            User user = UserServiceImpl.getInstanceByID(USER_ID).getUser();
+            HashMap map = new HashMap<>();
+            if(USER_ID == service.getUser().getUSER_ID()){//用户本人
+                //好像没啥好给
+            }
+            map.put("uid",user.getUSER_ID());
+            map.put("name",user.getName());
+            return ResponseMessage.getSuccessInstance(200,"用户信息获取成功",map);
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            return ResponseMessage.getSuccessInstance(300,e.getMessage(),null);
+        } catch (Throwable e){
+            e.printStackTrace();//打印异常情况
+            return ResponseMessage.getErrorInstance(500,"系统错误",null);
+        }
+    }
+
+    @ResponseBody
     @RequestMapping(value = "/uploadHead",method = RequestMethod.POST)
     public ResponseMessage uploadHead(MultipartFile getFile, HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException {
         UserServiceImpl loginService = (UserServiceImpl) request.getAttribute("AuthService");

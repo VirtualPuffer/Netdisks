@@ -78,6 +78,20 @@ public class UserServiceImpl extends BaseServiceImpl implements LoginService {
         }
     }
 
+    public static UserServiceImpl getInstanceByID(int USER_ID) throws RuntimeException{
+        SqlSession session = null;
+        try {
+            session = MybatisConnect.getSession();
+            User user = session.getMapper(UserMap.class).getUserByID(USER_ID);
+            if(user == null){
+                throw new RuntimeException("用户不存在");
+            }
+            return new UserServiceImpl(user);
+        } finally {
+            close(session);
+        }
+    }
+
     public static UserServiceImpl getInstanceByAddr(String mailAddr) throws RuntimeException{
         SqlSession session = null;
         try {

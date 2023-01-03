@@ -17,6 +17,8 @@ public interface UserMap {
     User getInstanceByAddr(String addr);
 
     User userLogin(String username,String password);
+
+    User getUserData(int USER_ID);
     LinkedList<User> getName(String verCode);
 
     User getUserByID(int userID);
