@@ -37,6 +37,10 @@
     <update id="rename">
         update user set name = #{name} where USER_ID = #{USER_ID}
     </update>
+
+    <select id="getUserData" resultType="com.virtualpuffer.netdisk.entity.User" >
+        select  * from user where USER_ID = #{USER_ID};
+    </select>
     <!--<select id="getName" resultType="com.virtualpuffer.netdisk.mapper.User">
         select user.username from user left join login_verify on user.USER_ID=Ver.USER_ID where login_verify.verCode = #{verCode};
     </select>

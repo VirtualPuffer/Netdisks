@@ -68,8 +68,13 @@ public abstract class FileUtilService extends BaseServiceImpl {
         return getHash(inputStream,"SHA-256");
     }
     protected static String getHash(File file,String type)throws Exception{
-        InputStream inputStream = new FileInputStream(file);
-        return getHash(inputStream,type);
+        InputStream inputStream = null;
+        try {
+            inputStream = new FileInputStream(file);
+            return getHash(inputStream,type);
+        } finally {
+            close(inputStream);
+        }
     }
     protected static String getHash(InputStream input, String type)throws Exception{
         MessageDigest instance = MessageDigest.getInstance(type);

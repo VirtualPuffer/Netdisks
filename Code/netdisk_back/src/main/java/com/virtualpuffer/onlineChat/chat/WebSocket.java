@@ -89,9 +89,6 @@ public class WebSocket {
         }
         this.session=session;
         HandshakeRequest request = (HandshakeRequest)config.getUserProperties().get("request");
-        for(String s:request.getHeaders().keySet()){
-            System.out.println(request.getHeaders().get(s)+" "+s);
-        }
         String token =  request.getHeaders().get("Sec-WebSocket-Protocol").get(0);
         this.service = UserTokenService.getInstanceByToken(token,"");
         if(service == null){
@@ -138,7 +135,7 @@ public class WebSocket {
             broadCastMessage(message);
         }
     }
-    public String x(int length){
+    public static String x(int length){
         StringBuffer buffer = new StringBuffer();
         for(int i = 0;i<length;i++){
             buffer.append("*");
@@ -152,6 +149,40 @@ public class WebSocket {
 
     public void pingMessage(String message)throws Exception{
         broadCastMessage(message,false,"ping");
+    }
+
+    public static void broadCast(String messageContent,boolean isCache,String type,User user) throws Exception {
+        //处理base64编码
+        if(messageContent.startsWith("data:image")){
+            String SHA = FileUtilService.getSH256(messageContent);
+            String path = "image/" + SHA;
+            try {
+                FileBaseService service = FileBaseService.getInstance("image",5, AbsoluteNetdiskDirectory.default_priviledge);
+                service.setFile(new File(StringUtils.filePathDeal(path)));
+                service.uploadFile(FileUtilService.getStringInputStream(messageContent));
+            } catch (Exception e) {
+            }
+            messageContent = "rochttp://47.96.253.99/Netdisk/resource/static/image/" + SHA;
+        }else {
+            for(String s : keywords){
+                messageContent = messageContent.replace(s,x(s.length()));
+            }
+        }
+        String message = null;
+        ChatResponseMessage responseMessage = null;
+        int current_id = isCache ? message_id.incrementAndGet() : 0;//线程安全获取ID
+        String name = user.getName();
+        responseMessage = new ChatResponseMessage(Log.getTime(),name,messageContent,current_id,user.getUSER_ID(),type);
+        message = JSON.toJSONString(responseMessage);
+        if (isCache) {
+            messageCache(message,current_id,user);
+        }
+        for(WebSocket webSocket:webSocketSet){
+            try {
+                sendMessage(message,webSocket);
+            } catch (IOException e) {
+            }
+        }
     }
 
     public void broadCastMessage(String message)throws Exception{
@@ -208,15 +239,15 @@ public class WebSocket {
         return url;
     }
 
-    public void sendMessage(String message,WebSocket socket) throws IOException {
+    public static void sendMessage(String message,WebSocket socket) throws IOException {
         socket.session.getBasicRemote().sendText(message);
     }
 
-    public void messageCache(String message,int message_id){
+    public static void messageCache(String message,int message_id,User user){
         SqlSession session = null;
         try{
             session = MybatisConnect.getSession();
-            session.getMapper(ChatMap.class).sendMessage(new Timestamp(System.currentTimeMillis()),service.getUser().getUSER_ID(),message,-1,message_id);
+            session.getMapper(ChatMap.class).sendMessage(new Timestamp(System.currentTimeMillis()),user.getUSER_ID(),message,-1,message_id);
             session.commit();
             if(messageList.size() < 100){
                 messageList.addLast(message);
@@ -227,6 +258,10 @@ public class WebSocket {
         }finally {
             session.close();
         }
+    }
+
+    public void messageCache(String message,int message_id){
+        messageCache(message,message_id,this.service.getUser());
     }
     public void printMessage(WebSocket socket) throws IOException {
         Iterator<String> iterator = messageList.iterator();
@@ -279,6 +314,8 @@ class messageContent{
 class ConnectMaintain extends Thread{
     WebSocket webSocket = NetdiskContextWare.getBean(WebSocket.class);
     public void run() {
+        webSocket.service = UserServiceImpl.getInstanceByID(5);
+        webSocket.service.getUser().setName("ping");
         while (true){
             if(webSocket!=null){
                 try {
