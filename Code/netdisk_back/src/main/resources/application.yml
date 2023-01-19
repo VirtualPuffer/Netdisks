@@ -42,4 +42,6 @@ spring:
     pool-core: 10
     pool-max: 30
     pool-queue-init: 10
+  appSocket:
+    port: 10005
 

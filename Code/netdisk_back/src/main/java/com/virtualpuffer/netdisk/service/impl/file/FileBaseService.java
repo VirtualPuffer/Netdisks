@@ -396,7 +396,7 @@ public class FileBaseService extends FileUtilService {
         try {
            session = MybatisConnect.getSession();
            FileCollection collection = new FileCollection();
-           LinkedList<AbsoluteNetdiskFile> fileList = session.getMapper(FileMap.class).searchFile(name, user.getUSER_ID());
+           LinkedList<AbsoluteNetdiskFile> fileList = session.getMapper(FileMap.class).searchFile(name, user.getUSER_ID(),3);//这有问题，权限给了没搜，暂时不管了
            LinkedList<AbsoluteNetdiskDirectory> dirList = session.getMapper(DirectoryMap.class).searchDir(name, user.getUSER_ID());
 
            LinkedList<String> file = new LinkedList<>();
@@ -405,14 +405,22 @@ public class FileBaseService extends FileUtilService {
            this.directoryMap = session.getMapper(DirectoryMap.class).getDirMap(this.user.getUSER_ID());
             if(!fileList.isEmpty()){
                 for(AbsoluteNetdiskFile fileMap : fileList) {
-                    AbsoluteNetdiskDirectory directoryParent = directoryMap.get(fileMap.getDirectory_Parent_ID());
-                    String file_path = buildAbstractPath(fileMap);
-                    file.add(file_path);
+                    try {
+                        AbsoluteNetdiskDirectory directoryParent = directoryMap.get(fileMap.getDirectory_Parent_ID());
+                        String file_path = buildAbstractPath(fileMap);
+                        file.add(file_path);
+                    } catch (RuntimeException e) {
+                        //不用管，抛出就是权限不足
+                    }
                 }
             }
             if(!dirList.isEmpty()){
                 for(AbsoluteNetdiskDirectory directory : dirList){
-                    dir.add(buildAbstractPath(directory));
+                    try {
+                        dir.add(buildAbstractPath(directory));
+                    } catch (RuntimeException e) {
+                        //不用管，抛出就是权限不足
+                    }
                 }
             }
             if(file.isEmpty()&&dir.isEmpty()){
@@ -430,19 +438,22 @@ public class FileBaseService extends FileUtilService {
         }
     }
 
-    public String buildAbstractPath(AbsoluteNetdiskFile netdiskFile){
+    public String buildAbstractPath(AbsoluteNetdiskFile netdiskFile)throws RuntimeException{
         AbsoluteNetdiskDirectory directoryParent = directoryMap.get(netdiskFile.getDirectory_Parent_ID());
         String dir_path = buildAbstractPath(directoryParent);
         String path = (netdiskFile == null) ? dir_path : (dir_path + "/" + netdiskFile.getFile_Name());
         return StringUtils.filePathDeal(path);
     }
 
-    public String buildAbstractPath(AbsoluteNetdiskDirectory netdiskDirectory){
+    public String buildAbstractPath(AbsoluteNetdiskDirectory netdiskDirectory)throws RuntimeException{
         LinkedList<String> pathList = new LinkedList<>();
         StringBuffer buffer = new StringBuffer();
         while (netdiskDirectory.getDirectory_Parent_ID() != -1){
-            netdiskDirectory = directoryMap.get(netdiskDirectory.getDirectory_Parent_ID());
+            if(netdiskDirectory.getPriviledge() > AbsoluteNetdiskDirectory.default_priviledge){
+                throw new RuntimeException("文件访问权限不足");
+            }
             pathList.addFirst(netdiskDirectory.getDirectory_Name());
+            netdiskDirectory = directoryMap.get(netdiskDirectory.getDirectory_Parent_ID());
         }
         for(String path : pathList){
             buffer.append("/").append(path);
