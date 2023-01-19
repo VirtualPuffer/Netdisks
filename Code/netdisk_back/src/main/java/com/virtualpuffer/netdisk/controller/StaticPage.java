@@ -23,7 +23,7 @@ public class StaticPage {
             return "随便返回的网页";
         }else {
             System.out.println("fuck:  "+request.getServletPath());
-            return new ModelAndView("/index.html");
+            return new ModelAndView("/indexe.html");
         }
     }
     @RequestMapping(value = {"/1/{path}"})

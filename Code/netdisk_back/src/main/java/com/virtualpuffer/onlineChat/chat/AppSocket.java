@@ -8,20 +8,22 @@ import java.io.*;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Locale;
+import java.util.Set;
 
 /**
  * 该类为多线程类，用于服务端
  */
 
 public class AppSocket extends BaseServiceImpl implements Runnable{
-    public static void main(String[] args) {
 
-    }
-    private Socket client = null;
-    public static Socket socket = null;
+    public static Set<AppSocket> socketSet = new HashSet<>();
+    public Socket socket = null;
     public int connectTag = 0;
     public static UserTokenService service = null;
+    public PrintStream out = null;
     private static final Class threadLock = ServerThread.class;
     private static final PrintStream systemStream = System.out;
     public static final String CONNECTTEST_REQUEST = "ping";
@@ -29,37 +31,30 @@ public class AppSocket extends BaseServiceImpl implements Runnable{
     public static final String DISCONNECT_REQUEST = "bye";
     public static final String DISCONNECT_RESPONSE = "byebye111";
     public AppSocket(Socket client){
-        this.client = client;
+        this.socket = client;
+    }
+
+    public void print(String string){
+        out.print(string);
     }
 
     @Override
     public void run() {
         int tryTime = 0;
         String str = null;
-        PrintStream out = null;
         boolean permit = true;
-
-        synchronized (threadLock) {
-            try {
-                socket.close();
-            } catch (Exception e) {
-            }
-            try {
-                socket = this.client;
-                socket.setSoTimeout(50000);
-            } catch (SocketException e) {
-            }
-        }
         try {
             out = new PrintStream(socket.getOutputStream());
-            BufferedReader buf = new BufferedReader(new InputStreamReader(client.getInputStream()));
-            out.println("password");
+            BufferedReader buf = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             while (permit) {
                 String token = buf.readLine();
+                System.out.println(token);
                 try {
                     service = UserTokenService.getInstanceByToken(token, "");
+                    System.out.println(service);
                     if(service!=null){
-                        permit = false;
+                        permit = false;//结束
+                        socketSet.add(this);
                     }
                 } catch (Exception e) {
                     if (tryTime > 2) {
@@ -73,46 +68,27 @@ public class AppSocket extends BaseServiceImpl implements Runnable{
                 }
             }
             socket.setSoTimeout(10000);
-            boolean listen = true;
-            while (listen){
-                String message = buf.readLine();
-                WebSocket.broadCast(message,false,"message",service.getUser());
-            }
             out.println("欢迎回来，连接已建立，通信地址：" + socket.getRemoteSocketAddress());
-            boolean flag = true;
-            File current = new File("/bin/sh");
-            while (flag && !socket.isClosed()) {
-                Runtime.getRuntime().exec("");
+            WebSocket.printMessage(out);
+            boolean listen = true;
+            while (listen && !socket.isClosed()){
+                String message = null;
                 try {
-                    str = buf.readLine();
+                    message = buf.readLine();
+                    if(CONNECTTEST_REQUEST.equals(message)){
+                        out.println(DISCONNECT_RESPONSE);
+                        connectTag = 0;
+                    }else {
+                        System.out.println("message : "+message);
+                        WebSocket.broadCast(message,true,"message",service.getUser());
+                    }
                 } catch (SocketTimeoutException e){
                     if(connectTag < 3){
-                        out.println(ServerThread.CONNECTTEST_REQUEST);
+                        out.println(ServerThread.CONNECTTEST_RESPONSE);//res
                         connectTag ++;
                     }else {
                         out.println(DISCONNECT_RESPONSE);
                         return;
-                    }
-                }
-
-                if (DISCONNECT_REQUEST.equals(str) && client.equals(socket)) {
-                    out.println(DISCONNECT_RESPONSE);
-                    return;
-                }else if(CONNECTTEST_REQUEST.equals(str)){
-                    out.println(CONNECTTEST_RESPONSE);
-                }else if(CONNECTTEST_RESPONSE.equals(str)){
-                    connectTag = 0;
-                }else if(str.startsWith("$cd")){
-                    String path = str.substring(3).trim();
-                    File file = new File(path);
-                    if(file.exists()){
-                        current = file;
-                    }
-                }else if(str.startsWith("$")){
-                    try{
-                        InputStream inputStream = Runtime.getRuntime().exec(str.substring(1),null,current).getInputStream();
-                    }catch (Exception e){
-
                     }
                 }
             }
@@ -120,8 +96,8 @@ public class AppSocket extends BaseServiceImpl implements Runnable{
             ioException.printStackTrace();
         } catch (Exception exception){
         }finally {
-            System.setOut(systemStream);
             close(out);
+            close(socket);
         }
     }
 }

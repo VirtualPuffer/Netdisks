@@ -47,10 +47,6 @@ public class AbsoluteNetdiskDirectory extends AbsoluteNetdiskEntity{
      *
      * */
 
-    public AbsoluteNetdiskDirectory(){
-
-    }
-
     public static AbsoluteNetdiskDirectory getInstance(String destination, int id,int priviledge) throws FileNotFoundException {
         SqlSession session = null;
         AbsoluteNetdiskDirectory netdiskDirectory = null;

@@ -39,7 +39,7 @@ public interface FileMap {
     /*
     * 搜索文件
     * */
-    LinkedList searchFile(String name,int userID);
+    LinkedList searchFile(String name,int userID,int priviledge);
     /**
      * 上传文件
      * */

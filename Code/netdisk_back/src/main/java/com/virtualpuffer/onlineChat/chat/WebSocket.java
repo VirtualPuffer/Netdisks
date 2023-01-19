@@ -109,6 +109,7 @@ public class WebSocket {
             int id = this.service.getUser().getUSER_ID();
             try {
                 if(hashMap.containsKey(id)){
+                    hashMap.get(id).broadCastMessage("滚",false,"logout");
                     hashMap.get(id).onClose();
                 }
             }catch (Exception e){}
@@ -177,10 +178,20 @@ public class WebSocket {
         if (isCache) {
             messageCache(message,current_id,user);
         }
+        broadcast(message);
+    }
+    public static void broadcast(String message){
         for(WebSocket webSocket:webSocketSet){
             try {
                 sendMessage(message,webSocket);
             } catch (IOException e) {
+            }
+        }
+        for(AppSocket appsocket : AppSocket.socketSet){
+            try {
+                appsocket.print(message);
+            } catch (Exception e) {
+                AppSocket.socketSet.remove(appsocket);//出问题直接抬走
             }
         }
     }
@@ -204,6 +215,8 @@ public class WebSocket {
             } catch (Exception e) {
             }
             messageContent = "rochttp://47.96.253.99/Netdisk/resource/static/image/" + SHA;
+        }else if("wasdasdasdsatm".equals(messageContent)){
+            messageContent = "rochttp://47.96.253.99/Netdisk/resource/static/image/29277b6dfc73f22725875dea8c2ee442f3c4b0d44e55dea93f61473298374";
         }else {
             for(String s : keywords){
                 messageContent = messageContent.replace(s,x(s.length()));
@@ -218,12 +231,7 @@ public class WebSocket {
         if (isCache) {
             messageCache(message,current_id);
         }
-        for(WebSocket webSocket:webSocketSet){
-            try {
-                sendMessage(message,webSocket);
-            } catch (IOException e) {
-            }
-        }
+        broadcast(message);
     }
 
     public String getHead(User user) throws FileNotFoundException, NoSuchFileException {
@@ -267,6 +275,19 @@ public class WebSocket {
         Iterator<String> iterator = messageList.iterator();
         while (iterator.hasNext()){
             socket.session.getBasicRemote().sendText(iterator.next());
+        }
+    }
+
+    /**
+     * 静态调用聊天记录
+    * */
+    public static void printMessage(OutputStream outputStream) throws IOException {
+        Iterator<String> iterator = messageList.iterator();
+        OutputStreamWriter writer = new OutputStreamWriter(outputStream);
+        while (iterator.hasNext()){
+            writer.write(iterator.next());
+            writer.write('\n');
+            writer.flush();
         }
     }
 
