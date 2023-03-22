@@ -1,6 +1,6 @@
 
 server:
-  port: 80
+  port: 11000
   ssl:
     key-store: classpath:virtualpuffer.top.jks
     key-store-password: 123333
