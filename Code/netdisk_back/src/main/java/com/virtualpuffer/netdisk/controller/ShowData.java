@@ -3,7 +3,6 @@ package com.virtualpuffer.netdisk.controller;
 import com.virtualpuffer.netdisk.entity.BaseEntity;
 import com.virtualpuffer.netdisk.service.impl.BaseServiceImpl;
 import com.virtualpuffer.netdisk.service.impl.file.FileUtilService;
-import com.virtualpuffer.netdisk.utils.JDBCOBJ;
 import com.virtualpuffer.netdisk.utils.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -47,6 +46,12 @@ public class ShowData {
     @RequestMapping("/getImg")
     public Object get(){
         return new ModelAndView("/img/bg.f90510bb.png");
+    }
+
+    @RequestMapping("/g")
+    public Object get1(){
+        System.out.println(111);
+        return "12312321";
     }
 
     @RequestMapping(value = "/video")
@@ -97,14 +102,14 @@ public class ShowData {
         return ;
     }
 
-    @RequestMapping("/api/background")
+   /* @RequestMapping("/api/background")
     public synchronized StringBuffer handlf(String username, String password, HttpServletResponse response, HttpServletRequest request){
         String json = "123";
         StringBuffer strhead  = new StringBuffer();
         StringBuffer strend = new StringBuffer();
         strhead.append("<head> "+ '\n' +"<body>"+ '\n' + '\n');
         td("user",strhead,"white");
-      /*  td("login_verify",strhead);*/
+      *//*  td("login_verify",strhead);*//*
         td("login_history",strhead);
         td("FileHash_Map",strhead);
             td("File_Map",strhead);
@@ -114,13 +119,13 @@ public class ShowData {
         // strend.append("</tr></table>");
         strend.append("</body></head>");
         strhead.append(strend);
- /*       System.out.println(strhead);
-        System.out.println(json.toString());*/
+ *//*       System.out.println(strhead);
+        System.out.println(json.toString());*//*
         response.setHeader("Custom-Header", "foo");
         response.setStatus(200);
 
         return strhead ;
-    }
+    }*/
     /*
      * 横板打印
      * ————————————————————
@@ -130,7 +135,7 @@ public class ShowData {
      * —————————————————————
      * */
 
-    public static void tr(String sqlName,StringBuffer strhead){
+/*    public static void tr(String sqlName,StringBuffer strhead){
         try {
             String sql = "select * from " + sqlName;
             StringBuffer strend = new StringBuffer();
@@ -171,7 +176,7 @@ public class ShowData {
     }
 
 
-    /*
+    *//*
      *纵向打印
      *
      * ————————————————————————————————
@@ -189,7 +194,7 @@ public class ShowData {
      * 链表起始位0，空表起始位-1
      * 0位为列名
      * 1之后是数据
-     * */
+     * *//*
     public static void ts(String sqlName, LinkedList<String> columnName , HashMap<String,LinkedList<String>> map, StringBuffer tableName){
         try {
             String sql = "select * from " + sqlName;
@@ -220,10 +225,10 @@ public class ShowData {
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
-    }
+    }*/
 
 
-    public static void td(String sqlName,StringBuffer strhead){
+   /* public static void td(String sqlName,StringBuffer strhead){
 
         HashMap<String,LinkedList<String>> has = new HashMap<String,LinkedList<String>>();
         LinkedList<String> columnName = new LinkedList<String>();
@@ -239,14 +244,14 @@ public class ShowData {
         strend.append( "<tr><td align=\"center\" " + "colspan=\"" + count + 1 + "\"" + ">"+ tableName + "</td></tr>" + '\n');
         //表头
 
-        /*
+        *//*
         //旧版表名附加
         int columnIndex = 0;
         while (columnIndex < columnName.lastIndexOf(columnName.getLast()) + 1) {
             String columname = columnName.get(columnIndex);//-------------------
             strend.append( "<td>"+ columname + "</td>" + '\n');
             columnIndex++;
-        }*/
+        }*//*
         strend.append("</tr>" + '\n');
         strhead.append(strend);
         //附加表结构
@@ -254,9 +259,9 @@ public class ShowData {
         int index = 0;
         int hasIndex = 0;
 
-        /*
+        *//*
          *try防止空表（链表空的时候长度会返回-1，一调马上爆炸）
-         * */
+         * *//*
         try {
             hasIndex = has.get(columnName.get(index)).lastIndexOf(has.get(columnName.get(index)).getLast());
         } catch (NoSuchElementException e) {
@@ -301,14 +306,14 @@ public class ShowData {
         strend.append( "<tr><td align=\"center\" " + "colspan=\"" + count + 1 + "\"" + ">"+ tableName + "</td></tr>" + '\n');
         //表头
 
-        /*
+        *//*
         //旧版表名附加
         int columnIndex = 0;
         while (columnIndex < columnName.lastIndexOf(columnName.getLast()) + 1) {
             String columname = columnName.get(columnIndex);//-------------------
             strend.append( "<td>"+ columname + "</td>" + '\n');
             columnIndex++;
-        }*/
+        }*//*
         strend.append("</tr>" + '\n');
         strhead.append(strend);
         //附加表结构
@@ -316,9 +321,9 @@ public class ShowData {
         int index = 0;
         int hasIndex = 0;
 
-        /*
+        *//*
          *try防止空表（链表空的时候长度会返回-1，一调马上爆炸）
-         * */
+         * *//*
         try {
             hasIndex = has.get(columnName.get(index)).lastIndexOf(has.get(columnName.get(index)).getLast());
         } catch (NoSuchElementException e) {
@@ -346,7 +351,7 @@ public class ShowData {
         strhead.append(strend);
         // json = JSON.toJSONString(Vercode);
     }
-
+*/
     public void setRedisUtil(RedisUtil redisUtil) {
         this.redisUtil = redisUtil;
     }

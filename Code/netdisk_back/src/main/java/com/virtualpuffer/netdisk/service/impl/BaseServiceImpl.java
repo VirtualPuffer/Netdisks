@@ -14,7 +14,6 @@ import java.io.*;
 import java.sql.Timestamp;
 import java.util.*;
 
-@Async
 @Service
 public abstract class BaseServiceImpl {
     protected static final int BUFFER_SIZE = 4 * 1024;

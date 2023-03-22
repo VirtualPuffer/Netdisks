@@ -15,6 +15,7 @@ import java.util.Date;
 
 @Component
 public class Log {
+    public Log(){}
     /*
     * 获取当前时间
     * */

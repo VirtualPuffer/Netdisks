@@ -101,8 +101,8 @@ public class SendMail extends BaseServiceImpl implements Runnable{
             }
             transport.close();
         }catch (Exception e){
-            log.errorLog(e.getMessage());
             e.printStackTrace();
+            log.errorLog(e.getMessage());
         }
     }
     public void getConnect() throws InterruptedException {
